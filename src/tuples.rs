@@ -4,13 +4,7 @@ struct Tuple {
     x: f32,
     y: f32,
     z: f32,
-    w: TupleType,
-}
-
-#[derive(PartialEq)]
-enum TupleType {
-    Point,
-    Vector,
+    w: i8,
 }
 
 impl Tuple {
@@ -19,7 +13,7 @@ impl Tuple {
             x,
             y,
             z,
-            w: TupleType::Point,
+            w: 1,
         }
     }
 
@@ -28,22 +22,16 @@ impl Tuple {
             x,
             y,
             z,
-            w: TupleType::Vector,
+            w: 0,
         }
     }
 
     fn is_vector(&self) -> bool {
-        match self.w {
-            TupleType::Vector => true,
-            _ => false,
-        }
+        self.w == 0
     }
 
     fn is_point(&self) -> bool {
-        match self.w {
-            TupleType::Point => true,
-            _ => false,
-        }
+        self.w == 1
     }
 }
 
