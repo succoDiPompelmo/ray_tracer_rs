@@ -67,7 +67,6 @@ impl ops::Mul<f32> for Tuple {
     }
 }
 
-
 impl ops::Sub for Tuple {
     type Output = Self;
 
@@ -77,6 +76,19 @@ impl ops::Sub for Tuple {
             y: self.y - rhs.y,
             z: self.z - rhs.z,
             w: self.w - rhs.w,
+        }
+    }
+}
+
+impl ops::Div<f32> for Tuple {
+    type Output = Self;
+
+    fn div(self, rhs: f32) -> Tuple {
+        Tuple {
+            x: self.x / rhs,
+            y: self.y / rhs,
+            z: self.z / rhs,
+            w: self.w / rhs,
         }
     }
 }
@@ -211,7 +223,7 @@ mod tests {
     fn negate_tuple() {
         let tuple = Tuple::new(1.0, -2.0, 3.0, -4.0);
         let expected = Tuple::new(-1.0, 2.0, -3.0, 4.0);
-        
+
         assert!(-tuple == expected);
     }
 
@@ -231,5 +243,14 @@ mod tests {
 
         let expected = Tuple::new(0.5, -1.0, 1.5, -2.0);
         assert!(tuple * scalar == expected);
+    }
+
+    #[test]
+    fn divide_tuple_by_scalar() {
+        let tuple = Tuple::new(1.0, -2.0, 3.0, -4.0);
+        let scalar: f32 = 2.0;
+
+        let expected = Tuple::new(0.5, -1.0, 1.5, -2.0);
+        assert!(tuple / scalar == expected);
     }
 }
