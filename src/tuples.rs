@@ -45,13 +45,24 @@ impl ops::Add for Tuple {
     type Output = Self;
 
     fn add(self, rhs: Tuple) -> Tuple {
-        println!("> Foo.add(Bar) was called");
-
         Tuple {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
             z: self.z + rhs.z,
             w: self.w + rhs.w,
+        }
+    }
+}
+
+impl ops::Sub for Tuple {
+    type Output = Self;
+
+    fn sub(self, rhs: Tuple) -> Tuple {
+        Tuple {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
+            w: self.w - rhs.w,
         }
     }
 }
@@ -137,5 +148,35 @@ mod tests {
         let point_3 = Tuple::new_vector(2.0, 4.0, 6.0);
 
         assert!((point_1 + point_2) == point_3)
+    }
+
+    #[test]
+    fn sub_point_to_point() {
+        let point_1 = Tuple::new_point(3.0, 2.0, 1.0);
+        let point_2 = Tuple::new_point(5.0, 6.0, 7.0);
+
+        let point_3 = Tuple::new_vector(-2.0, -4.0, -6.0);
+
+        assert!((point_1 - point_2) == point_3)
+    }
+
+    #[test]
+    fn sub_vector_to_point() {
+        let point_1 = Tuple::new_point(3.0, 2.0, 1.0);
+        let point_2 = Tuple::new_vector(5.0, 6.0, 7.0);
+
+        let point_3 = Tuple::new_point(-2.0, -4.0, -6.0);
+
+        assert!((point_1 - point_2) == point_3)
+    }
+
+    #[test]
+    fn sub_vector_to_vector() {
+        let point_1 = Tuple::new_vector(3.0, 2.0, 1.0);
+        let point_2 = Tuple::new_vector(5.0, 6.0, 7.0);
+
+        let point_3 = Tuple::new_vector(-2.0, -4.0, -6.0);
+
+        assert!((point_1 - point_2) == point_3)
     }
 }
