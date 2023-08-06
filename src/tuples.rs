@@ -29,6 +29,10 @@ impl Tuple {
     fn is_point(&self) -> bool {
         self.w == 1.0
     }
+
+    fn magnitude(&self) -> f32 {
+        (self.x.powf(2.0) + self.y.powf(2.0) + self.z.powf(2.0) + self.w.powf(2.0)).sqrt()
+    }
 }
 
 impl PartialEq for Tuple {
@@ -252,5 +256,14 @@ mod tests {
 
         let expected = Tuple::new(0.5, -1.0, 1.5, -2.0);
         assert!(tuple / scalar == expected);
+    }
+
+    #[test]
+    fn magnitude_computation() {
+        assert!(1.0 == Tuple::new_vector(1.0, 0.0, 0.0).magnitude());
+        assert!(1.0 == Tuple::new_vector(0.0, 1.0, 0.0).magnitude());
+        assert!(1.0 == Tuple::new_vector(0.0, 0.0, 1.0).magnitude());
+        assert!((14.0_f32).sqrt() == Tuple::new_vector(1.0, 2.0, 3.0).magnitude());
+        assert!((14.0_f32).sqrt() == Tuple::new_vector(-1.0, -2.0, -3.0).magnitude());
     }
 }
