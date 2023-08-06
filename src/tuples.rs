@@ -33,6 +33,16 @@ impl Tuple {
     fn magnitude(&self) -> f32 {
         (self.x.powf(2.0) + self.y.powf(2.0) + self.z.powf(2.0) + self.w.powf(2.0)).sqrt()
     }
+
+    fn normalize(&self) -> Tuple {
+        let magnitude = self.magnitude();
+        Tuple::new(
+            self.x / magnitude,
+            self.y / magnitude,
+            self.z / magnitude,
+            self.w / magnitude,
+        )
+    }
 }
 
 impl PartialEq for Tuple {
@@ -265,5 +275,22 @@ mod tests {
         assert!(1.0 == Tuple::new_vector(0.0, 0.0, 1.0).magnitude());
         assert!((14.0_f32).sqrt() == Tuple::new_vector(1.0, 2.0, 3.0).magnitude());
         assert!((14.0_f32).sqrt() == Tuple::new_vector(-1.0, -2.0, -3.0).magnitude());
+    }
+
+    #[test]
+    fn normalize_computation() {
+        assert!(Tuple::new_vector(1.0, 0.0, 0.0) == Tuple::new_vector(4.0, 0.0, 0.0).normalize());
+    }
+
+    #[test]
+    fn normalize_vector_has_magnitude_1() {
+        let outcome = Tuple::new_vector(1.0, 2.0, 3.0).normalize();
+        let expected = Tuple::new_vector(
+            1.0 / (14.0_f32).sqrt(),
+            2.0 / (14.0_f32).sqrt(),
+            3.0 / (14.0_f32).sqrt(),
+        );
+        assert!(outcome == expected);
+        assert!(outcome.magnitude().approx_eq(1.0, F32Margin::default()));
     }
 }
