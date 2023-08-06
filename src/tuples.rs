@@ -43,6 +43,10 @@ impl Tuple {
             self.w / magnitude,
         )
     }
+
+    fn dot(&self, rhs: Tuple) -> f32 {
+        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z + self.w * rhs.w
+    }
 }
 
 impl PartialEq for Tuple {
@@ -292,5 +296,13 @@ mod tests {
         );
         assert!(outcome == expected);
         assert!(outcome.magnitude().approx_eq(1.0, F32Margin::default()));
+    }
+
+    #[test]
+    fn dot_product_between_vectors() {
+        let vector_1 = Tuple::new_vector(1.0, 2.0, 3.0);
+        let vector_2 = Tuple::new_vector(2.0, 3.0, 4.0);
+
+        assert!(vector_1.dot(vector_2) == 20.0);
     }
 }
