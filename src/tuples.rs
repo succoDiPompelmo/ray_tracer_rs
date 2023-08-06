@@ -6,28 +6,28 @@ struct Tuple {
     x: f32,
     y: f32,
     z: f32,
-    w: i8,
+    w: f32,
 }
 
 impl Tuple {
-    fn new(x: f32, y: f32, z: f32, w: i8) -> Tuple {
+    fn new(x: f32, y: f32, z: f32, w: f32) -> Tuple {
         Tuple { x, y, z, w }
     }
 
     fn new_point(x: f32, y: f32, z: f32) -> Tuple {
-        Tuple { x, y, z, w: 1 }
+        Tuple { x, y, z, w: 1.0 }
     }
 
     fn new_vector(x: f32, y: f32, z: f32) -> Tuple {
-        Tuple { x, y, z, w: 0 }
+        Tuple { x, y, z, w: 0.0 }
     }
 
     fn is_vector(&self) -> bool {
-        self.w == 0
+        self.w == 0.0
     }
 
     fn is_point(&self) -> bool {
-        self.w == 1
+        self.w == 1.0
     }
 }
 
@@ -138,7 +138,7 @@ mod tests {
         let point_1 = Tuple::new_point(1.0, 2.0, 3.0);
         let point_2 = Tuple::new_point(1.0, 2.0, 3.0);
 
-        let point_3 = Tuple::new(2.0, 4.0, 6.0, 2);
+        let point_3 = Tuple::new(2.0, 4.0, 6.0, 2.0);
 
         assert!((point_1 + point_2) == point_3)
     }
@@ -195,8 +195,8 @@ mod tests {
 
     #[test]
     fn negate_tuple() {
-        let tuple = Tuple::new(1.0, -2.0, 3.0, -4);
-        let expected = Tuple::new(-1.0, 2.0, -3.0, 4);
+        let tuple = Tuple::new(1.0, -2.0, 3.0, -4.0);
+        let expected = Tuple::new(-1.0, 2.0, -3.0, 4.0);
         
         assert!(-tuple == expected);
     }
