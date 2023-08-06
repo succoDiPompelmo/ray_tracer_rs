@@ -67,6 +67,19 @@ impl ops::Sub for Tuple {
     }
 }
 
+impl ops::Neg for Tuple {
+    type Output = Self;
+
+    fn neg(self) -> Tuple {
+        Tuple {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+            w: -self.w,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -178,5 +191,13 @@ mod tests {
         let point_3 = Tuple::new_vector(-2.0, -4.0, -6.0);
 
         assert!((point_1 - point_2) == point_3)
+    }
+
+    #[test]
+    fn negate_tuple() {
+        let tuple = Tuple::new(1.0, -2.0, 3.0, -4);
+        let expected = Tuple::new(-1.0, 2.0, -3.0, 4);
+        
+        assert!(-tuple == expected);
     }
 }
