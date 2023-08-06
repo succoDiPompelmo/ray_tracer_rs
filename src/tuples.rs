@@ -22,6 +22,17 @@ impl Tuple {
         Tuple { x, y, z, w: 0.0 }
     }
 
+    fn new_color(r: f32, g: f32, b: f32) -> Tuple {
+        // w value for colors are useless, so for no particular reason is set to 0
+        // to avoid interaction with other components
+        Tuple {
+            x: r,
+            y: g,
+            z: b,
+            w: 0.0,
+        }
+    }
+
     fn is_vector(&self) -> bool {
         self.w == 0.0
     }
@@ -54,6 +65,10 @@ impl Tuple {
             self.z * rhs.x - self.x * rhs.z,
             self.x * rhs.y - self.y * rhs.x,
         )
+    }
+
+    fn hadamard_product(&self, rhs: &Tuple) -> Tuple {
+        Tuple::new_color(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
     }
 }
 
@@ -334,5 +349,41 @@ mod tests {
         assert!(vector_y.cross(&vector_z) == vector_x);
 
         assert!(vector_y.cross(&vector_x) == -vector_z);
+    }
+
+    #[test]
+    fn add_colors() {
+        let color_1 = Tuple::new_color(0.9, 0.6, 0.75);
+        let color_2 = Tuple::new_color(0.7, 0.1, 0.25);
+
+        let expected = Tuple::new_color(1.6, 0.7, 1.0);
+        assert!((color_1 + color_2) == expected);
+    }
+
+    #[test]
+    fn subtract_colors() {
+        let color_1 = Tuple::new_color(0.9, 0.6, 0.75);
+        let color_2 = Tuple::new_color(0.7, 0.1, 0.25);
+
+        let expected = Tuple::new_color(0.2, 0.5, 0.5);
+        assert!(color_1 - color_2 == expected);
+    }
+
+    #[test]
+    fn multiply_color_by_scalar() {
+        let color_1 = Tuple::new_color(0.2, 0.3, 0.4);
+        let scalar = 2.0;
+
+        let expected = Tuple::new_color(0.4, 0.6, 0.8);
+        assert!(color_1 * scalar == expected);
+    }
+
+    #[test]
+    fn multiply_colors() {
+        let color_1 = Tuple::new_color(1.0, 0.2, 0.4);
+        let color_2 = Tuple::new_color(0.9, 1.0, 0.1);
+
+        let expected = Tuple::new_color(0.9, 0.2, 0.04);
+        assert!(color_1.hadamard_product(&color_2) == expected);
     }
 }
