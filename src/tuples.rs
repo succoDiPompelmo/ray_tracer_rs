@@ -1,3 +1,5 @@
+use std::ops;
+
 use float_cmp::{ApproxEq, F32Margin};
 
 struct Tuple {
@@ -8,22 +10,16 @@ struct Tuple {
 }
 
 impl Tuple {
+    fn new(x: f32, y: f32, z: f32, w: i8) -> Tuple {
+        Tuple { x, y, z, w }
+    }
+
     fn new_point(x: f32, y: f32, z: f32) -> Tuple {
-        Tuple {
-            x,
-            y,
-            z,
-            w: 1,
-        }
+        Tuple { x, y, z, w: 1 }
     }
 
     fn new_vector(x: f32, y: f32, z: f32) -> Tuple {
-        Tuple {
-            x,
-            y,
-            z,
-            w: 0,
-        }
+        Tuple { x, y, z, w: 0 }
     }
 
     fn is_vector(&self) -> bool {
@@ -42,6 +38,21 @@ impl PartialEq for Tuple {
             && self.y.approx_eq(other.y, margin)
             && self.z.approx_eq(other.z, margin)
             && self.w == other.w
+    }
+}
+
+impl ops::Add for Tuple {
+    type Output = Self;
+
+    fn add(self, rhs: Tuple) -> Tuple {
+        println!("> Foo.add(Bar) was called");
+
+        Tuple {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
+            w: self.w + rhs.w,
+        }
     }
 }
 
@@ -96,5 +107,35 @@ mod tests {
         let point_2 = Tuple::new_vector(1.0, 2.0, 3.0);
 
         assert!(!(point_1 == point_2))
+    }
+
+    #[test]
+    fn add_point_to_point() {
+        let point_1 = Tuple::new_point(1.0, 2.0, 3.0);
+        let point_2 = Tuple::new_point(1.0, 2.0, 3.0);
+
+        let point_3 = Tuple::new(2.0, 4.0, 6.0, 2);
+
+        assert!((point_1 + point_2) == point_3)
+    }
+
+    #[test]
+    fn add_point_to_vector() {
+        let point_1 = Tuple::new_point(1.0, 2.0, 3.0);
+        let point_2 = Tuple::new_vector(1.0, 2.0, 3.0);
+
+        let point_3 = Tuple::new_point(2.0, 4.0, 6.0);
+
+        assert!((point_1 + point_2) == point_3)
+    }
+
+    #[test]
+    fn add_vector_to_vector() {
+        let point_1 = Tuple::new_vector(1.0, 2.0, 3.0);
+        let point_2 = Tuple::new_vector(1.0, 2.0, 3.0);
+
+        let point_3 = Tuple::new_vector(2.0, 4.0, 6.0);
+
+        assert!((point_1 + point_2) == point_3)
     }
 }
