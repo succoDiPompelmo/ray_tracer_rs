@@ -54,6 +54,20 @@ impl ops::Add for Tuple {
     }
 }
 
+impl ops::Mul<f32> for Tuple {
+    type Output = Self;
+
+    fn mul(self, rhs: f32) -> Tuple {
+        Tuple {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
+            w: self.w * rhs,
+        }
+    }
+}
+
+
 impl ops::Sub for Tuple {
     type Output = Self;
 
@@ -199,5 +213,23 @@ mod tests {
         let expected = Tuple::new(-1.0, 2.0, -3.0, 4.0);
         
         assert!(-tuple == expected);
+    }
+
+    #[test]
+    fn multiply_tuple_by_scalar() {
+        let tuple = Tuple::new(1.0, -2.0, 3.0, -4.0);
+        let scalar: f32 = 3.5;
+
+        let expected = Tuple::new(3.5, -7.0, 10.5, -14.0);
+        assert!(tuple * scalar == expected);
+    }
+
+    #[test]
+    fn multiply_tuple_by_fraction() {
+        let tuple = Tuple::new(1.0, -2.0, 3.0, -4.0);
+        let scalar: f32 = 0.5;
+
+        let expected = Tuple::new(0.5, -1.0, 1.5, -2.0);
+        assert!(tuple * scalar == expected);
     }
 }
