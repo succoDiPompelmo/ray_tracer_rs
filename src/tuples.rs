@@ -44,11 +44,11 @@ impl Tuple {
         )
     }
 
-    fn dot(&self, rhs: Tuple) -> f32 {
+    fn dot(&self, rhs: &Tuple) -> f32 {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z + self.w * rhs.w
     }
 
-    fn cross(&self, rhs: Tuple) -> Tuple {
+    fn cross(&self, rhs: &Tuple) -> Tuple {
         Tuple::new_vector(
             self.y * rhs.z - self.z * rhs.y,
             self.z * rhs.x - self.x * rhs.z,
@@ -311,7 +311,7 @@ mod tests {
         let vector_1 = Tuple::new_vector(1.0, 2.0, 3.0);
         let vector_2 = Tuple::new_vector(2.0, 3.0, 4.0);
 
-        assert!(vector_1.dot(vector_2) == 20.0);
+        assert!(vector_1.dot(&vector_2) == 20.0);
     }
 
     #[test]
@@ -321,6 +321,18 @@ mod tests {
 
         let expected = Tuple::new_vector(-1.0, 2.0, -1.0);
 
-        assert!(vector_1.cross(vector_2) == expected);
+        assert!(vector_1.cross(&vector_2) == expected);
+    }
+
+    #[test]
+    fn cross_product_properties() {
+        let vector_x = Tuple::new_vector(1.0, 0.0, 0.0);
+        let vector_y = Tuple::new_vector(0.0, 1.0, 0.0);
+        let vector_z = Tuple::new_vector(0.0, 0.0, 1.0);
+
+        assert!(vector_x.cross(&vector_y) == vector_z);
+        assert!(vector_y.cross(&vector_z) == vector_x);
+
+        assert!(vector_y.cross(&vector_x) == -vector_z);
     }
 }
