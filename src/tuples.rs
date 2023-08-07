@@ -2,7 +2,8 @@ use std::ops;
 
 use float_cmp::{ApproxEq, F32Margin};
 
-struct Tuple {
+#[derive(Clone, Copy)]
+pub struct Tuple {
     x: f32,
     y: f32,
     z: f32,
@@ -22,7 +23,7 @@ impl Tuple {
         Tuple { x, y, z, w: 0.0 }
     }
 
-    fn new_color(r: f32, g: f32, b: f32) -> Tuple {
+    pub fn new_color(r: f32, g: f32, b: f32) -> Tuple {
         // w value for colors are useless, so for no particular reason is set to 0
         // to avoid interaction with other components
         Tuple {

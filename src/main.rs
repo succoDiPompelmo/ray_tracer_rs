@@ -1,3 +1,4 @@
+mod canvas;
 mod tuples;
 
 fn main() {
