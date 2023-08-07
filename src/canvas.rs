@@ -1,3 +1,5 @@
+use std::{fs::File, io::Write};
+
 use crate::tuples::Tuple;
 
 struct Canvas {
@@ -83,6 +85,12 @@ impl Canvas {
             "{}\n{}\n{}\n{}\n",
             magic_number, size, max_color_value, body
         )
+    }
+
+    fn write_ppm_to_fs(&self) {
+        let ppm = self.to_ppm();
+        let mut file = File::create("foo.ppm").unwrap();
+        file.write_all(ppm.as_bytes()).unwrap();
     }
 }
 
