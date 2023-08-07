@@ -40,7 +40,7 @@ impl Canvas {
         let size = format!("{} {}", self.width, self.height);
         let max_color_value = "255".to_owned();
 
-        let mut rows = vec![];
+        let mut rows: Vec<String> = vec![];
 
         for x in 0..self.height {
             let mut row = vec![];
@@ -58,13 +58,31 @@ impl Canvas {
                 .map(|el| el.round() as usize)
                 .map(|el| el.clamp(0, 255))
                 .map(|el| el.to_string())
-                .collect::<Vec<String>>();
+                .collect::<Vec<String>>()
+                .join(" ");
 
-            rows.push(format_row.join(" "));
+            let mut space_cnt = 0;
+            let mut output = vec![];
+            for el in format_row.chars() {
+                if el.is_ascii_whitespace() {
+                    space_cnt += 1;
+                }
+
+                if space_cnt % 10 == 0 && el.is_ascii_whitespace() {
+                    output.push('\n');
+                } else {
+                    output.push(el);
+                }
+            }
+
+            rows.push(output.into_iter().collect());
         }
         let body = rows.join("\n");
 
-        format!("{}\n{}\n{}\n{}", magic_number, size, max_color_value, body)
+        format!(
+            "{}\n{}\n{}\n{}\n",
+            magic_number, size, max_color_value, body
+        )
     }
 }
 
@@ -102,19 +120,46 @@ mod tests {
 
     #[test]
     fn canvas_to_ppm() {
-        let mut canvas = Canvas::new(5, 3);
+        let mut canvas = Canvas::new(3, 3);
         canvas.write_pixel(Tuple::new_color(1.5, 0.0, 0.0), 0, 0);
-        canvas.write_pixel(Tuple::new_color(0.0, 0.5, 0.0), 2, 1);
-        canvas.write_pixel(Tuple::new_color(-0.5, 0.0, 1.0), 4, 2);
+        canvas.write_pixel(Tuple::new_color(0.0, 0.5, 0.0), 1, 1);
+        canvas.write_pixel(Tuple::new_color(-0.5, 0.0, 1.0), 2, 2);
         let ppm = canvas.to_ppm();
 
         let expected = "\
         P3\n\
-        5 3\n\
+        3 3\n\
         255\n\
-        255 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n\
-        0 0 0 0 0 0 0 128 0 0 0 0 0 0 0\n\
-        0 0 0 0 0 0 0 0 0 0 0 0 0 0 255";
+        255 0 0 0 0 0 0 0 0\n\
+        0 0 0 0 128 0 0 0 0\n\
+        0 0 0 0 0 0 0 0 255\n";
+
+        assert!(ppm == expected);
+    }
+
+    #[test]
+    fn canvas_with_high_width_to_ppm() {
+        let mut canvas = Canvas::new(8, 3);
+        let color = Tuple::new_color(1.0, 0.8, 0.6);
+        for x in 0..canvas.height() {
+            for y in 0..canvas.width() {
+                canvas.write_pixel(color, y, x);
+            }
+        }
+        let ppm = canvas.to_ppm();
+        let expected = "\
+        P3\n\
+        8 3\n\
+        255\n\
+        255 204 153 255 204 153 255 204 153 255\n\
+        204 153 255 204 153 255 204 153 255 204\n\
+        153 255 204 153\n\
+        255 204 153 255 204 153 255 204 153 255\n\
+        204 153 255 204 153 255 204 153 255 204\n\
+        153 255 204 153\n\
+        255 204 153 255 204 153 255 204 153 255\n\
+        204 153 255 204 153 255 204 153 255 204\n\
+        153 255 204 153\n";
 
         assert!(ppm == expected);
     }
