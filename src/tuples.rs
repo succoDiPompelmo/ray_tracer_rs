@@ -2,7 +2,7 @@ use std::ops;
 
 use float_cmp::{ApproxEq, F32Margin};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Tuple {
     pub x: f32,
     pub y: f32,
@@ -15,11 +15,11 @@ impl Tuple {
         Tuple { x, y, z, w }
     }
 
-    fn new_point(x: f32, y: f32, z: f32) -> Tuple {
+    pub fn new_point(x: f32, y: f32, z: f32) -> Tuple {
         Tuple { x, y, z, w: 1.0 }
     }
 
-    fn new_vector(x: f32, y: f32, z: f32) -> Tuple {
+    pub fn new_vector(x: f32, y: f32, z: f32) -> Tuple {
         Tuple { x, y, z, w: 0.0 }
     }
 
@@ -46,7 +46,7 @@ impl Tuple {
         (self.x.powf(2.0) + self.y.powf(2.0) + self.z.powf(2.0) + self.w.powf(2.0)).sqrt()
     }
 
-    fn normalize(&self) -> Tuple {
+    pub fn normalize(&self) -> Tuple {
         let magnitude = self.magnitude();
         Tuple::new(
             self.x / magnitude,
