@@ -1,4 +1,4 @@
-use crate::tuples::Tuple;
+use crate::{tuples::Tuple, canvas::Canvas};
 
 pub struct Environment {
     gravity: Tuple,
@@ -29,7 +29,15 @@ impl Projectile {
         Projectile { position, velocity }
     }
 
+    pub fn get_x(&self) -> f32 {
+        self.position.x
+    }
+
     pub fn get_y(&self) -> f32 {
         self.position.y
+    }
+
+    pub fn to_canvas_coordinate(&self, canvas: &Canvas) -> Tuple {
+        Tuple::new_point(self.position.x, canvas.height() as f32 - self.position.y, self.position.z)
     }
 }

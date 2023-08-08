@@ -2,7 +2,7 @@ use std::{fs::File, io::Write};
 
 use crate::tuples::Tuple;
 
-struct Canvas {
+pub struct Canvas {
     width: usize,
     height: usize,
     // TODO: This has bad data locality since the column vectors could be scattered
@@ -12,7 +12,7 @@ struct Canvas {
 }
 
 impl Canvas {
-    fn new(width: usize, height: usize) -> Canvas {
+    pub fn new(width: usize, height: usize) -> Canvas {
         let state = vec![vec![Tuple::new_color(0.0, 0.0, 0.0); width]; height];
         Canvas {
             width,
@@ -25,7 +25,7 @@ impl Canvas {
         self.width
     }
 
-    fn height(&self) -> usize {
+    pub fn height(&self) -> usize {
         self.height
     }
 
@@ -33,8 +33,10 @@ impl Canvas {
         self.state[y][x]
     }
 
-    fn write_pixel(&mut self, color: Tuple, x: usize, y: usize) {
-        self.state[y][x] = color
+    pub fn write_pixel(&mut self, color: Tuple, x: usize, y: usize) {
+        if y < self.height && y >= 0 && x < self.width && x >= 0 {
+            self.state[y][x] = color
+        }
     }
 
     fn to_ppm(&self) -> String {
@@ -87,7 +89,7 @@ impl Canvas {
         )
     }
 
-    fn write_ppm_to_fs(&self) {
+    pub fn write_ppm_to_fs(&self) {
         let ppm = self.to_ppm();
         let mut file = File::create("foo.ppm").unwrap();
         file.write_all(ppm.as_bytes()).unwrap();
