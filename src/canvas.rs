@@ -33,9 +33,9 @@ impl Canvas {
         self.state[y][x]
     }
 
-    pub fn write_pixel(&mut self, color: Tuple, x: usize, y: usize) {
-        if y < self.height && y >= 0 && x < self.width && x >= 0 {
-            self.state[y][x] = color
+    pub fn write_pixel(&mut self, color: Tuple, x: isize, y: isize) {
+        if y < self.height as isize && y >= 0 && x < self.width as isize && x >= 0 {
+            self.state[y as usize][x as usize] = color
         }
     }
 
@@ -153,7 +153,7 @@ mod tests {
         let color = Tuple::new_color(1.0, 0.8, 0.6);
         for x in 0..canvas.height() {
             for y in 0..canvas.width() {
-                canvas.write_pixel(color, y, x);
+                canvas.write_pixel(color, y as isize, x as isize);
             }
         }
         let ppm = canvas.to_ppm();

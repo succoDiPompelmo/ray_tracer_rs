@@ -1,4 +1,5 @@
 mod canvas;
+mod matrices;
 mod play;
 mod tuples;
 
@@ -18,7 +19,7 @@ fn main() {
 
     let mut proj = play::Projectile::new(
         Tuple::new_point(0.0, 1.0, 0.0),
-        Tuple::new_vector(100.0, 150.0, 0.0).normalize() * 10.0,
+        Tuple::new_vector(100.0, 150.0, 0.0).normalize() * 15.0,
     );
 
     for _ in 0..10000 {
@@ -28,7 +29,11 @@ fn main() {
             break;
         }
 
-        canvas.write_pixel(color, proj.get_x() as usize, canvas.height() - (proj.get_y() as usize));
+        canvas.write_pixel(
+            color,
+            proj.get_x() as isize,
+            canvas.height() as isize - (proj.get_y() as isize),
+        );
     }
 
     canvas.write_ppm_to_fs();
