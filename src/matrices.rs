@@ -1,5 +1,8 @@
+use std::ops;
+
 use float_cmp::{ApproxEq, F32Margin};
 
+#[derive(Debug)]
 struct Matrix {
     width: usize,
     height: usize,
@@ -18,10 +21,10 @@ impl Matrix {
     fn from_vector(a: Vec<f32>, width: usize, height: usize) -> Matrix {
         let mut grid = vec![vec![0.0; width]; height];
 
-        for x in 0..width {
-            for y in 0..height {
-                let value = a.get(width * x + y).unwrap();
-                grid[y][x] = *value;
+        for row in 0..height {
+            for col in 0..width {
+                let value = a.get(width * row + col).unwrap();
+                grid[row][col] = *value;
             }
         }
 
@@ -32,8 +35,12 @@ impl Matrix {
         }
     }
 
-    fn get(&self, x: usize, y: usize) -> f32 {
-        self.grid[y][x]
+    fn get(&self, row: usize, col: usize) -> f32 {
+        self.grid[row][col]
+    }
+
+    fn set(&mut self, row: usize, col: usize, value: f32) {
+        self.grid[row][col] = value
     }
 }
 
@@ -45,15 +52,38 @@ impl PartialEq for Matrix {
             return false;
         }
 
-        for x in 0..self.width {
-            for y in 0..self.height {
-                if !self.get(x, y).approx_eq(other.get(x, y), margin) {
+        for row in 0..self.height {
+            for col in 0..self.width {
+                if !self.get(row, col).approx_eq(other.get(row, col), margin) {
                     return false;
                 }
             }
         }
 
         true
+    }
+}
+
+impl ops::Mul<Matrix> for Matrix {
+    type Output = Self;
+
+    // We are only interested in 4x4 matrix multiplications, so we can simplify this
+    // implementation. No need to be generic.
+    fn mul(self, rhs: Matrix) -> Matrix {
+        let mut output = Matrix::new(4, 4);
+
+        for row in 0..4 {
+            for col in 0..4 {
+                let value = self.get(row, 0) * rhs.get(0, col)
+                    + self.get(row, 1) * rhs.get(1, col)
+                    + self.get(row, 2) * rhs.get(2, col)
+                    + self.get(row, 3) * rhs.get(3, col);
+
+                output.set(row, col, value);
+            }
+        }
+
+        output
     }
 }
 
@@ -107,7 +137,6 @@ mod tests {
     #[test]
     fn equal_matrices() {
         let a = Matrix::from_vector(vec![-3.0, 0.15 + 0.15 + 0.15, 1.0, -2.0], 2, 2);
-
         let b = Matrix::from_vector(vec![-3.0, 0.1 + 0.1 + 0.25, 1.0, -2.0], 2, 2);
 
         assert!(a == b);
@@ -116,9 +145,38 @@ mod tests {
     #[test]
     fn not_equal_matrices() {
         let a = Matrix::from_vector(vec![-3.0, 5.0, 1.0, -2.0], 2, 2);
-
         let b = Matrix::from_vector(vec![3.0, 5.0, 1.0, -2.0], 2, 2);
 
         assert!(a != b);
+    }
+
+    #[test]
+    fn matrices_multiplication() {
+        let a = Matrix::from_vector(
+            vec![
+                1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0,
+            ],
+            4,
+            4,
+        );
+
+        let b = Matrix::from_vector(
+            vec![
+                -2.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, -1.0, 4.0, 3.0, 6.0, 5.0, 1.0, 2.0, 7.0, 8.0,
+            ],
+            4,
+            4,
+        );
+
+        let c = Matrix::from_vector(
+            vec![
+                20.0, 22.0, 50.0, 48.0, 44.0, 54.0, 114.0, 108.0, 40.0, 58.0, 110.0, 102.0, 16.0,
+                26.0, 46.0, 42.0,
+            ],
+            4,
+            4,
+        );
+
+        assert!(a * b == c)
     }
 }
