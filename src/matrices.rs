@@ -29,7 +29,7 @@ impl Matrix {
         Matrix {
             width: size,
             height: size,
-            grid: grid,
+            grid,
         }
     }
 
@@ -68,6 +68,14 @@ impl Matrix {
         }
 
         output
+    }
+
+    fn determinant(&self) -> f32 {
+        match (self.width, self.height) {
+            (x, y) if x != y => panic!("Determinant is a property of square matrices"),
+            (2, 2) => self.get(0, 0) * self.get(1, 1) - self.get(0, 1) * self.get(1, 0),
+            _ => panic!("Not implemented yet"),
+        }
     }
 }
 
@@ -284,5 +292,12 @@ mod tests {
     #[test]
     fn identity_matrix_transponse() {
         assert!(Matrix::identity(4).transpose() == Matrix::identity(4));
+    }
+
+    #[test]
+    fn two_by_two_matrix_determinant() {
+        let matrix = Matrix::from_vector(vec![1.0, 5.0, -3.0, 2.0], 2, 2);
+
+        assert!(matrix.determinant() == 17.0);
     }
 }
