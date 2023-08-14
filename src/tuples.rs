@@ -7,11 +7,11 @@ pub struct Tuple {
     pub x: f32,
     pub y: f32,
     pub z: f32,
-    w: f32,
+    pub w: f32,
 }
 
 impl Tuple {
-    fn new(x: f32, y: f32, z: f32, w: f32) -> Tuple {
+    pub fn new(x: f32, y: f32, z: f32, w: f32) -> Tuple {
         Tuple { x, y, z, w }
     }
 
@@ -70,6 +70,16 @@ impl Tuple {
 
     fn hadamard_product(&self, rhs: &Tuple) -> Tuple {
         Tuple::new_color(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
+    }
+
+    pub fn set(&mut self, idx: usize, value: f32) {
+        match idx {
+            0 => self.x = value,
+            1 => self.y = value,
+            2 => self.z = value,
+            3 => self.w = value,
+            _ => (),
+        }
     }
 }
 

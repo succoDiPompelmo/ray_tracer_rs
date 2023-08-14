@@ -1,5 +1,6 @@
 use std::ops;
 
+use crate::tuples::Tuple;
 use float_cmp::{ApproxEq, F32Margin};
 
 #[derive(Debug)]
@@ -81,6 +82,27 @@ impl ops::Mul<Matrix> for Matrix {
 
                 output.set(row, col, value);
             }
+        }
+
+        output
+    }
+}
+
+impl ops::Mul<Tuple> for Matrix {
+    type Output = Tuple;
+
+    // We are only interested in 4x4 matrix multiplications, so we can simplify this
+    // implementation. No need to be generic.
+    fn mul(self, rhs: Tuple) -> Tuple {
+        let mut output: Tuple = Tuple::new(0.0, 0.0, 0.0, 0.0);
+
+        for row in 0..4 {
+            let value = self.get(row, 0) * rhs.x
+                + self.get(row, 1) * rhs.y
+                + self.get(row, 2) * rhs.z
+                + self.get(row, 3) * rhs.w;
+
+            output.set(row, value);
         }
 
         output
@@ -178,5 +200,21 @@ mod tests {
         );
 
         assert!(a * b == c)
+    }
+
+    #[test]
+    fn matrix_tuple_multiplication() {
+        let a = Matrix::from_vector(
+            vec![
+                1.0, 2.0, 3.0, 4.0, 2.0, 4.0, 4.0, 2.0, 8.0, 6.0, 4.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+            ],
+            4,
+            4,
+        );
+
+        let b = Tuple::new(1.0, 2.0, 3.0, 1.0);
+        let c = Tuple::new(18.0, 24.0, 33.0, 1.0);
+
+        assert!(a * b == c);
     }
 }
