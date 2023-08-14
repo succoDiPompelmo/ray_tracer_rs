@@ -95,6 +95,14 @@ impl Matrix {
     fn minor(&self, target_row: usize, target_col: usize) -> f32 {
         self.submatrix(target_row, target_col).determinant()
     }
+
+    fn cofactor(&self, target_row: usize, target_col: usize) -> f32 {
+        match (target_col + target_row) % 2 {
+            0 => self.minor(target_row, target_col),
+            1 => -self.minor(target_row, target_col),
+            _ => panic!("Odd or even"),
+        }
+    }
 }
 
 impl PartialEq for Matrix {
@@ -350,5 +358,14 @@ mod tests {
             Matrix::from_vector(vec![3.0, 5.0, 0.0, 2.0, -1.0, -7.0, 6.0, -1.0, 5.0], 3, 3);
 
         assert!(matrix.minor(1, 0) == 25.0)
+    }
+
+    #[test]
+    fn matrix_cofactor() {
+        let matrix =
+            Matrix::from_vector(vec![3.0, 5.0, 0.0, 2.0, -1.0, -7.0, 6.0, -1.0, 5.0], 3, 3);
+
+        assert!(matrix.cofactor(0, 0) == -12.0);
+        assert!(matrix.cofactor(1, 0) == -25.0);
     }
 }
