@@ -91,6 +91,10 @@ impl Matrix {
 
         Matrix::from_vector(flat_matrix, self.width - 1, self.height - 1)
     }
+
+    fn minor(&self, target_row: usize, target_col: usize) -> f32 {
+        self.submatrix(target_row, target_col).determinant()
+    }
 }
 
 impl PartialEq for Matrix {
@@ -338,5 +342,13 @@ mod tests {
             Matrix::from_vector(vec![-6.0, 1.0, 6.0, -8.0, 8.0, 6.0, -7.0, -1.0, 1.0], 3, 3);
 
         assert!(matrix.submatrix(2, 1) == submatrix);
+    }
+
+    #[test]
+    fn three_by_three_matrix_minor() {
+        let matrix =
+            Matrix::from_vector(vec![3.0, 5.0, 0.0, 2.0, -1.0, -7.0, 6.0, -1.0, 5.0], 3, 3);
+
+        assert!(matrix.minor(1, 0) == 25.0)
     }
 }
