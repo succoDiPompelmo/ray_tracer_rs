@@ -57,6 +57,18 @@ impl Matrix {
     fn set(&mut self, row: usize, col: usize, value: f32) {
         self.grid[row][col] = value
     }
+
+    fn transpose(&self) -> Matrix {
+        let mut output = Matrix::new(self.width, self.height);
+
+        for row in 0..self.width {
+            for col in 0..self.height {
+                output.set(row, col, self.get(col, row))
+            }
+        }
+
+        output
+    }
 }
 
 impl PartialEq for Matrix {
@@ -246,5 +258,31 @@ mod tests {
 
         assert!(a.clone() * b.clone() == a.clone());
         assert!(b * a.clone() == a.clone())
+    }
+
+    #[test]
+    fn matrix_transpose() {
+        let a = Matrix::from_vector(
+            vec![
+                0.0, 9.0, 3.0, 0.0, 9.0, 8.0, 0.0, 8.0, 1.0, 8.0, 5.0, 3.0, 0.0, 0.0, 5.0, 8.0,
+            ],
+            4,
+            4,
+        );
+
+        let b = Matrix::from_vector(
+            vec![
+                0.0, 9.0, 1.0, 0.0, 9.0, 8.0, 8.0, 0.0, 3.0, 0.0, 5.0, 5.0, 0.0, 8.0, 3.0, 8.0,
+            ],
+            4,
+            4,
+        );
+
+        assert!(a.transpose() == b)
+    }
+
+    #[test]
+    fn identity_matrix_transponse() {
+        assert!(Matrix::identity(4).transpose() == Matrix::identity(4));
     }
 }
