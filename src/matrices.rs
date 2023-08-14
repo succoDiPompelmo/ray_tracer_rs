@@ -3,7 +3,7 @@ use std::ops;
 use crate::tuples::Tuple;
 use float_cmp::{ApproxEq, F32Margin};
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct Matrix {
     width: usize,
     height: usize,
@@ -16,6 +16,20 @@ impl Matrix {
             grid: vec![vec![0.0; width]; height],
             width,
             height,
+        }
+    }
+
+    fn identity(size: usize) -> Matrix {
+        let mut grid = vec![vec![0.0; size]; size];
+
+        for i in 0..size {
+            grid[i][i] = 1.0;
+        }
+
+        Matrix {
+            width: size,
+            height: size,
+            grid: grid,
         }
     }
 
@@ -216,5 +230,21 @@ mod tests {
         let c = Tuple::new(18.0, 24.0, 33.0, 1.0);
 
         assert!(a * b == c);
+    }
+
+    #[test]
+    fn matrix_identity_multiplication() {
+        let a = Matrix::from_vector(
+            vec![
+                0.0, 1.0, 2.0, 4.0, 1.0, 2.0, 4.0, 8.0, 2.0, 4.0, 8.0, 16.0, 4.0, 8.0, 16.0, 32.0,
+            ],
+            4,
+            4,
+        );
+
+        let b = Matrix::identity(4);
+
+        assert!(a.clone() * b.clone() == a.clone());
+        assert!(b * a.clone() == a.clone())
     }
 }
