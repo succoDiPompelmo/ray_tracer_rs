@@ -77,6 +77,20 @@ impl Matrix {
             _ => panic!("Not implemented yet"),
         }
     }
+
+    fn submatrix(&self, remove_row: usize, remove_col: usize) -> Matrix {
+        let mut flat_matrix = vec![];
+
+        for row in 0..self.height {
+            for col in 0..self.width {
+                if row != remove_row && col != remove_col {
+                    flat_matrix.push(self.get(row, col));
+                }
+            }
+        }
+
+        Matrix::from_vector(flat_matrix, self.width - 1, self.height - 1)
+    }
 }
 
 impl PartialEq for Matrix {
@@ -299,5 +313,30 @@ mod tests {
         let matrix = Matrix::from_vector(vec![1.0, 5.0, -3.0, 2.0], 2, 2);
 
         assert!(matrix.determinant() == 17.0);
+    }
+
+    #[test]
+    fn submatrix_of_a_three_by_three_matrix() {
+        let matrix = Matrix::from_vector(vec![1.0, 5.0, 0.0, -3.0, 2.0, 7.0, 0.0, 6.0, -3.0], 3, 3);
+
+        let submatrix = Matrix::from_vector(vec![-3.0, 2.0, 0.0, 6.0], 2, 2);
+
+        assert!(matrix.submatrix(0, 2) == submatrix)
+    }
+
+    #[test]
+    fn submatrix_of_a_four_by_four_matrix() {
+        let matrix = Matrix::from_vector(
+            vec![
+                -6.0, 1.0, 1.0, 6.0, -8.0, 5.0, 8.0, 6.0, -1.0, 0.0, 8.0, 2.0, -7.0, 1.0, -1.0, 1.0,
+            ],
+            4,
+            4,
+        );
+
+        let submatrix =
+            Matrix::from_vector(vec![-6.0, 1.0, 6.0, -8.0, 8.0, 6.0, -7.0, -1.0, 1.0], 3, 3);
+
+        assert!(matrix.submatrix(2, 1) == submatrix);
     }
 }
