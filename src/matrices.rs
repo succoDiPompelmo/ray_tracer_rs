@@ -74,7 +74,15 @@ impl Matrix {
         match (self.width, self.height) {
             (x, y) if x != y => panic!("Determinant is a property of square matrices"),
             (2, 2) => self.get(0, 0) * self.get(1, 1) - self.get(0, 1) * self.get(1, 0),
-            _ => panic!("Not implemented yet"),
+            _ => {
+                let mut det = 0.0;
+
+                for col in 0..self.width {
+                    det += self.get(0, col) * self.cofactor(0, col);
+                }
+
+                det
+            }
         }
     }
 
@@ -367,5 +375,35 @@ mod tests {
 
         assert!(matrix.cofactor(0, 0) == -12.0);
         assert!(matrix.cofactor(1, 0) == -25.0);
+    }
+
+    #[test]
+    fn three_by_three_matrix_determinant() {
+        let matrix = Matrix::from_vector(vec![1.0, 2.0, 6.0, -5.0, 8.0, -4.0, 2.0, 6.0, 4.0], 3, 3);
+
+        assert!(matrix.cofactor(0, 0) == 56.0);
+        assert!(matrix.cofactor(0, 1) == 12.0);
+        assert!(matrix.cofactor(0, 2) == -46.0);
+
+        assert!(matrix.determinant() == -196.0);
+    }
+
+    #[test]
+    fn four_by_four_matrix_determinant() {
+        let matrix = Matrix::from_vector(
+            vec![
+                -2.0, -8.0, 3.0, 5.0, -3.0, 1.0, 7.0, 3.0, 1.0, 2.0, -9.0, 6.0, -6.0, 7.0, 7.0,
+                -9.0,
+            ],
+            4,
+            4,
+        );
+
+        assert!(matrix.cofactor(0, 0) == 690.0);
+        assert!(matrix.cofactor(0, 1) == 447.0);
+        assert!(matrix.cofactor(0, 2) == 210.0);
+        assert!(matrix.cofactor(0, 3) == 51.0);
+
+        assert!(matrix.determinant() == -4071.0);
     }
 }
