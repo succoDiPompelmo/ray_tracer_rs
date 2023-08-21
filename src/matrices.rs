@@ -1,13 +1,13 @@
 use std::ops;
 
 use crate::tuples::Tuple;
-use float_cmp::{ApproxEq, F32Margin};
+use float_cmp::{ApproxEq, F64Margin};
 
 #[derive(Clone, Debug)]
 struct Matrix {
     width: usize,
     height: usize,
-    grid: Vec<Vec<f32>>,
+    grid: Vec<Vec<f64>>,
 }
 
 impl Matrix {
@@ -33,7 +33,7 @@ impl Matrix {
         }
     }
 
-    fn from_vector(a: Vec<f32>, width: usize, height: usize) -> Matrix {
+    fn from_vector(a: Vec<f64>, width: usize, height: usize) -> Matrix {
         let mut grid = vec![vec![0.0; width]; height];
 
         for row in 0..height {
@@ -50,11 +50,11 @@ impl Matrix {
         }
     }
 
-    fn get(&self, row: usize, col: usize) -> f32 {
+    fn get(&self, row: usize, col: usize) -> f64 {
         self.grid[row][col]
     }
 
-    fn set(&mut self, row: usize, col: usize, value: f32) {
+    fn set(&mut self, row: usize, col: usize, value: f64) {
         self.grid[row][col] = value
     }
 
@@ -70,7 +70,7 @@ impl Matrix {
         output
     }
 
-    fn determinant(&self) -> f32 {
+    fn determinant(&self) -> f64 {
         match (self.width, self.height) {
             (x, y) if x != y => panic!("Determinant is a property of square matrices"),
             (2, 2) => self.get(0, 0) * self.get(1, 1) - self.get(0, 1) * self.get(1, 0),
@@ -100,22 +100,45 @@ impl Matrix {
         Matrix::from_vector(flat_matrix, self.width - 1, self.height - 1)
     }
 
-    fn minor(&self, target_row: usize, target_col: usize) -> f32 {
+    fn minor(&self, target_row: usize, target_col: usize) -> f64 {
         self.submatrix(target_row, target_col).determinant()
     }
 
-    fn cofactor(&self, target_row: usize, target_col: usize) -> f32 {
+    fn cofactor(&self, target_row: usize, target_col: usize) -> f64 {
         match (target_col + target_row) % 2 {
             0 => self.minor(target_row, target_col),
             1 => -self.minor(target_row, target_col),
             _ => panic!("Odd or even"),
         }
     }
+
+    fn is_invertible(&self) -> bool {
+        !self.determinant().approx_eq(0.0, F64Margin::default())
+    }
+
+    fn invert(&self) -> Matrix {
+        if !self.is_invertible() {
+            panic!("Matrix cannot be inverted")
+        }
+
+        let mut inverted = Matrix::new(self.width, self.height);
+
+        for row in 0..self.height {
+            for col in 0..self.width {
+                inverted.set(col, row, self.cofactor(row, col) / self.determinant());
+            }
+        }
+
+        inverted
+    }
 }
 
 impl PartialEq for Matrix {
     fn eq(&self, other: &Self) -> bool {
-        let margin = F32Margin::default();
+        let margin = F64Margin {
+            ulps: 10,
+            epsilon: 0.0,
+        };
 
         if !(self.width == other.width && self.height == other.height) {
             return false;
@@ -180,8 +203,6 @@ impl ops::Mul<Tuple> for Matrix {
 #[cfg(test)]
 mod tests {
 
-    use float_cmp::{ApproxEq, F32Margin};
-
     use super::*;
 
     #[test]
@@ -195,13 +216,13 @@ mod tests {
             4,
         );
 
-        assert!(matrix.get(0, 0).approx_eq(1.0, F32Margin::default()));
-        assert!(matrix.get(0, 3).approx_eq(4.0, F32Margin::default()));
-        assert!(matrix.get(1, 0).approx_eq(5.5, F32Margin::default()));
-        assert!(matrix.get(1, 2).approx_eq(7.5, F32Margin::default()));
-        assert!(matrix.get(2, 2).approx_eq(11.0, F32Margin::default()));
-        assert!(matrix.get(3, 0).approx_eq(13.5, F32Margin::default()));
-        assert!(matrix.get(3, 2).approx_eq(15.5, F32Margin::default()));
+        assert!(matrix.get(0, 0).approx_eq(1.0, F64Margin::default()));
+        assert!(matrix.get(0, 3).approx_eq(4.0, F64Margin::default()));
+        assert!(matrix.get(1, 0).approx_eq(5.5, F64Margin::default()));
+        assert!(matrix.get(1, 2).approx_eq(7.5, F64Margin::default()));
+        assert!(matrix.get(2, 2).approx_eq(11.0, F64Margin::default()));
+        assert!(matrix.get(3, 0).approx_eq(13.5, F64Margin::default()));
+        assert!(matrix.get(3, 2).approx_eq(15.5, F64Margin::default()));
     }
 
     #[test]
@@ -209,19 +230,19 @@ mod tests {
         let matrix =
             Matrix::from_vector(vec![-3.0, 5.0, 0.0, 1.0, -2.0, -7.0, 0.0, 1.0, 1.0], 3, 3);
 
-        assert!(matrix.get(0, 0).approx_eq(-3.0, F32Margin::default()));
-        assert!(matrix.get(1, 1).approx_eq(-2.0, F32Margin::default()));
-        assert!(matrix.get(2, 2).approx_eq(1.0, F32Margin::default()));
+        assert!(matrix.get(0, 0).approx_eq(-3.0, F64Margin::default()));
+        assert!(matrix.get(1, 1).approx_eq(-2.0, F64Margin::default()));
+        assert!(matrix.get(2, 2).approx_eq(1.0, F64Margin::default()));
     }
 
     #[test]
     fn two_by_two_matrix_is_representable() {
         let matrix = Matrix::from_vector(vec![-3.0, 5.0, 1.0, -2.0], 2, 2);
 
-        assert!(matrix.get(0, 0).approx_eq(-3.0, F32Margin::default()));
-        assert!(matrix.get(0, 1).approx_eq(5.0, F32Margin::default()));
-        assert!(matrix.get(1, 0).approx_eq(1.0, F32Margin::default()));
-        assert!(matrix.get(1, 1).approx_eq(-2.0, F32Margin::default()));
+        assert!(matrix.get(0, 0).approx_eq(-3.0, F64Margin::default()));
+        assert!(matrix.get(0, 1).approx_eq(5.0, F64Margin::default()));
+        assert!(matrix.get(1, 0).approx_eq(1.0, F64Margin::default()));
+        assert!(matrix.get(1, 1).approx_eq(-2.0, F64Margin::default()));
     }
 
     #[test]
@@ -405,5 +426,166 @@ mod tests {
         assert!(matrix.cofactor(0, 3) == 51.0);
 
         assert!(matrix.determinant() == -4071.0);
+    }
+
+    #[test]
+    fn invertible_matrix() {
+        let matrix = Matrix::from_vector(
+            vec![
+                6.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 6.0, 4.0, -9.0, 3.0, -7.0, 9.0, 1.0, 7.0, -6.0,
+            ],
+            4,
+            4,
+        );
+
+        assert!(matrix.is_invertible());
+    }
+
+    #[test]
+    fn non_invertible_matrix() {
+        let matrix = Matrix::from_vector(
+            vec![
+                -4.0, 2.0, -2.0, -3.0, 9.0, 6.0, 2.0, 6.0, 0.0, -5.0, 1.0, -5.0, 0.0, 0.0, 0.0, 0.0,
+            ],
+            4,
+            4,
+        );
+
+        assert!(!matrix.is_invertible());
+    }
+
+    #[test]
+    fn first_inverse_of_matrix() {
+        let matrix = Matrix::from_vector(
+            vec![
+                -5.0, 2.0, 6.0, -8.0, 1.0, -5.0, 1.0, 8.0, 7.0, 7.0, -6.0, -7.0, 1.0, -3.0, 7.0,
+                4.0,
+            ],
+            4,
+            4,
+        );
+
+        let inverse = Matrix::from_vector(
+            vec![
+                29.0 / 133.0,
+                60.0 / 133.0,
+                32.0 / 133.0,
+                -6.0 / 133.0,
+                -215.0 / 266.0,
+                -775.0 / 532.0,
+                -59.0 / 133.0,
+                277.0 / 532.0,
+                -3.0 / 38.0,
+                -17.0 / 76.0,
+                -1.0 / 19.0,
+                15.0 / 76.0,
+                -139.0 / 266.0,
+                -433.0 / 532.0,
+                -40.0 / 133.0,
+                163.0 / 532.0,
+            ],
+            4,
+            4,
+        );
+
+        assert!(matrix.cofactor(2, 3) == -160.0);
+        assert!(matrix.cofactor(3, 2) == 105.0);
+        assert!(matrix.invert() == inverse);
+    }
+
+    #[test]
+    fn second_inverse_of_matrix() {
+        let matrix = Matrix::from_vector(
+            vec![
+                8.0, -5.0, 9.0, 2.0, 7.0, 5.0, 6.0, 1.0, -6.0, 0.0, 9.0, 6.0, -3.0, 0.0, -9.0, -4.0,
+            ],
+            4,
+            4,
+        );
+
+        let inverse = Matrix::from_vector(
+            vec![
+                -2.0 / 13.0,
+                -2.0 / 13.0,
+                -11.0 / 39.0,
+                -7.0 / 13.0,
+                -1.0 / 13.0,
+                8.0 / 65.0,
+                1.0 / 39.0,
+                2.0 / 65.0,
+                14.0 / 39.0,
+                14.0 / 39.0,
+                17.0 / 39.0,
+                12.0 / 13.0,
+                -9.0 / 13.0,
+                -9.0 / 13.0,
+                -10.0 / 13.0,
+                -25.0 / 13.0,
+            ],
+            4,
+            4,
+        );
+
+        assert!(matrix.invert() == inverse);
+    }
+
+    #[test]
+    fn third_inverse_of_matrix() {
+        let matrix = Matrix::from_vector(
+            vec![
+                9.0, 3.0, 0.0, 9.0, -5.0, -2.0, -6.0, -3.0, -4.0, 9.0, 6.0, 4.0, -7.0, 6.0, 6.0,
+                2.0,
+            ],
+            4,
+            4,
+        );
+
+        let inverse = Matrix::from_vector(
+            vec![
+                -11.0 / 270.0,
+                -7.0 / 90.0,
+                13.0 / 90.0,
+                -2.0 / 9.0,
+                -7.0 / 90.0,
+                1.0 / 30.0,
+                11.0 / 30.0,
+                -1.0 / 3.0,
+                -47.0 / 1620.0,
+                -79.0 / 540.0,
+                -59.0 / 540.0,
+                7.0 / 54.0,
+                8.0 / 45.0,
+                1.0 / 15.0,
+                -4.0 / 15.0,
+                1.0 / 3.0,
+            ],
+            4,
+            4,
+        );
+
+        assert!(matrix.invert() == inverse);
+    }
+
+    #[test]
+    fn multiply_matrix_by_inverse() {
+        let a = Matrix::from_vector(
+            vec![
+                3.0, -9.0, 7.0, 3.0, 3.0, -8.0, 2.0, -9.0, -4.0, 4.0, 4.0, 1.0, -6.0, 5.0, -1.0,
+                1.0,
+            ],
+            4,
+            4,
+        );
+
+        let b = Matrix::from_vector(
+            vec![
+                8.0, 2.0, 2.0, 2.0, 3.0, -1.0, 7.0, 0.0, 7.0, 0.0, 5.0, 4.0, 6.0, -2.0, 0.0, 5.0,
+            ],
+            4,
+            4,
+        );
+
+        let c = a.clone() * b.clone();
+        assert!(a == c * b.invert());
     }
 }

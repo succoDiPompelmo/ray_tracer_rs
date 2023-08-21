@@ -1,29 +1,29 @@
 use std::ops;
 
-use float_cmp::{ApproxEq, F32Margin};
+use float_cmp::{ApproxEq, F64Margin};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Tuple {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
-    pub w: f32,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+    pub w: f64,
 }
 
 impl Tuple {
-    pub fn new(x: f32, y: f32, z: f32, w: f32) -> Tuple {
+    pub fn new(x: f64, y: f64, z: f64, w: f64) -> Tuple {
         Tuple { x, y, z, w }
     }
 
-    pub fn new_point(x: f32, y: f32, z: f32) -> Tuple {
+    pub fn new_point(x: f64, y: f64, z: f64) -> Tuple {
         Tuple { x, y, z, w: 1.0 }
     }
 
-    pub fn new_vector(x: f32, y: f32, z: f32) -> Tuple {
+    pub fn new_vector(x: f64, y: f64, z: f64) -> Tuple {
         Tuple { x, y, z, w: 0.0 }
     }
 
-    pub fn new_color(r: f32, g: f32, b: f32) -> Tuple {
+    pub fn new_color(r: f64, g: f64, b: f64) -> Tuple {
         // w value for colors are useless, so for no particular reason is set to 0
         // to avoid interaction with other components
         Tuple {
@@ -42,7 +42,7 @@ impl Tuple {
         self.w == 1.0
     }
 
-    fn magnitude(&self) -> f32 {
+    fn magnitude(&self) -> f64 {
         (self.x.powf(2.0) + self.y.powf(2.0) + self.z.powf(2.0) + self.w.powf(2.0)).sqrt()
     }
 
@@ -56,7 +56,7 @@ impl Tuple {
         )
     }
 
-    fn dot(&self, rhs: &Tuple) -> f32 {
+    fn dot(&self, rhs: &Tuple) -> f64 {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z + self.w * rhs.w
     }
 
@@ -72,7 +72,7 @@ impl Tuple {
         Tuple::new_color(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
     }
 
-    pub fn set(&mut self, idx: usize, value: f32) {
+    pub fn set(&mut self, idx: usize, value: f64) {
         match idx {
             0 => self.x = value,
             1 => self.y = value,
@@ -85,7 +85,7 @@ impl Tuple {
 
 impl PartialEq for Tuple {
     fn eq(&self, other: &Self) -> bool {
-        let margin = F32Margin::default();
+        let margin = F64Margin::default();
         self.x.approx_eq(other.x, margin)
             && self.y.approx_eq(other.y, margin)
             && self.z.approx_eq(other.z, margin)
@@ -106,10 +106,10 @@ impl ops::Add for Tuple {
     }
 }
 
-impl ops::Mul<f32> for Tuple {
+impl ops::Mul<f64> for Tuple {
     type Output = Self;
 
-    fn mul(self, rhs: f32) -> Tuple {
+    fn mul(self, rhs: f64) -> Tuple {
         Tuple {
             x: self.x * rhs,
             y: self.y * rhs,
@@ -132,10 +132,10 @@ impl ops::Sub for Tuple {
     }
 }
 
-impl ops::Div<f32> for Tuple {
+impl ops::Div<f64> for Tuple {
     type Output = Self;
 
-    fn div(self, rhs: f32) -> Tuple {
+    fn div(self, rhs: f64) -> Tuple {
         Tuple {
             x: self.x / rhs,
             y: self.y / rhs,
@@ -282,7 +282,7 @@ mod tests {
     #[test]
     fn multiply_tuple_by_scalar() {
         let tuple = Tuple::new(1.0, -2.0, 3.0, -4.0);
-        let scalar: f32 = 3.5;
+        let scalar: f64 = 3.5;
 
         let expected = Tuple::new(3.5, -7.0, 10.5, -14.0);
         assert!(tuple * scalar == expected);
@@ -291,7 +291,7 @@ mod tests {
     #[test]
     fn multiply_tuple_by_fraction() {
         let tuple = Tuple::new(1.0, -2.0, 3.0, -4.0);
-        let scalar: f32 = 0.5;
+        let scalar: f64 = 0.5;
 
         let expected = Tuple::new(0.5, -1.0, 1.5, -2.0);
         assert!(tuple * scalar == expected);
@@ -300,7 +300,7 @@ mod tests {
     #[test]
     fn divide_tuple_by_scalar() {
         let tuple = Tuple::new(1.0, -2.0, 3.0, -4.0);
-        let scalar: f32 = 2.0;
+        let scalar: f64 = 2.0;
 
         let expected = Tuple::new(0.5, -1.0, 1.5, -2.0);
         assert!(tuple / scalar == expected);
@@ -311,8 +311,8 @@ mod tests {
         assert!(1.0 == Tuple::new_vector(1.0, 0.0, 0.0).magnitude());
         assert!(1.0 == Tuple::new_vector(0.0, 1.0, 0.0).magnitude());
         assert!(1.0 == Tuple::new_vector(0.0, 0.0, 1.0).magnitude());
-        assert!((14.0_f32).sqrt() == Tuple::new_vector(1.0, 2.0, 3.0).magnitude());
-        assert!((14.0_f32).sqrt() == Tuple::new_vector(-1.0, -2.0, -3.0).magnitude());
+        assert!((14.0_f64).sqrt() == Tuple::new_vector(1.0, 2.0, 3.0).magnitude());
+        assert!((14.0_f64).sqrt() == Tuple::new_vector(-1.0, -2.0, -3.0).magnitude());
     }
 
     #[test]
@@ -324,12 +324,12 @@ mod tests {
     fn normalize_vector_has_magnitude_1() {
         let outcome = Tuple::new_vector(1.0, 2.0, 3.0).normalize();
         let expected = Tuple::new_vector(
-            1.0 / (14.0_f32).sqrt(),
-            2.0 / (14.0_f32).sqrt(),
-            3.0 / (14.0_f32).sqrt(),
+            1.0 / (14.0_f64).sqrt(),
+            2.0 / (14.0_f64).sqrt(),
+            3.0 / (14.0_f64).sqrt(),
         );
         assert!(outcome == expected);
-        assert!(outcome.magnitude().approx_eq(1.0, F32Margin::default()));
+        assert!(outcome.magnitude().approx_eq(1.0, F64Margin::default()));
     }
 
     #[test]
