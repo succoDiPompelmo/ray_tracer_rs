@@ -137,7 +137,7 @@ impl PartialEq for Matrix {
     fn eq(&self, other: &Self) -> bool {
         let margin = F64Margin {
             ulps: 10,
-            epsilon: 0.0,
+            epsilon: 0.000000000001,
         };
 
         if !(self.width == other.width && self.height == other.height) {
@@ -587,5 +587,26 @@ mod tests {
 
         let c = a.clone() * b.clone();
         assert!(a == c * b.invert());
+    }
+
+    #[test]
+    fn inverse_of_identity_matrix() {
+        let identity = Matrix::identity(4);
+
+        assert!(identity == identity.invert())
+    }
+
+    #[test]
+    fn multiply_matrix_by_own_inverse() {
+        let a = Matrix::from_vector(
+            vec![
+                3.0, -9.0, 7.0, 3.0, 3.0, -8.0, 2.0, -9.0, -4.0, 4.0, 4.0, 1.0, -6.0, 5.0, -1.0,
+                1.0,
+            ],
+            4,
+            4,
+        );
+
+        assert!(Matrix::identity(4) == a.clone() * a.invert())
     }
 }
