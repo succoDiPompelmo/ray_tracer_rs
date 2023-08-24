@@ -4,7 +4,7 @@ use crate::tuples::Tuple;
 use float_cmp::{ApproxEq, F64Margin};
 
 #[derive(Clone, Debug)]
-struct Matrix {
+pub struct Matrix {
     width: usize,
     height: usize,
     grid: Vec<Vec<f64>>,
@@ -19,7 +19,7 @@ impl Matrix {
         }
     }
 
-    fn identity(size: usize) -> Matrix {
+    pub fn identity(size: usize) -> Matrix {
         let mut grid = vec![vec![0.0; size]; size];
 
         for i in 0..size {
@@ -54,7 +54,7 @@ impl Matrix {
         self.grid[row][col]
     }
 
-    fn set(&mut self, row: usize, col: usize, value: f64) {
+    pub fn set(&mut self, row: usize, col: usize, value: f64) {
         self.grid[row][col] = value
     }
 
@@ -116,7 +116,7 @@ impl Matrix {
         !self.determinant().approx_eq(0.0, F64Margin::default())
     }
 
-    fn invert(&self) -> Matrix {
+    pub fn invert(&self) -> Matrix {
         if !self.is_invertible() {
             panic!("Matrix cannot be inverted")
         }

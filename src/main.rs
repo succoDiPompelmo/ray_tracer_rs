@@ -1,6 +1,7 @@
 mod canvas;
 mod matrices;
 mod play;
+mod transformations;
 mod tuples;
 
 use canvas::Canvas;
