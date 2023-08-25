@@ -55,6 +55,21 @@ impl Transformation {
 
         matrix
     }
+
+    fn shearing(x_y: f64, x_z: f64, y_x: f64, y_z: f64, z_x: f64, z_y: f64) -> Matrix {
+        let mut matrix = Matrix::identity(4);
+
+        matrix.set(0, 1, x_y);
+        matrix.set(0, 2, x_z);
+
+        matrix.set(1, 0, y_x);
+        matrix.set(1, 2, y_z);
+
+        matrix.set(2, 0, z_x);
+        matrix.set(2, 1, z_y);
+
+        matrix
+    }
 }
 
 #[cfg(test)]
@@ -171,5 +186,59 @@ mod tests {
 
         assert!(p2 == half_quarter * p1);
         assert!(p3 == full_quarter * p1);
+    }
+
+    #[test]
+    fn shearing_moves_x_in_proportion_to_y() {
+        let t = Transformation::shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        let p1 = Tuple::new_point(2.0, 3.0, 4.0);
+        let p2 = Tuple::new_point(5.0, 3.0, 4.0);
+
+        assert!(p2 == t * p1);
+    }
+
+    #[test]
+    fn shearing_moves_x_in_proportion_to_z() {
+        let t = Transformation::shearing(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
+        let p1 = Tuple::new_point(2.0, 3.0, 4.0);
+        let p2 = Tuple::new_point(6.0, 3.0, 4.0);
+
+        assert!(p2 == t * p1);
+    }
+
+    #[test]
+    fn shearing_moves_y_in_proportion_to_x() {
+        let t = Transformation::shearing(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+        let p1 = Tuple::new_point(2.0, 3.0, 4.0);
+        let p2 = Tuple::new_point(2.0, 5.0, 4.0);
+
+        assert!(p2 == t * p1);
+    }
+
+    #[test]
+    fn shearing_moves_y_in_proportion_to_z() {
+        let t = Transformation::shearing(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+        let p1 = Tuple::new_point(2.0, 3.0, 4.0);
+        let p2 = Tuple::new_point(2.0, 7.0, 4.0);
+
+        assert!(p2 == t * p1);
+    }
+
+    #[test]
+    fn shearing_moves_z_in_proportion_to_x() {
+        let t = Transformation::shearing(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+        let p1 = Tuple::new_point(2.0, 3.0, 4.0);
+        let p2 = Tuple::new_point(2.0, 3.0, 6.0);
+
+        assert!(p2 == t * p1);
+    }
+
+    #[test]
+    fn shearing_moves_z_in_proportion_to_y() {
+        let t = Transformation::shearing(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+        let p1 = Tuple::new_point(2.0, 3.0, 4.0);
+        let p2 = Tuple::new_point(2.0, 3.0, 7.0);
+
+        assert!(p2 == t * p1);
     }
 }
