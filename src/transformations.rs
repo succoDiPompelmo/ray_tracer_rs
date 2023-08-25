@@ -22,10 +22,45 @@ impl Transformation {
 
         matrix
     }
+
+    fn rotation_x(rad: f64) -> Matrix {
+        let mut matrix = Matrix::identity(4);
+
+        matrix.set(1, 1, rad.cos());
+        matrix.set(1, 2, -rad.sin());
+        matrix.set(2, 1, rad.sin());
+        matrix.set(2, 2, rad.cos());
+
+        matrix
+    }
+
+    fn rotation_y(rad: f64) -> Matrix {
+        let mut matrix = Matrix::identity(4);
+
+        matrix.set(0, 0, rad.cos());
+        matrix.set(0, 2, rad.sin());
+        matrix.set(2, 0, -rad.sin());
+        matrix.set(2, 2, rad.cos());
+
+        matrix
+    }
+
+    fn rotation_z(rad: f64) -> Matrix {
+        let mut matrix = Matrix::identity(4);
+
+        matrix.set(0, 0, rad.cos());
+        matrix.set(0, 1, -rad.sin());
+        matrix.set(1, 0, rad.sin());
+        matrix.set(1, 1, rad.cos());
+
+        matrix
+    }
 }
 
 #[cfg(test)]
 mod tests {
+
+    use std::f64::consts::PI;
 
     use crate::tuples::Tuple;
 
@@ -91,5 +126,50 @@ mod tests {
         let p2 = Tuple::new_point(-2.0, 3.0, 4.0);
 
         assert!(p2 == t * p1);
+    }
+
+    #[test]
+    fn rotate_a_point_around_x() {
+        let half_quarter = Transformation::rotation_x(PI / 4.0);
+        let full_quarter = Transformation::rotation_x(PI / 2.0);
+        let p1 = Tuple::new_point(0.0, 1.0, 0.0);
+        let p2 = Tuple::new_point(0.0, f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0);
+        let p3 = Tuple::new_point(0.0, 0.0, 1.0);
+
+        assert!(p2 == half_quarter * p1);
+        assert!(p3 == full_quarter * p1);
+    }
+
+    #[test]
+    fn inverse_rotate_a_point_around_x() {
+        let half_quarter = Transformation::rotation_x(PI / 4.0);
+        let p1 = Tuple::new_point(0.0, 1.0, 0.0);
+        let p2 = Tuple::new_point(0.0, f64::sqrt(2.0) / 2.0, -f64::sqrt(2.0) / 2.0);
+
+        assert!(p2 == half_quarter.invert() * p1);
+    }
+
+    #[test]
+    fn rotate_a_point_around_y() {
+        let half_quarter = Transformation::rotation_y(PI / 4.0);
+        let full_quarter = Transformation::rotation_y(PI / 2.0);
+        let p1 = Tuple::new_point(0.0, 0.0, 1.0);
+        let p2 = Tuple::new_point(f64::sqrt(2.0) / 2.0, 0.0, f64::sqrt(2.0) / 2.0);
+        let p3 = Tuple::new_point(1.0, 0.0, 0.0);
+
+        assert!(p2 == half_quarter * p1);
+        assert!(p3 == full_quarter * p1);
+    }
+
+    #[test]
+    fn rotate_a_point_around_z() {
+        let half_quarter = Transformation::rotation_z(PI / 4.0);
+        let full_quarter = Transformation::rotation_z(PI / 2.0);
+        let p1 = Tuple::new_point(0.0, 1.0, 0.0);
+        let p2 = Tuple::new_point(-f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0, 0.0);
+        let p3 = Tuple::new_point(-1.0, 0.0, 0.0);
+
+        assert!(p2 == half_quarter * p1);
+        assert!(p3 == full_quarter * p1);
     }
 }
