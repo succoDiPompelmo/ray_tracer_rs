@@ -1,9 +1,9 @@
 use crate::matrices::Matrix;
 
-struct Transformation {}
+pub struct Transformation {}
 
 impl Transformation {
-    fn translation(x: f64, y: f64, z: f64) -> Matrix {
+    pub fn translation(x: f64, y: f64, z: f64) -> Matrix {
         let mut matrix = Matrix::identity(4);
 
         matrix.set(0, 3, x);
@@ -45,7 +45,7 @@ impl Transformation {
         matrix
     }
 
-    fn rotation_z(rad: f64) -> Matrix {
+    pub fn rotation_z(rad: f64) -> Matrix {
         let mut matrix = Matrix::identity(4);
 
         matrix.set(0, 0, rad.cos());

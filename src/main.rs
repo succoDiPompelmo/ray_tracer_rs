@@ -5,10 +5,31 @@ mod transformations;
 mod tuples;
 
 use canvas::Canvas;
+use play::Clock;
 
 use crate::tuples::Tuple;
 
 fn main() {
+    let mut canvas = Canvas::new(900, 500);
+
+    let ticks = 300;
+
+    let color = Tuple::new_color(1.0, 0.8, 0.6);
+    let mut clock = Clock::new(100.0, ticks);
+
+    for _ in 0..ticks {
+        canvas.write_pixel(
+            color,
+            (clock.get_x() + 450.0) as isize,
+            (clock.get_y() + 250.0) as isize,
+        );
+        clock = clock.tick();
+    }
+
+    canvas.write_ppm_to_fs();
+}
+
+fn draw_projectile() {
     let mut canvas = Canvas::new(900, 500);
 
     let color = Tuple::new_color(1.0, 0.8, 0.6);

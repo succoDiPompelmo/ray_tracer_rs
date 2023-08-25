@@ -1,4 +1,6 @@
-use crate::{canvas::Canvas, tuples::Tuple};
+use std::f64::consts::PI;
+
+use crate::{canvas::Canvas, transformations::Transformation, tuples::Tuple};
 
 pub struct Environment {
     gravity: Tuple,
@@ -43,5 +45,36 @@ impl Projectile {
             canvas.height() as f64 - self.position.y,
             self.position.z,
         )
+    }
+}
+
+pub struct Clock {
+    position: Tuple,
+    ticks: usize,
+}
+
+impl Clock {
+    pub fn new(r: f64, ticks: usize) -> Clock {
+        Clock {
+            position: Tuple::new_point(r, 0.0, 0.0),
+            ticks,
+        }
+    }
+
+    pub fn tick(&self) -> Clock {
+        let r = Transformation::rotation_z((2.0 * PI) / self.ticks as f64);
+
+        Clock {
+            position: r * self.position,
+            ticks: self.ticks,
+        }
+    }
+
+    pub fn get_x(&self) -> f64 {
+        self.position.x
+    }
+
+    pub fn get_y(&self) -> f64 {
+        self.position.y
     }
 }
