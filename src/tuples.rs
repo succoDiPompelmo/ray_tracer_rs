@@ -85,7 +85,11 @@ impl Tuple {
 
 impl PartialEq for Tuple {
     fn eq(&self, other: &Self) -> bool {
-        let margin = F64Margin::default();
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
         self.x.approx_eq(other.x, margin)
             && self.y.approx_eq(other.y, margin)
             && self.z.approx_eq(other.z, margin)

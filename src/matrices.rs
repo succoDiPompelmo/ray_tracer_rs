@@ -136,8 +136,8 @@ impl Matrix {
 impl PartialEq for Matrix {
     fn eq(&self, other: &Self) -> bool {
         let margin = F64Margin {
-            ulps: 10,
-            epsilon: 0.000000000001,
+            ulps: 2,
+            epsilon: 1e-14,
         };
 
         if !(self.width == other.width && self.height == other.height) {

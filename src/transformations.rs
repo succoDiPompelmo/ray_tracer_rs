@@ -241,4 +241,28 @@ mod tests {
 
         assert!(p2 == t * p1);
     }
+
+    #[test]
+    fn chaining_transformations() {
+        let r = Transformation::rotation_x(PI / 2.0);
+        let s = Transformation::scaling(5.0, 5.0, 5.0);
+        let t = Transformation::translation(10.0, 5.0, 7.0);
+
+        let p1 = Tuple::new_point(1.0, 0.0, 1.0);
+
+        let p2_expected = Tuple::new_point(1.0, -1.0, 0.0);
+        let p3_expected = Tuple::new_point(5.0, -5.0, 0.0);
+        let p4_expected = Tuple::new_point(15.0, 0.0, 7.0);
+
+        let p2 = r.clone() * p1;
+        assert!(p2 == p2_expected);
+
+        let p3 = s.clone() * p2;
+        assert!(p3 == p3_expected);
+
+        let p4 = t.clone() * p3;
+        assert!(p4 == p4_expected);
+
+        assert!(p4 == t * s * r * p1);
+    }
 }
