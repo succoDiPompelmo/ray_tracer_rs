@@ -6,15 +6,15 @@ pub struct Ray {
 }
 
 impl Ray {
-    fn new(origin: Tuple, direction: Tuple) -> Ray {
+    pub fn new(origin: Tuple, direction: Tuple) -> Ray {
         Ray { origin, direction }
     }
 
-    fn get_origin(&self) -> Tuple {
+    pub fn get_origin(&self) -> Tuple {
         self.origin
     }
 
-    fn get_direction(&self) -> Tuple {
+    pub fn get_direction(&self) -> Tuple {
         self.direction
     }
 

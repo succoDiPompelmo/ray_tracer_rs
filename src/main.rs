@@ -2,6 +2,7 @@ mod canvas;
 mod matrices;
 mod play;
 mod rays;
+mod spheres;
 mod transformations;
 mod tuples;
 
