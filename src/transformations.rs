@@ -13,7 +13,7 @@ impl Transformation {
         matrix
     }
 
-    fn scaling(x: f64, y: f64, z: f64) -> Matrix {
+    pub fn scaling(x: f64, y: f64, z: f64) -> Matrix {
         let mut matrix = Matrix::identity(4);
 
         matrix.set(0, 0, x);

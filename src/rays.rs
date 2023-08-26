@@ -1,4 +1,4 @@
-use crate::tuples::Tuple;
+use crate::{matrices::Matrix, transformations::Transformation, tuples::Tuple};
 
 pub struct Ray {
     origin: Tuple,
@@ -20,6 +20,13 @@ impl Ray {
 
     fn position(&self, distance: f64) -> Tuple {
         self.origin + self.direction * distance
+    }
+
+    pub fn transform(&self, t: Matrix) -> Ray {
+        Ray {
+            origin: t.clone() * self.origin,
+            direction: t.clone() * self.direction,
+        }
     }
 }
 
@@ -50,5 +57,39 @@ mod tests {
         assert!(r.position(1.0) == Tuple::new_point(3.0, 3.0, 4.0));
         assert!(r.position(-1.0) == Tuple::new_point(1.0, 3.0, 4.0));
         assert!(r.position(2.5) == Tuple::new_point(4.5, 3.0, 4.0));
+    }
+
+    #[test]
+    fn translate_a_ray() {
+        let r = Ray::new(
+            Tuple::new_point(1.0, 2.0, 3.0),
+            Tuple::new_vector(0.0, 1.0, 0.0),
+        );
+        let t = Transformation::translation(3.0, 4.0, 5.0);
+
+        let p = Tuple::new_point(4.0, 6.0, 8.0);
+        let v = Tuple::new_vector(0.0, 1.0, 0.0);
+
+        let r2 = r.transform(t);
+
+        assert!(r2.get_origin() == p);
+        assert!(r2.get_direction() == v);
+    }
+
+    #[test]
+    fn scaling_a_ray() {
+        let r = Ray::new(
+            Tuple::new_point(1.0, 2.0, 3.0),
+            Tuple::new_vector(0.0, 1.0, 0.0),
+        );
+        let t = Transformation::scaling(2.0, 3.0, 4.0);
+
+        let p = Tuple::new_point(2.0, 6.0, 12.0);
+        let v = Tuple::new_vector(0.0, 3.0, 0.0);
+
+        let r2 = r.transform(t);
+
+        assert!(r2.get_origin() == p);
+        assert!(r2.get_direction() == v);
     }
 }
