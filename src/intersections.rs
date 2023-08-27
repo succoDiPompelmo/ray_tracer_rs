@@ -1,6 +1,6 @@
 use crate::spheres::Sphere;
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Intersection {
     t: f64,
     object: Sphere,
@@ -16,7 +16,7 @@ impl Intersection {
     }
 
     pub fn get_object(&self) -> Sphere {
-        self.object
+        self.object.clone()
     }
 
     pub fn get_t(&self) -> f64 {
@@ -54,7 +54,7 @@ mod tests {
         let s = Sphere::new();
         let t = 3.5;
 
-        let intersection = Intersection::new(t, s);
+        let intersection = Intersection::new(t, s.clone());
 
         assert!(intersection.get_object() == s);
         assert!(intersection.get_t() == t);
@@ -64,7 +64,7 @@ mod tests {
     fn aggregate_intersections() {
         let s = Sphere::new();
 
-        let i1 = Intersection::new(1.0, s);
+        let i1 = Intersection::new(1.0, s.clone());
         let i2 = Intersection::new(2.0, s);
 
         let xs = Intersection::intersects(&[i1, i2]);
@@ -77,7 +77,7 @@ mod tests {
     #[test]
     fn hit_when_all_intersections_are_positives() {
         let s = Sphere::new();
-        let i1 = Intersection::new(1.0, s);
+        let i1 = Intersection::new(1.0, s.clone());
         let i2 = Intersection::new(2.0, s);
 
         let xs = Intersection::intersects(&[i1.clone(), i2]);
@@ -88,7 +88,7 @@ mod tests {
     #[test]
     fn hit_when_some_intersections_are_negatives() {
         let s = Sphere::new();
-        let i1 = Intersection::new(-1.0, s);
+        let i1 = Intersection::new(-1.0, s.clone());
         let i2 = Intersection::new(1.0, s);
 
         let xs = Intersection::intersects(&[i1, i2.clone()]);
@@ -99,7 +99,7 @@ mod tests {
     #[test]
     fn hit_when_all_intersections_are_negatives() {
         let s = Sphere::new();
-        let i1 = Intersection::new(-2.0, s);
+        let i1 = Intersection::new(-2.0, s.clone());
         let i2 = Intersection::new(-1.0, s);
 
         let xs = Intersection::intersects(&[i1, i2]);
@@ -110,10 +110,10 @@ mod tests {
     #[test]
     fn hit_is_always_the_lowest_nonnegative_intersection() {
         let s = Sphere::new();
-        let i1 = Intersection::new(5.0, s);
-        let i2 = Intersection::new(7.0, s);
-        let i3 = Intersection::new(-3.0, s);
-        let i4 = Intersection::new(2.0, s);
+        let i1 = Intersection::new(5.0, s.clone());
+        let i2 = Intersection::new(7.0, s.clone());
+        let i3 = Intersection::new(-3.0, s.clone());
+        let i4 = Intersection::new(2.0, s.clone());
 
         let xs = Intersection::intersects(&[i1, i2, i3, i4.clone()]);
 
