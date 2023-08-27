@@ -23,7 +23,7 @@ impl Intersection {
         self.t
     }
 
-    fn hit(intersections: &[Intersection]) -> Option<Intersection> {
+    pub fn hit(intersections: &[Intersection]) -> Option<Intersection> {
         let mut hit = None;
 
         for intersection in intersections {

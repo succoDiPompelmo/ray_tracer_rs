@@ -18,7 +18,7 @@ impl Sphere {
         }
     }
 
-    fn intersect(&self, original_ray: Ray) -> Vec<Intersection> {
+    pub fn intersect(&self, original_ray: Ray) -> Vec<Intersection> {
         let ray = original_ray.transform(self.get_transform().invert());
         let sphere_to_ray = ray.get_origin() - self.center;
 
