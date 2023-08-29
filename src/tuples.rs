@@ -81,6 +81,10 @@ impl Tuple {
             _ => (),
         }
     }
+
+    pub fn reflect(&self, normal: Tuple) -> Tuple {
+        self.clone() - normal * 2.0 * self.dot(&normal)
+    }
 }
 
 impl PartialEq for Tuple {
@@ -400,5 +404,23 @@ mod tests {
 
         let expected = Tuple::new_color(0.9, 0.2, 0.04);
         assert!(color_1.hadamard_product(&color_2) == expected);
+    }
+
+    #[test]
+    fn reflect_a_vector_at_45_degrees() {
+        let v = Tuple::new_vector(1.0, -1.0, 0.0);
+        let n = Tuple::new_vector(0.0, 1.0, 0.0);
+        let r = v.reflect(n);
+
+        assert!(r == Tuple::new_vector(1.0, 1.0, 0.0));
+    }
+
+    #[test]
+    fn reflect_a_vector_over_a_slanted_surface() {
+        let v = Tuple::new_vector(0.0, -1.0, 0.0);
+        let n = Tuple::new_vector(2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0, 0.0);
+        let r = v.reflect(n);
+
+        assert!(r == Tuple::new_vector(1.0, 0.0, 0.0));
     }
 }
