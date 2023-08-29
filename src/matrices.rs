@@ -58,7 +58,7 @@ impl Matrix {
         self.grid[row][col] = value
     }
 
-    fn transpose(&self) -> Matrix {
+    pub fn transpose(&self) -> Matrix {
         let mut output = Matrix::new(self.width, self.height);
 
         for row in 0..self.width {

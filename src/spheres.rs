@@ -48,6 +48,16 @@ impl Sphere {
     fn set_transformation(&mut self, t: Matrix) {
         self.transform = t
     }
+
+    fn normal_at(&self, world_point: Tuple) -> Tuple {
+        let object_point = self.transform.invert() * world_point;
+        let object_normal = object_point - self.center;
+        let mut world_normal = self.transform.invert().transpose() * object_normal;
+
+        world_normal.w = 0.0;
+
+        return world_normal.normalize();
+    }
 }
 
 impl PartialEq for Sphere {
@@ -63,6 +73,8 @@ impl PartialEq for Sphere {
 
 #[cfg(test)]
 mod tests {
+
+    use std::f64::consts::PI;
 
     use crate::{rays::Ray, transformations::Transformation, tuples::Tuple};
 
@@ -195,5 +207,58 @@ mod tests {
         let xs = s.intersect(r);
 
         assert!(xs.len() == 0);
+    }
+
+    #[test]
+    fn normal_on_a_sphere() {
+        let s = Sphere::new();
+
+        let v1 = Tuple::new_vector(1.0, 0.0, 0.0);
+        assert!(s.normal_at(Tuple::new_point(1.0, 0.0, 0.0)) == v1);
+
+        let v2 = Tuple::new_vector(0.0, 1.0, 0.0);
+        assert!(s.normal_at(Tuple::new_point(0.0, 1.0, 0.0)) == v2);
+
+        let v3 = Tuple::new_vector(0.0, 0.0, 1.0);
+        assert!(s.normal_at(Tuple::new_point(0.0, 0.0, 1.0)) == v3);
+
+        let value = 3.0_f64.sqrt() / 3.0;
+        let v4 = Tuple::new_vector(value, value, value);
+        assert!(s.normal_at(Tuple::new_point(value, value, value)) == v4);
+    }
+
+    #[test]
+    fn the_normal_is_a_normalized_vector() {
+        let s = Sphere::new();
+
+        let value = 3.0_f64.sqrt() / 3.0;
+        let n = s.normal_at(Tuple::new_point(value, value, value));
+        assert!(n.normalize() == n);
+    }
+
+    #[test]
+    fn normal_on_a_translated_sphere() {
+        let mut s = Sphere::new();
+        s.set_transformation(Transformation::translation(0.0, 1.0, 0.0));
+        let n = s.normal_at(Tuple::new_point(0.0, 1.70711, -0.70711));
+
+        println!("{:?}", n);
+
+        assert!(n == Tuple::new_vector(0.0, 0.7071067811865475, -0.7071067811865476))
+    }
+
+    #[test]
+    fn normal_on_a_transformed_sphere() {
+        let mut s = Sphere::new();
+        s.set_transformation(
+            Transformation::scaling(1.0, 0.5, 1.0) * Transformation::rotation_z(PI / 5.0),
+        );
+        let n = s.normal_at(Tuple::new_point(
+            0.0,
+            2.0_f64.sqrt() / 2.0,
+            -2.0_f64.sqrt() / 2.0,
+        ));
+
+        assert!(n == Tuple::new_vector(0.0, 0.9701425001453319, -0.24253562503633294))
     }
 }
