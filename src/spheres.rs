@@ -1,9 +1,12 @@
 use float_cmp::{ApproxEq, F64Margin};
 
-use crate::{intersections::Intersection, matrices::Matrix, rays::Ray, tuples::Tuple};
+use crate::{
+    intersections::Intersection, materials::Material, matrices::Matrix, rays::Ray, tuples::Tuple,
+};
 
 #[derive(Clone, Debug)]
 pub struct Sphere {
+    material: Material,
     center: Tuple,
     radius: f64,
     transform: Matrix,
@@ -12,6 +15,7 @@ pub struct Sphere {
 impl Sphere {
     pub fn new() -> Sphere {
         Sphere {
+            material: Material::default(),
             center: Tuple::new_point(0.0, 0.0, 0.0),
             radius: 1.0,
             transform: Matrix::identity(4),
@@ -57,6 +61,10 @@ impl Sphere {
         world_normal.w = 0.0;
 
         return world_normal.normalize();
+    }
+
+    fn set_material(&mut self, material: Material) {
+        self.material = material;
     }
 }
 
@@ -260,5 +268,23 @@ mod tests {
         ));
 
         assert!(n == Tuple::new_vector(0.0, 0.9701425001453319, -0.24253562503633294))
+    }
+
+    #[test]
+    fn a_sphere_has_a_default_material() {
+        let s = Sphere::new();
+
+        assert!(s.material == Material::default());
+    }
+
+    #[test]
+    fn a_sphere_may_be_assigned_a_material() {
+        let mut s = Sphere::new();
+        let mut m = Material::default();
+
+        m.set_ambient(1.0);
+        s.set_material(m.clone());
+
+        assert!(s.material == m);
     }
 }
