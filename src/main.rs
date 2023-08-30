@@ -1,5 +1,6 @@
 mod canvas;
 mod intersections;
+mod lights;
 mod matrices;
 mod play;
 mod rays;
