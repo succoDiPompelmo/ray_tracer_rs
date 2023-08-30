@@ -6,18 +6,18 @@ pub struct PointLight {
 }
 
 impl PointLight {
-    fn new(intensity: Tuple, position: Tuple) -> PointLight {
+    pub fn new(intensity: Tuple, position: Tuple) -> PointLight {
         PointLight {
             intensity,
             position,
         }
     }
 
-    fn get_intensity(&self) -> Tuple {
+    pub fn get_intensity(&self) -> Tuple {
         self.intensity
     }
 
-    fn get_position(&self) -> Tuple {
+    pub fn get_position(&self) -> Tuple {
         self.position
     }
 }

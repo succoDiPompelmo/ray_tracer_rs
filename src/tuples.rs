@@ -68,7 +68,7 @@ impl Tuple {
         )
     }
 
-    fn hadamard_product(&self, rhs: &Tuple) -> Tuple {
+    pub fn hadamard_product(&self, rhs: &Tuple) -> Tuple {
         Tuple::new_color(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
     }
 
