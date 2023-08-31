@@ -22,7 +22,7 @@ impl Sphere {
         }
     }
 
-    pub fn intersect(&self, original_ray: Ray) -> Vec<Intersection> {
+    pub fn intersect(&self, original_ray: &Ray) -> Vec<Intersection> {
         let ray = original_ray.transform(self.get_transform().invert());
         let sphere_to_ray = ray.get_origin() - self.center;
 
@@ -53,7 +53,7 @@ impl Sphere {
         self.transform = t
     }
 
-    fn normal_at(&self, world_point: Tuple) -> Tuple {
+    pub fn normal_at(&self, world_point: Tuple) -> Tuple {
         let object_point = self.transform.invert() * world_point;
         let object_normal = object_point - self.center;
         let mut world_normal = self.transform.invert().transpose() * object_normal;
@@ -63,7 +63,11 @@ impl Sphere {
         return world_normal.normalize();
     }
 
-    fn set_material(&mut self, material: Material) {
+    pub fn get_material(&self) -> Material {
+        self.material.clone()
+    }
+
+    pub fn set_material(&mut self, material: Material) {
         self.material = material;
     }
 }
@@ -96,7 +100,7 @@ mod tests {
         );
         let s = Sphere::new();
 
-        let xs = s.intersect(r);
+        let xs = s.intersect(&r);
 
         assert!(xs.len() == 2);
         assert!(xs.get(0).unwrap().get_object() == s);
@@ -113,7 +117,7 @@ mod tests {
         );
         let s = Sphere::new();
 
-        let xs = s.intersect(r);
+        let xs = s.intersect(&r);
 
         assert!(xs.len() == 2);
         assert!(xs.get(0).unwrap().get_object() == s);
@@ -130,7 +134,7 @@ mod tests {
         );
         let s = Sphere::new();
 
-        let xs = s.intersect(r);
+        let xs = s.intersect(&r);
 
         assert!(xs.len() == 0);
     }
@@ -143,7 +147,7 @@ mod tests {
         );
         let s = Sphere::new();
 
-        let xs = s.intersect(r);
+        let xs = s.intersect(&r);
 
         assert!(xs.len() == 2);
         assert!(xs.get(0).unwrap().get_object() == s);
@@ -160,7 +164,7 @@ mod tests {
         );
         let s = Sphere::new();
 
-        let xs = s.intersect(r);
+        let xs = s.intersect(&r);
 
         assert!(xs.len() == 2);
         assert!(xs.get(0).unwrap().get_object() == s);
@@ -195,7 +199,7 @@ mod tests {
         let t = Transformation::scaling(2.0, 2.0, 2.0);
         s.set_transformation(t.clone());
 
-        let xs = s.intersect(r);
+        let xs = s.intersect(&r);
 
         assert!(xs.len() == 2);
         assert!(xs.get(0).unwrap().get_t() == 3.0);
@@ -212,7 +216,7 @@ mod tests {
         let t = Transformation::translation(5.0, 0.0, 0.0);
         s.set_transformation(t.clone());
 
-        let xs = s.intersect(r);
+        let xs = s.intersect(&r);
 
         assert!(xs.len() == 0);
     }

@@ -11,6 +11,8 @@ mod tuples;
 
 use canvas::Canvas;
 use intersections::Intersection;
+use lights::PointLight;
+use materials::Material;
 use play::Clock;
 use rays::Ray;
 use spheres::Sphere;
@@ -20,8 +22,17 @@ use crate::tuples::Tuple;
 fn main() {
     let canvas_pixels = 100;
     let color = Tuple::new_color(1.0, 0.8, 0.6);
-    let shape = Sphere::new();
+    let mut shape = Sphere::new();
+
+    let mut material = Material::default();
+    material.set_color(Tuple::new_color(1.0, 0.2, 1.0));
+    shape.set_material(material);
+
     let mut canvas = Canvas::new(canvas_pixels, canvas_pixels);
+
+    let light_position = Tuple::new_point(-10.0, 10.0, -10.0);
+    let light_color = Tuple::new_color(1.0, 1.0, 1.0);
+    let light = PointLight::new(light_color, light_position);
 
     let ray_origin = Tuple::new_point(0.0, 0.0, -5.0);
     let wall_z = 10.0;
@@ -37,9 +48,18 @@ fn main() {
 
             let position = Tuple::new_point(world_x, world_y, wall_z);
             let r = Ray::new(ray_origin, (position - ray_origin).normalize());
-            let xs = shape.intersect(r);
+            let xs = shape.intersect(&r);
 
-            if let Some(_) = Intersection::hit(&xs) {
+            if let Some(hit) = Intersection::hit(&xs) {
+                let point = r.position(hit.get_t());
+                let normal = hit.get_object().normal_at(point);
+                let eye = -r.get_direction();
+
+                let color = hit
+                    .get_object()
+                    .get_material()
+                    .lighting(&light, point, eye, normal);
+
                 canvas.write_pixel(color, x as isize, y as isize);
             }
         }

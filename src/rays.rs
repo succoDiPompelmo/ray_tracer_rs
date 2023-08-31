@@ -18,7 +18,7 @@ impl Ray {
         self.direction
     }
 
-    fn position(&self, distance: f64) -> Tuple {
+    pub fn position(&self, distance: f64) -> Tuple {
         self.origin + self.direction * distance
     }
 

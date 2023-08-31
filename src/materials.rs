@@ -40,11 +40,15 @@ impl Material {
         self.shininess
     }
 
+    pub fn set_color(&mut self, color: Tuple) {
+        self.color = color
+    }
+
     pub fn set_ambient(&mut self, ambient: f64) {
         self.ambient = ambient;
     }
 
-    fn lighting(&self, light: PointLight, point: Tuple, eyev: Tuple, normalv: Tuple) -> Tuple {
+    pub fn lighting(&self, light: &PointLight, point: Tuple, eyev: Tuple, normalv: Tuple) -> Tuple {
         let effective_color = self.color.hadamard_product(&light.get_intensity());
         let lightv = (light.get_position() - point).normalize();
 
@@ -99,7 +103,7 @@ mod tests {
             Tuple::new_point(0.0, 0.0, -10.0),
         );
 
-        let r = m.lighting(light, position, eyev, normalv);
+        let r = m.lighting(&light, position, eyev, normalv);
         assert!(r == Tuple::new_color(1.9, 1.9, 1.9))
     }
 
@@ -115,7 +119,7 @@ mod tests {
             Tuple::new_point(0.0, 0.0, -10.0),
         );
 
-        let r = m.lighting(light, position, eyev, normalv);
+        let r = m.lighting(&light, position, eyev, normalv);
         assert!(r == Tuple::new_color(1.0, 1.0, 1.0))
     }
 
@@ -131,7 +135,7 @@ mod tests {
             Tuple::new_point(0.0, 10.0, -10.0),
         );
 
-        let r = m.lighting(light, position, eyev, normalv);
+        let r = m.lighting(&light, position, eyev, normalv);
         let value = 0.1 + 0.9 * 2.0_f64.sqrt() / 2.0 + 0.0;
         assert!(r == Tuple::new_color(value, value, value))
     }
@@ -148,7 +152,7 @@ mod tests {
             Tuple::new_point(0.0, 10.0, -10.0),
         );
 
-        let r = m.lighting(light, position, eyev, normalv);
+        let r = m.lighting(&light, position, eyev, normalv);
         let value = 0.1 + 0.9 * 2.0_f64.sqrt() / 2.0 + 0.9;
         assert!(r == Tuple::new_color(value, value, value))
     }
@@ -165,7 +169,7 @@ mod tests {
             Tuple::new_point(0.0, 0.0, 10.0),
         );
 
-        let r = m.lighting(light, position, eyev, normalv);
+        let r = m.lighting(&light, position, eyev, normalv);
         assert!(r == Tuple::new_color(0.1, 0.1, 0.1))
     }
 }
