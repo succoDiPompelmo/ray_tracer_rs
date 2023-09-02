@@ -13,6 +13,7 @@ pub struct Computations {
     point: Tuple,
     eyev: Tuple,
     normalv: Tuple,
+    inside: bool,
 }
 
 impl Intersection {
@@ -58,7 +59,14 @@ impl Intersection {
 
         let point = ray.position(t);
         let eyev = -ray.get_direction();
-        let normalv = object.normal_at(point);
+        let mut normalv = object.normal_at(point);
+
+        let mut inside = false;
+
+        if normalv.dot(&eyev) < 0.0 {
+            inside = true;
+            normalv = -normalv
+        }
 
         Computations {
             t,
@@ -66,6 +74,7 @@ impl Intersection {
             point,
             eyev,
             normalv,
+            inside,
         }
     }
 }
@@ -163,6 +172,38 @@ mod tests {
         assert!(comps.t == i.t);
         assert!(comps.point == Tuple::new_point(0.0, 0.0, -1.0));
         assert!(comps.eyev == Tuple::new_vector(0.0, 0.0, -1.0));
+        assert!(comps.normalv == Tuple::new_vector(0.0, 0.0, -1.0));
+    }
+
+    #[test]
+    fn the_hit_when_an_intersection_occours_on_the_outside() {
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, -5.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+        let shape = Sphere::new();
+
+        let i = Intersection::new(4.0, shape);
+
+        let comps = i.prepare_computations(&r);
+        assert!(!comps.inside);
+    }
+
+    #[test]
+    fn the_hit_when_an_intersection_occours_on_the_inside() {
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, 0.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+        let shape = Sphere::new();
+
+        let i = Intersection::new(1.0, shape);
+
+        let comps = i.prepare_computations(&r);
+
+        assert!(comps.point == Tuple::new_point(0.0, 0.0, 1.0));
+        assert!(comps.eyev == Tuple::new_vector(0.0, 0.0, -1.0));
+        assert!(comps.inside);
         assert!(comps.normalv == Tuple::new_vector(0.0, 0.0, -1.0));
     }
 }
