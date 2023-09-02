@@ -20,7 +20,7 @@ impl Material {
         }
     }
 
-    fn get_color(&self) -> Tuple {
+    pub fn get_color(&self) -> Tuple {
         self.color
     }
 

@@ -6,7 +6,7 @@ use crate::{
 
 #[derive(Clone, Debug)]
 pub struct Sphere {
-    material: Material,
+    pub material: Material,
     center: Tuple,
     radius: f64,
     transform: Matrix,

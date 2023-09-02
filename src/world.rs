@@ -55,7 +55,7 @@ impl World {
         self.objects.to_vec()
     }
 
-    pub fn intersect(&self, ray: Ray) -> Vec<Intersection> {
+    pub fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
         let mut intersections = vec![];
 
         for object in &self.objects {
@@ -76,10 +76,24 @@ impl World {
             comps.get_normalv(),
         )
     }
+
+    pub fn color_at(&self, ray: &Ray) -> Tuple {
+        let intersections = self.intersect(ray);
+
+        match Intersection::hit(&intersections) {
+            None => Tuple::new_color(0.0, 0.0, 0.0),
+            Some(hit) => {
+                let comps = hit.prepare_computations(ray);
+                self.shade_hit(&comps)
+            }
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
+
+    use std::borrow::BorrowMut;
 
     use super::*;
 
@@ -123,7 +137,7 @@ mod tests {
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
 
-        let xs = w.intersect(r);
+        let xs = w.intersect(&r);
 
         assert!(xs.len() == 4);
         assert!(xs.get(0).unwrap().get_t() == 4.0);
@@ -173,5 +187,50 @@ mod tests {
         let c = w.shade_hit(&comps);
 
         assert!(c == Tuple::new_color(0.9049844720832575, 0.9049844720832575, 0.9049844720832575));
+    }
+
+    #[test]
+    fn the_color_when_a_ray_misses() {
+        let w = World::default();
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, -5.0),
+            Tuple::new_vector(0.0, 1.0, 0.0),
+        );
+        let c = w.color_at(&r);
+
+        assert!(c == Tuple::new_color(0.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn the_color_when_a_ray_hits() {
+        let w = World::default();
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, -5.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+        let c = w.color_at(&r);
+
+        assert!(
+            c == Tuple::new_color(
+                0.38066119308103435,
+                0.47582649135129296,
+                0.28549589481077575
+            )
+        );
+    }
+
+    #[test]
+    fn the_color_with_an_intersection_behind_the_ray() {
+        let mut w = World::default();
+
+        w.objects.get_mut(0).unwrap().material.set_ambient(1.0);
+        w.objects.get_mut(1).unwrap().material.set_ambient(1.0);
+
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, 0.75),
+            Tuple::new_vector(0.0, 0.0, -1.0),
+        );
+
+        assert!(w.objects.get(1).unwrap().material.get_color() == w.color_at(&r));
     }
 }
