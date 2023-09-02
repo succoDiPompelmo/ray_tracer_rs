@@ -79,6 +79,24 @@ impl Intersection {
     }
 }
 
+impl Computations {
+    pub fn get_object(&self) -> Sphere {
+        self.object.clone()
+    }
+
+    pub fn get_point(&self) -> Tuple {
+        self.point
+    }
+
+    pub fn get_eyev(&self) -> Tuple {
+        self.eyev
+    }
+
+    pub fn get_normalv(&self) -> Tuple {
+        self.normalv
+    }
+}
+
 #[cfg(test)]
 mod tests {
 

@@ -1,6 +1,11 @@
 use crate::{
-    intersections::Intersection, lights::PointLight, materials::Material, rays::Ray,
-    spheres::Sphere, transformations::Transformation, tuples::Tuple,
+    intersections::{Computations, Intersection},
+    lights::PointLight,
+    materials::Material,
+    rays::Ray,
+    spheres::Sphere,
+    transformations::Transformation,
+    tuples::Tuple,
 };
 
 pub struct World {
@@ -42,6 +47,10 @@ impl World {
         self.light.clone()
     }
 
+    pub fn set_light(&mut self, light: PointLight) {
+        self.light = Some(light);
+    }
+
     pub fn get_objects(&self) -> Vec<Sphere> {
         self.objects.to_vec()
     }
@@ -56,6 +65,16 @@ impl World {
 
         intersections.sort_by(|a, b| a.get_t().partial_cmp(&b.get_t()).unwrap());
         intersections
+    }
+
+    pub fn shade_hit(&self, comps: &Computations) -> Tuple {
+        let light = self.light.as_ref().unwrap();
+        comps.get_object().get_material().lighting(
+            light,
+            comps.get_point(),
+            comps.get_eyev(),
+            comps.get_normalv(),
+        )
     }
 }
 
@@ -111,5 +130,48 @@ mod tests {
         assert!(xs.get(1).unwrap().get_t() == 4.5);
         assert!(xs.get(2).unwrap().get_t() == 5.5);
         assert!(xs.get(3).unwrap().get_t() == 6.0);
+    }
+
+    #[test]
+    fn shading_an_intersection() {
+        let w = World::default();
+
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, -5.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+        let objects = w.get_objects();
+
+        let i = Intersection::new(4.0, objects.get(0).unwrap().clone());
+        let comps = i.prepare_computations(&r);
+        let c = w.shade_hit(&comps);
+        assert!(
+            c == Tuple::new_color(
+                0.38066119308103435,
+                0.47582649135129296,
+                0.28549589481077575
+            )
+        );
+    }
+
+    #[test]
+    fn shading_an_intersection_from_the_inside() {
+        let mut w = World::default();
+        w.set_light(PointLight::new(
+            Tuple::new_color(1.0, 1.0, 1.0),
+            Tuple::new_point(0.0, 0.25, 0.0),
+        ));
+
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, 0.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+        let objects = w.get_objects();
+
+        let i = Intersection::new(0.5, objects.get(1).unwrap().clone());
+        let comps = i.prepare_computations(&r);
+        let c = w.shade_hit(&comps);
+
+        assert!(c == Tuple::new_color(0.9049844720832575, 0.9049844720832575, 0.9049844720832575));
     }
 }
