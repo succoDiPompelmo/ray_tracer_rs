@@ -33,7 +33,7 @@ impl Matrix {
         }
     }
 
-    fn from_vector(a: Vec<f64>, width: usize, height: usize) -> Matrix {
+    pub fn from_vector(a: Vec<f64>, width: usize, height: usize) -> Matrix {
         let mut grid = vec![vec![0.0; width]; height];
 
         for row in 0..height {

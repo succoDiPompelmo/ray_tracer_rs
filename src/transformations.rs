@@ -1,4 +1,4 @@
-use crate::matrices::Matrix;
+use crate::{matrices::Matrix, tuples::Tuple};
 
 pub struct Transformation {}
 
@@ -69,6 +69,23 @@ impl Transformation {
         matrix.set(2, 1, z_y);
 
         matrix
+    }
+
+    fn view_transform(from: Tuple, to: Tuple, up: Tuple) -> Matrix {
+        let forward = (to - from).normalize();
+        let left = forward.cross(&up.normalize());
+        let true_up = left.cross(&forward);
+
+        let orientation = Matrix::from_vector(
+            vec![
+                left.x, left.y, left.z, 0.0, true_up.x, true_up.y, true_up.z, 0.0, -forward.x,
+                -forward.y, -forward.z, 0.0, 0.0, 0.0, 0.0, 1.0,
+            ],
+            4,
+            4,
+        );
+
+        orientation * Transformation::translation(-from.x, -from.y, -from.z)
     }
 }
 
@@ -264,5 +281,69 @@ mod tests {
         assert!(p4 == p4_expected);
 
         assert!(p4 == t * s * r * p1);
+    }
+
+    #[test]
+    fn view_transformation_default_orientation() {
+        let from = Tuple::new_point(0.0, 0.0, 0.0);
+        let to = Tuple::new_point(0.0, 0.0, -1.0);
+        let up = Tuple::new_vector(0.0, 1.0, 0.0);
+
+        let t = Transformation::view_transform(from, to, up);
+        assert!(t == Matrix::identity(4));
+    }
+
+    #[test]
+    fn view_transformation_looking_in_positive_z_direction() {
+        let from = Tuple::new_point(0.0, 0.0, 0.0);
+        let to = Tuple::new_point(0.0, 0.0, 1.0);
+        let up = Tuple::new_vector(0.0, 1.0, 0.0);
+
+        let t = Transformation::view_transform(from, to, up);
+        assert!(t == Transformation::scaling(-1.0, 1.0, -1.0));
+    }
+
+    #[test]
+    fn view_transformation_moves_the_world() {
+        let from = Tuple::new_point(0.0, 0.0, 8.0);
+        let to = Tuple::new_point(0.0, 0.0, 0.0);
+        let up = Tuple::new_vector(0.0, 1.0, 0.0);
+
+        let t = Transformation::view_transform(from, to, up);
+        assert!(t == Transformation::translation(0.0, 0.0, -8.0));
+    }
+
+    #[test]
+    fn arbitrary_view_transformation() {
+        let from = Tuple::new_point(1.0, 3.0, 2.0);
+        let to = Tuple::new_point(4.0, -2.0, 8.0);
+        let up = Tuple::new_vector(1.0, 1.0, 0.0);
+
+        let m = Matrix::from_vector(
+            vec![
+                -0.5070925528371099,
+                0.5070925528371099,
+                0.6761234037828132,
+                -2.366431913239846,
+                0.7677159338596801,
+                0.6060915267313263,
+                0.12121830534626524,
+                -2.8284271247461894,
+                -0.35856858280031806,
+                0.5976143046671968,
+                -0.7171371656006361,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+            ],
+            4,
+            4,
+        );
+
+        let t = Transformation::view_transform(from, to, up);
+
+        assert!(t == m);
     }
 }
