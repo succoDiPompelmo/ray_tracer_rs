@@ -49,7 +49,7 @@ impl Sphere {
         self.transform.clone()
     }
 
-    fn set_transformation(&mut self, t: Matrix) {
+    pub fn set_transformation(&mut self, t: Matrix) {
         self.transform = t
     }
 

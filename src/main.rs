@@ -8,6 +8,7 @@ mod rays;
 mod spheres;
 mod transformations;
 mod tuples;
+mod world;
 
 use canvas::Canvas;
 use intersections::Intersection;

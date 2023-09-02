@@ -32,8 +32,16 @@ impl Material {
         self.diffuse
     }
 
+    pub fn set_diffuse(&mut self, diffuse: f64) {
+        self.diffuse = diffuse
+    }
+
     fn get_specular(&self) -> f64 {
         self.specular
+    }
+
+    pub fn set_specular(&mut self, specular: f64) {
+        self.specular = specular
     }
 
     fn get_shininess(&self) -> f64 {
