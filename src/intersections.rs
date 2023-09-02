@@ -1,9 +1,18 @@
-use crate::spheres::Sphere;
+use crate::{rays::Ray, spheres::Sphere, tuples::Tuple};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Intersection {
     t: f64,
     object: Sphere,
+}
+
+#[derive(Debug)]
+pub struct Computations {
+    t: f64,
+    object: Sphere,
+    point: Tuple,
+    eyev: Tuple,
+    normalv: Tuple,
 }
 
 impl Intersection {
@@ -42,10 +51,29 @@ impl Intersection {
 
         hit.cloned()
     }
+
+    pub fn prepare_computations(&self, ray: &Ray) -> Computations {
+        let t = self.t;
+        let object = self.object.clone();
+
+        let point = ray.position(t);
+        let eyev = -ray.get_direction();
+        let normalv = object.normal_at(point);
+
+        Computations {
+            t,
+            object,
+            point,
+            eyev,
+            normalv,
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
+
+    use crate::{rays::Ray, tuples::Tuple};
 
     use super::*;
 
@@ -118,5 +146,23 @@ mod tests {
         let xs = Intersection::intersects(&[i1, i2, i3, i4.clone()]);
 
         assert!(Intersection::hit(&xs) == Some(i4));
+    }
+
+    #[test]
+    fn precomputing_the_state_of_an_intersection() {
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, -5.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+
+        let shape = Sphere::new();
+        let i = Intersection::new(4.0, shape);
+
+        let comps = i.prepare_computations(&r);
+
+        assert!(comps.t == i.t);
+        assert!(comps.point == Tuple::new_point(0.0, 0.0, -1.0));
+        assert!(comps.eyev == Tuple::new_vector(0.0, 0.0, -1.0));
+        assert!(comps.normalv == Tuple::new_vector(0.0, 0.0, -1.0));
     }
 }
