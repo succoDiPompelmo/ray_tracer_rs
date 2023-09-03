@@ -55,6 +55,12 @@ impl World {
         self.objects.to_vec()
     }
 
+    pub fn add_objects(&mut self, shapes: &[Sphere]) {
+        for shape in shapes {
+            self.objects.push(shape.clone());
+        }
+    }
+
     pub fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
         let mut intersections = vec![];
 

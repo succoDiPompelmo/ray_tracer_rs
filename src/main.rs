@@ -11,113 +11,85 @@ mod transformations;
 mod tuples;
 mod world;
 
-use canvas::Canvas;
-use intersections::Intersection;
+use std::f64::consts::PI;
+
+use camera::Camera;
 use lights::PointLight;
 use materials::Material;
-use play::Clock;
-use rays::Ray;
 use spheres::Sphere;
+use transformations::Transformation;
+use world::World;
 
 use crate::tuples::Tuple;
 
 fn main() {
-    let canvas_pixels = 100;
-    let color = Tuple::new_color(1.0, 0.8, 0.6);
-    let mut shape = Sphere::new();
+    let mut floor = Sphere::new();
+    floor.set_transformation(Transformation::scaling(10.0, 0.01, 10.0));
+    let mut floor_material = Material::default();
+    floor_material.set_color(Tuple::new_color(1.0, 0.9, 0.9));
+    floor_material.set_specular(0.0);
+    floor.set_material(floor_material.clone());
 
-    let mut material = Material::default();
-    material.set_color(Tuple::new_color(1.0, 0.2, 1.0));
-    shape.set_material(material);
-
-    let mut canvas = Canvas::new(canvas_pixels, canvas_pixels);
-
-    let light_position = Tuple::new_point(-10.0, 10.0, -10.0);
-    let light_color = Tuple::new_color(1.0, 1.0, 1.0);
-    let light = PointLight::new(light_color, light_position);
-
-    let ray_origin = Tuple::new_point(0.0, 0.0, -5.0);
-    let wall_z = 10.0;
-    let wall_size = 7.0;
-
-    let pixel_size = wall_size / canvas_pixels as f64;
-    let half = wall_size / 2.0;
-
-    for y in 0..canvas_pixels - 1 {
-        let world_y = half - pixel_size * y as f64;
-        for x in 0..canvas_pixels - 1 {
-            let world_x = -half + pixel_size * x as f64;
-
-            let position = Tuple::new_point(world_x, world_y, wall_z);
-            let r = Ray::new(ray_origin, (position - ray_origin).normalize());
-            let xs = shape.intersect(&r);
-
-            if let Some(hit) = Intersection::hit(&xs) {
-                let point = r.position(hit.get_t());
-                let normal = hit.get_object().normal_at(point);
-                let eye = -r.get_direction();
-
-                let color = hit
-                    .get_object()
-                    .get_material()
-                    .lighting(&light, point, eye, normal);
-
-                canvas.write_pixel(color, x as isize, y as isize);
-            }
-        }
-    }
-
-    canvas.write_ppm_to_fs();
-}
-
-fn draw_cirlce() {
-    let mut canvas = Canvas::new(900, 500);
-
-    let ticks = 300;
-
-    let color = Tuple::new_color(1.0, 0.8, 0.6);
-    let mut clock = Clock::new(100.0, ticks);
-
-    for _ in 0..ticks {
-        canvas.write_pixel(
-            color,
-            (clock.get_x() + 450.0) as isize,
-            (clock.get_y() + 250.0) as isize,
-        );
-        clock = clock.tick();
-    }
-
-    canvas.write_ppm_to_fs();
-}
-
-fn draw_projectile() {
-    let mut canvas = Canvas::new(900, 500);
-
-    let color = Tuple::new_color(1.0, 0.8, 0.6);
-
-    let env = play::Environment::new(
-        Tuple::new_vector(0.0, -0.1, 0.0),
-        Tuple::new_vector(-0.01, 0.0, 0.0),
+    let mut left_wall = Sphere::new();
+    left_wall.set_transformation(
+        Transformation::translation(0.0, 0.0, 5.0)
+            * Transformation::rotation_y(-PI / 4.0)
+            * Transformation::rotation_x(PI / 2.0)
+            * Transformation::scaling(10.0, 0.01, 10.0),
     );
+    left_wall.set_material(floor_material.clone());
 
-    let mut proj = play::Projectile::new(
+    let mut right_wall = Sphere::new();
+    right_wall.set_transformation(
+        Transformation::translation(0.0, 0.0, 5.0)
+            * Transformation::rotation_y(PI / 4.0)
+            * Transformation::rotation_x(PI / 2.0)
+            * Transformation::scaling(10.0, 0.01, 10.0),
+    );
+    right_wall.set_material(floor_material.clone());
+
+    let mut middle = Sphere::new();
+    middle.set_transformation(Transformation::translation(-0.5, 1.0, 0.5));
+    let mut middle_material = Material::default();
+    middle_material.set_color(Tuple::new_color(0.1, 1.0, 0.5));
+    middle_material.set_diffuse(0.7);
+    middle_material.set_specular(0.3);
+    middle.set_material(middle_material);
+
+    let mut right = Sphere::new();
+    right.set_transformation(
+        Transformation::translation(1.5, 0.5, -0.5) * Transformation::scaling(0.5, 0.5, 0.5),
+    );
+    let mut right_material = Material::default();
+    right_material.set_color(Tuple::new_color(0.5, 1.0, 0.1));
+    right_material.set_diffuse(0.7);
+    right_material.set_specular(0.3);
+    right.set_material(right_material);
+
+    let mut left = Sphere::new();
+    left.set_transformation(
+        Transformation::translation(-1.5, 0.33, -0.75) * Transformation::scaling(0.33, 0.33, 0.33),
+    );
+    let mut left_material = Material::default();
+    left_material.set_color(Tuple::new_color(1.0, 0.8, 0.1));
+    left_material.set_diffuse(0.7);
+    left_material.set_specular(0.3);
+    left.set_material(left_material);
+
+    let mut world = World::new();
+    world.add_objects(&[floor, right_wall, left_wall, middle, right, left]);
+    world.set_light(PointLight::new(
+        Tuple::new_color(1.0, 1.0, 1.0),
+        Tuple::new_point(-10.0, 10.0, -10.0),
+    ));
+
+    let mut camera = Camera::new(100, 50, PI / 2.0);
+    camera.set_transform(Transformation::view_transform(
+        Tuple::new_point(0.0, 1.5, -5.0),
         Tuple::new_point(0.0, 1.0, 0.0),
-        Tuple::new_vector(100.0, 150.0, 0.0).normalize() * 15.0,
-    );
+        Tuple::new_vector(0.0, 1.0, 0.0),
+    ));
 
-    for _ in 0..10000 {
-        proj = env.tick(proj);
-
-        if proj.get_y() < 0.0 {
-            break;
-        }
-
-        canvas.write_pixel(
-            color,
-            proj.get_x() as isize,
-            canvas.height() as isize - (proj.get_y() as isize),
-        );
-    }
-
-    canvas.write_ppm_to_fs();
+    let canvas = camera.render(world);
+    canvas.write_ppm_to_fs()
 }

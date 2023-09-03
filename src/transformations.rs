@@ -23,7 +23,7 @@ impl Transformation {
         matrix
     }
 
-    fn rotation_x(rad: f64) -> Matrix {
+    pub fn rotation_x(rad: f64) -> Matrix {
         let mut matrix = Matrix::identity(4);
 
         matrix.set(1, 1, rad.cos());

@@ -11,7 +11,7 @@ pub struct Camera {
 }
 
 impl Camera {
-    fn new(hsize: usize, vsize: usize, field_of_view: f64) -> Camera {
+    pub fn new(hsize: usize, vsize: usize, field_of_view: f64) -> Camera {
         let half_view = (field_of_view / 2.0).tan();
         let aspect = (hsize as f64 / vsize as f64);
 
@@ -49,7 +49,7 @@ impl Camera {
         Ray::new(origin, direction)
     }
 
-    fn render(&self, world: World) -> Canvas {
+    pub fn render(&self, world: World) -> Canvas {
         let mut image = Canvas::new(self.hsize, self.vsize);
 
         for y in 0..self.vsize {
@@ -61,6 +61,10 @@ impl Camera {
         }
 
         image
+    }
+
+    pub fn set_transform(&mut self, transform: Matrix) {
+        self.transform = transform;
     }
 }
 
