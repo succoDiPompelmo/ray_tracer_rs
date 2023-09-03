@@ -56,11 +56,22 @@ impl Material {
         self.ambient = ambient;
     }
 
-    pub fn lighting(&self, light: &PointLight, point: Tuple, eyev: Tuple, normalv: Tuple) -> Tuple {
+    pub fn lighting(
+        &self,
+        light: &PointLight,
+        point: Tuple,
+        eyev: Tuple,
+        normalv: Tuple,
+        in_shadow: bool,
+    ) -> Tuple {
         let effective_color = self.color.hadamard_product(&light.get_intensity());
         let lightv = (light.get_position() - point).normalize();
 
         let ambient = effective_color * self.ambient;
+
+        if in_shadow {
+            return ambient;
+        }
 
         let light_dot_normal = lightv.dot(&normalv);
         let mut diffuse = Tuple::new_color(0.0, 0.0, 0.0);
@@ -102,7 +113,7 @@ mod tests {
     #[test]
     fn lighting_with_eye_between_the_light_and_the_surface() {
         let m = Material::default();
-        let position = Tuple::new_point(0.0, 0.0, 0.0);
+        let point = Tuple::new_point(0.0, 0.0, 0.0);
 
         let eyev = Tuple::new_vector(0.0, 0.0, -1.0);
         let normalv = Tuple::new_vector(0.0, 0.0, -1.0);
@@ -110,15 +121,16 @@ mod tests {
             Tuple::new_color(1.0, 1.0, 1.0),
             Tuple::new_point(0.0, 0.0, -10.0),
         );
+        let in_shadow = false;
 
-        let r = m.lighting(&light, position, eyev, normalv);
+        let r = m.lighting(&light, point, eyev, normalv, in_shadow);
         assert!(r == Tuple::new_color(1.9, 1.9, 1.9))
     }
 
     #[test]
     fn lighting_with_eye_between_the_light_and_the_surface_with_45_degree_eye_offset() {
         let m = Material::default();
-        let position = Tuple::new_point(0.0, 0.0, 0.0);
+        let point = Tuple::new_point(0.0, 0.0, 0.0);
 
         let eyev = Tuple::new_vector(0.0, 2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0);
         let normalv = Tuple::new_vector(0.0, 0.0, -1.0);
@@ -126,15 +138,16 @@ mod tests {
             Tuple::new_color(1.0, 1.0, 1.0),
             Tuple::new_point(0.0, 0.0, -10.0),
         );
+        let in_shadow = false;
 
-        let r = m.lighting(&light, position, eyev, normalv);
+        let r = m.lighting(&light, point, eyev, normalv, in_shadow);
         assert!(r == Tuple::new_color(1.0, 1.0, 1.0))
     }
 
     #[test]
     fn lighting_with_eye_opposite_the_surface_and_45_degree_light_offset() {
         let m = Material::default();
-        let position = Tuple::new_point(0.0, 0.0, 0.0);
+        let point = Tuple::new_point(0.0, 0.0, 0.0);
 
         let eyev = Tuple::new_vector(0.0, 0.0, -1.0);
         let normalv = Tuple::new_vector(0.0, 0.0, -1.0);
@@ -142,8 +155,9 @@ mod tests {
             Tuple::new_color(1.0, 1.0, 1.0),
             Tuple::new_point(0.0, 10.0, -10.0),
         );
+        let in_shadow = false;
 
-        let r = m.lighting(&light, position, eyev, normalv);
+        let r = m.lighting(&light, point, eyev, normalv, in_shadow);
         let value = 0.1 + 0.9 * 2.0_f64.sqrt() / 2.0 + 0.0;
         assert!(r == Tuple::new_color(value, value, value))
     }
@@ -151,7 +165,7 @@ mod tests {
     #[test]
     fn lighting_with_eye_in_the_path_of_the_reflection_vector() {
         let m = Material::default();
-        let position = Tuple::new_point(0.0, 0.0, 0.0);
+        let point = Tuple::new_point(0.0, 0.0, 0.0);
 
         let eyev = Tuple::new_vector(0.0, -2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0);
         let normalv = Tuple::new_vector(0.0, 0.0, -1.0);
@@ -159,8 +173,9 @@ mod tests {
             Tuple::new_color(1.0, 1.0, 1.0),
             Tuple::new_point(0.0, 10.0, -10.0),
         );
+        let in_shadow = false;
 
-        let r = m.lighting(&light, position, eyev, normalv);
+        let r = m.lighting(&light, point, eyev, normalv, in_shadow);
         let value = 0.1 + 0.9 * 2.0_f64.sqrt() / 2.0 + 0.9;
         assert!(r == Tuple::new_color(value, value, value))
     }
@@ -168,7 +183,7 @@ mod tests {
     #[test]
     fn lighting_with_light_behind_the_surface() {
         let m = Material::default();
-        let position = Tuple::new_point(0.0, 0.0, 0.0);
+        let point = Tuple::new_point(0.0, 0.0, 0.0);
 
         let eyev = Tuple::new_vector(0.0, 0.0, -1.0);
         let normalv = Tuple::new_vector(0.0, 0.0, -1.0);
@@ -176,8 +191,26 @@ mod tests {
             Tuple::new_color(1.0, 1.0, 1.0),
             Tuple::new_point(0.0, 0.0, 10.0),
         );
+        let in_shadow = false;
 
-        let r = m.lighting(&light, position, eyev, normalv);
+        let r = m.lighting(&light, point, eyev, normalv, in_shadow);
         assert!(r == Tuple::new_color(0.1, 0.1, 0.1))
+    }
+
+    #[test]
+    fn lighting_with_surface_in_shadow() {
+        let m = Material::default();
+        let point = Tuple::new_point(0.0, 0.0, 0.0);
+
+        let eyev = Tuple::new_vector(0.0, 0.0, -1.0);
+        let normalv = Tuple::new_vector(0.0, 0.0, -1.0);
+        let light = PointLight::new(
+            Tuple::new_color(1.0, 1.0, 1.0),
+            Tuple::new_point(0.0, 0.0, -10.0),
+        );
+        let in_shadow = true;
+
+        let result = m.lighting(&light, point, eyev, normalv, in_shadow);
+        assert!(result == Tuple::new_color(0.1, 0.1, 0.1))
     }
 }

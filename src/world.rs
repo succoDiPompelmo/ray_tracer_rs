@@ -80,6 +80,7 @@ impl World {
             comps.get_point(),
             comps.get_eyev(),
             comps.get_normalv(),
+            false,
         )
     }
 

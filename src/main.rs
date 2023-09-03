@@ -83,7 +83,7 @@ fn main() {
         Tuple::new_point(-10.0, 10.0, -10.0),
     ));
 
-    let mut camera = Camera::new(100, 50, PI / 2.0);
+    let mut camera = Camera::new(400, 200, PI / 2.0);
     camera.set_transform(Transformation::view_transform(
         Tuple::new_point(0.0, 1.5, -5.0),
         Tuple::new_point(0.0, 1.0, 0.0),
