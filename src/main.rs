@@ -1,3 +1,4 @@
+mod camera;
 mod canvas;
 mod intersections;
 mod lights;
