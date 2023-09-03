@@ -29,7 +29,7 @@ impl Canvas {
         self.height
     }
 
-    fn pixel_at(&self, x: usize, y: usize) -> Tuple {
+    pub fn pixel_at(&self, x: usize, y: usize) -> Tuple {
         self.state[y][x]
     }
 

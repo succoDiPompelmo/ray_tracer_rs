@@ -34,7 +34,7 @@ impl Transformation {
         matrix
     }
 
-    fn rotation_y(rad: f64) -> Matrix {
+    pub fn rotation_y(rad: f64) -> Matrix {
         let mut matrix = Matrix::identity(4);
 
         matrix.set(0, 0, rad.cos());
@@ -71,7 +71,7 @@ impl Transformation {
         matrix
     }
 
-    fn view_transform(from: Tuple, to: Tuple, up: Tuple) -> Matrix {
+    pub fn view_transform(from: Tuple, to: Tuple, up: Tuple) -> Matrix {
         let forward = (to - from).normalize();
         let left = forward.cross(&up.normalize());
         let true_up = left.cross(&forward);
