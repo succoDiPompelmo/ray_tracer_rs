@@ -1,3 +1,5 @@
+use std::f64::EPSILON;
+
 use crate::{rays::Ray, spheres::Sphere, tuples::Tuple};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -14,6 +16,7 @@ pub struct Computations {
     eyev: Tuple,
     normalv: Tuple,
     inside: bool,
+    over_point: Tuple,
 }
 
 impl Intersection {
@@ -68,6 +71,8 @@ impl Intersection {
             normalv = -normalv
         }
 
+        let over_point = point + normalv * Computations::get_epsilon();
+
         Computations {
             t,
             object,
@@ -75,6 +80,7 @@ impl Intersection {
             eyev,
             normalv,
             inside,
+            over_point,
         }
     }
 }
@@ -95,12 +101,20 @@ impl Computations {
     pub fn get_normalv(&self) -> Tuple {
         self.normalv
     }
+
+    fn get_epsilon() -> f64 {
+        EPSILON * 100.0
+    }
+
+    pub fn get_over_point(&self) -> Tuple {
+        self.over_point
+    }
 }
 
 #[cfg(test)]
 mod tests {
 
-    use crate::{rays::Ray, tuples::Tuple};
+    use crate::{rays::Ray, transformations::Transformation, tuples::Tuple};
 
     use super::*;
 
@@ -223,5 +237,21 @@ mod tests {
         assert!(comps.eyev == Tuple::new_vector(0.0, 0.0, -1.0));
         assert!(comps.inside);
         assert!(comps.normalv == Tuple::new_vector(0.0, 0.0, -1.0));
+    }
+
+    #[test]
+    fn the_hit_should_offset_the_point() {
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, -5.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+        let mut shape = Sphere::new();
+        shape.set_transformation(Transformation::translation(0.0, 0.0, 1.0));
+
+        let i = Intersection::new(5.0, shape);
+        let comps = i.prepare_computations(&r);
+
+        assert!(comps.over_point.z < -Computations::get_epsilon() / 2.0);
+        assert!(comps.point.z > comps.over_point.z);
     }
 }
