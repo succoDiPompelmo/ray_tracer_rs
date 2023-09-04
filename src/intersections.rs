@@ -103,7 +103,7 @@ impl Computations {
     }
 
     fn get_epsilon() -> f64 {
-        EPSILON * 100.0
+        0.000001
     }
 
     pub fn get_over_point(&self) -> Tuple {
