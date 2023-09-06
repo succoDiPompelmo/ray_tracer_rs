@@ -94,12 +94,24 @@ impl Computations {
         self.point
     }
 
+    pub fn get_point_ref(&self) -> &Tuple {
+        &self.point
+    }
+
     pub fn get_eyev(&self) -> Tuple {
         self.eyev
     }
 
+    pub fn get_eyev_ref(&self) -> &Tuple {
+        &self.eyev
+    }
+
     pub fn get_normalv(&self) -> Tuple {
         self.normalv
+    }
+
+    pub fn get_normalv_ref(&self) -> &Tuple {
+        &self.normalv
     }
 
     fn get_epsilon() -> f64 {
@@ -108,6 +120,10 @@ impl Computations {
 
     pub fn get_over_point(&self) -> Tuple {
         self.over_point
+    }
+
+    pub fn get_over_point_ref(&self) -> &Tuple {
+        &self.over_point
     }
 }
 

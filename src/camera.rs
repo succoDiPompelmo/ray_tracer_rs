@@ -1,3 +1,5 @@
+use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
+
 use crate::{canvas::Canvas, matrices::Matrix, rays::Ray, tuples::Tuple, world::World};
 
 pub struct Camera {
@@ -51,13 +53,24 @@ impl Camera {
 
     pub fn render(&self, world: World) -> Canvas {
         let mut image = Canvas::new(self.hsize, self.vsize);
+        let mut pixels = vec![];
 
         for y in 0..self.vsize {
             for x in 0..self.hsize {
-                let ray = self.ray_for_pixel(x, y);
-                let color = world.color_at(&ray);
-                image.write_pixel(color, x.try_into().unwrap(), y.try_into().unwrap());
+                pixels.push((x, y));
             }
+        }
+
+        let colors: Vec<(usize, usize, Tuple)> = pixels
+            .par_iter()
+            .map(move |(x, y)| {
+                let ray = self.ray_for_pixel(*x, *y);
+                (*x, *y, world.color_at(&ray))
+            })
+            .collect();
+
+        for (x, y, color) in colors {
+            image.write_pixel(color, x as isize, y as isize);
         }
 
         image

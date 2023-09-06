@@ -82,8 +82,8 @@ impl Tuple {
         }
     }
 
-    pub fn reflect(&self, normal: Tuple) -> Tuple {
-        self.clone() - normal * 2.0 * self.dot(&normal)
+    pub fn reflect(&self, normal: &Tuple) -> Tuple {
+        self - &(normal * 2.0 * self.dot(normal))
     }
 }
 
@@ -127,10 +127,36 @@ impl ops::Mul<f64> for Tuple {
     }
 }
 
+impl ops::Mul<f64> for &Tuple {
+    type Output = Tuple;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        Tuple {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
+            w: self.w * rhs,
+        }
+    }
+}
+
 impl ops::Sub for Tuple {
     type Output = Self;
 
     fn sub(self, rhs: Tuple) -> Tuple {
+        Tuple {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
+            w: self.w - rhs.w,
+        }
+    }
+}
+
+impl ops::Sub for &Tuple {
+    type Output = Tuple;
+
+    fn sub(self, rhs: Self) -> Self::Output {
         Tuple {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
@@ -410,7 +436,7 @@ mod tests {
     fn reflect_a_vector_at_45_degrees() {
         let v = Tuple::new_vector(1.0, -1.0, 0.0);
         let n = Tuple::new_vector(0.0, 1.0, 0.0);
-        let r = v.reflect(n);
+        let r = v.reflect(&n);
 
         assert!(r == Tuple::new_vector(1.0, 1.0, 0.0));
     }
@@ -419,7 +445,7 @@ mod tests {
     fn reflect_a_vector_over_a_slanted_surface() {
         let v = Tuple::new_vector(0.0, -1.0, 0.0);
         let n = Tuple::new_vector(2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0, 0.0);
-        let r = v.reflect(n);
+        let r = v.reflect(&n);
 
         assert!(r == Tuple::new_vector(1.0, 0.0, 0.0));
     }

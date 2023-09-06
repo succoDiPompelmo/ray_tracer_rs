@@ -47,6 +47,13 @@ impl World {
         self.light.clone()
     }
 
+    pub fn get_light_ref(&self) -> &PointLight {
+        match &self.light {
+            Some(light) => light,
+            None => panic!("No light defined")
+        }
+    }
+
     pub fn set_light(&mut self, light: PointLight) {
         self.light = Some(light);
     }
@@ -76,13 +83,13 @@ impl World {
     pub fn shade_hit(&self, comps: &Computations) -> Tuple {
         let light = self.light.as_ref().unwrap();
 
-        let shadowed = self.is_shadowed(comps.get_over_point());
+        let shadowed = self.is_shadowed(comps.get_over_point_ref());
 
         comps.get_object().get_material().lighting(
             light,
-            comps.get_point(),
-            comps.get_eyev(),
-            comps.get_normalv(),
+            comps.get_point_ref(),
+            comps.get_eyev_ref(),
+            comps.get_normalv_ref(),
             shadowed,
         )
     }
@@ -99,12 +106,12 @@ impl World {
         }
     }
 
-    fn is_shadowed(&self, point: Tuple) -> bool {
-        let v = self.get_light().unwrap().get_position() - point;
+    fn is_shadowed(&self, point: &Tuple) -> bool {
+        let v = self.get_light_ref().get_position_ref() - point;
         let distance = v.magnitude();
         let direction = v.normalize();
 
-        let r = Ray::new(point, direction);
+        let r = Ray::new(point.clone(), direction);
         let intersections = self.intersect(&r);
 
         let h = Intersection::hit(&intersections);
@@ -267,7 +274,7 @@ mod tests {
         let w = World::default();
         let p = Tuple::new_point(0.0, 10.0, 0.0);
 
-        assert!(!w.is_shadowed(p));
+        assert!(!w.is_shadowed(&p));
     }
 
     #[test]
@@ -275,7 +282,7 @@ mod tests {
         let w = World::default();
         let p = Tuple::new_point(10.0, -10.0, 10.0);
 
-        assert!(w.is_shadowed(p));
+        assert!(w.is_shadowed(&p));
     }
 
     #[test]
@@ -283,7 +290,7 @@ mod tests {
         let w = World::default();
         let p = Tuple::new_point(-20.0, 20.0, -20.0);
 
-        assert!(!w.is_shadowed(p));
+        assert!(!w.is_shadowed(&p));
     }
 
     #[test]
@@ -291,7 +298,7 @@ mod tests {
         let w = World::default();
         let p = Tuple::new_point(-2.0, 2.0, -2.0);
 
-        assert!(!w.is_shadowed(p));
+        assert!(!w.is_shadowed(&p));
     }
 
     #[test]

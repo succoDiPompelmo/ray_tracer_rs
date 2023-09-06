@@ -21,6 +21,10 @@ impl PointLight {
     pub fn get_position(&self) -> Tuple {
         self.position
     }
+
+    pub fn get_position_ref(&self) -> &Tuple {
+        &self.position
+    }
 }
 
 #[cfg(test)]

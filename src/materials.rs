@@ -59,13 +59,13 @@ impl Material {
     pub fn lighting(
         &self,
         light: &PointLight,
-        point: Tuple,
-        eyev: Tuple,
-        normalv: Tuple,
+        point: &Tuple,
+        eyev: &Tuple,
+        normalv: &Tuple,
         in_shadow: bool,
     ) -> Tuple {
         let effective_color = self.color.hadamard_product(&light.get_intensity());
-        let lightv = (light.get_position() - point).normalize();
+        let lightv = (light.get_position_ref() - point).normalize();
 
         let ambient = effective_color * self.ambient;
 
@@ -80,7 +80,7 @@ impl Material {
         if light_dot_normal > 0.0 {
             diffuse = effective_color * self.diffuse * light_dot_normal;
             let reflectv = (-lightv).reflect(normalv);
-            let reflect_dot_eye = reflectv.dot(&eyev);
+            let reflect_dot_eye = reflectv.dot(eyev);
 
             if reflect_dot_eye > 0.0 {
                 let factor = reflect_dot_eye.powf(self.shininess);
@@ -123,7 +123,7 @@ mod tests {
         );
         let in_shadow = false;
 
-        let r = m.lighting(&light, point, eyev, normalv, in_shadow);
+        let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
         assert!(r == Tuple::new_color(1.9, 1.9, 1.9))
     }
 
@@ -140,7 +140,7 @@ mod tests {
         );
         let in_shadow = false;
 
-        let r = m.lighting(&light, point, eyev, normalv, in_shadow);
+        let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
         assert!(r == Tuple::new_color(1.0, 1.0, 1.0))
     }
 
@@ -157,7 +157,7 @@ mod tests {
         );
         let in_shadow = false;
 
-        let r = m.lighting(&light, point, eyev, normalv, in_shadow);
+        let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
         let value = 0.1 + 0.9 * 2.0_f64.sqrt() / 2.0 + 0.0;
         assert!(r == Tuple::new_color(value, value, value))
     }
@@ -175,7 +175,7 @@ mod tests {
         );
         let in_shadow = false;
 
-        let r = m.lighting(&light, point, eyev, normalv, in_shadow);
+        let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
         let value = 0.1 + 0.9 * 2.0_f64.sqrt() / 2.0 + 0.9;
         assert!(r == Tuple::new_color(value, value, value))
     }
@@ -193,7 +193,7 @@ mod tests {
         );
         let in_shadow = false;
 
-        let r = m.lighting(&light, point, eyev, normalv, in_shadow);
+        let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
         assert!(r == Tuple::new_color(0.1, 0.1, 0.1))
     }
 
@@ -210,7 +210,7 @@ mod tests {
         );
         let in_shadow = true;
 
-        let result = m.lighting(&light, point, eyev, normalv, in_shadow);
+        let result = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
         assert!(result == Tuple::new_color(0.1, 0.1, 0.1))
     }
 }
