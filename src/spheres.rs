@@ -54,9 +54,9 @@ impl Sphere {
     }
 
     pub fn normal_at(&self, world_point: Tuple) -> Tuple {
-        let object_point = self.transform.invert() * world_point;
+        let object_point = &self.transform.invert() * &world_point;
         let object_normal = object_point - self.center;
-        let mut world_normal = self.transform.invert().transpose() * object_normal;
+        let mut world_normal = &self.transform.invert().transpose() * &object_normal;
 
         world_normal.w = 0.0;
 

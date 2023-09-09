@@ -50,7 +50,7 @@ impl World {
     pub fn get_light_ref(&self) -> &PointLight {
         match &self.light {
             Some(light) => light,
-            None => panic!("No light defined")
+            None => panic!("No light defined"),
         }
     }
 

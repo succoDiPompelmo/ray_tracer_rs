@@ -104,7 +104,7 @@ mod tests {
         let p1 = Tuple::new_point(-3.0, 4.0, 5.0);
         let p2 = Tuple::new_point(2.0, 1.0, 7.0);
 
-        assert!(p2 == t * p1);
+        assert!(p2 == &t * &p1);
     }
 
     #[test]
@@ -113,7 +113,7 @@ mod tests {
         let p1 = Tuple::new_point(-3.0, 4.0, 5.0);
         let p2 = Tuple::new_point(-8.0, 7.0, 3.0);
 
-        assert!(p2 == t.invert() * p1);
+        assert!(p2 == &t.invert() * &p1);
     }
 
     #[test]
@@ -121,7 +121,7 @@ mod tests {
         let t = Transformation::translation(5.0, -3.0, 2.0);
         let v = Tuple::new_vector(-3.0, 4.0, 5.0);
 
-        assert!(v == t * v);
+        assert!(v == &t * &v);
     }
 
     #[test]
@@ -130,7 +130,7 @@ mod tests {
         let p1 = Tuple::new_point(-4.0, 6.0, 8.0);
         let p2 = Tuple::new_point(-8.0, 18.0, 32.0);
 
-        assert!(p2 == t * p1);
+        assert!(p2 == &t * &p1);
     }
 
     #[test]
@@ -139,7 +139,7 @@ mod tests {
         let v1 = Tuple::new_vector(-4.0, 6.0, 8.0);
         let v2 = Tuple::new_vector(-8.0, 18.0, 32.0);
 
-        assert!(v2 == t * v1);
+        assert!(v2 == &t * &v1);
     }
 
     #[test]
@@ -148,7 +148,7 @@ mod tests {
         let v1 = Tuple::new_vector(-4.0, 6.0, 8.0);
         let v2 = Tuple::new_vector(-2.0, 2.0, 2.0);
 
-        assert!(v2 == t.invert() * v1);
+        assert!(v2 == &t.invert() * &v1);
     }
 
     #[test]
@@ -157,7 +157,7 @@ mod tests {
         let p1 = Tuple::new_point(2.0, 3.0, 4.0);
         let p2 = Tuple::new_point(-2.0, 3.0, 4.0);
 
-        assert!(p2 == t * p1);
+        assert!(p2 == &t * &p1);
     }
 
     #[test]
@@ -168,8 +168,8 @@ mod tests {
         let p2 = Tuple::new_point(0.0, f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0);
         let p3 = Tuple::new_point(0.0, 0.0, 1.0);
 
-        assert!(p2 == half_quarter * p1);
-        assert!(p3 == full_quarter * p1);
+        assert!(p2 == &half_quarter * &p1);
+        assert!(p3 == &full_quarter * &p1);
     }
 
     #[test]
@@ -178,7 +178,7 @@ mod tests {
         let p1 = Tuple::new_point(0.0, 1.0, 0.0);
         let p2 = Tuple::new_point(0.0, f64::sqrt(2.0) / 2.0, -f64::sqrt(2.0) / 2.0);
 
-        assert!(p2 == half_quarter.invert() * p1);
+        assert!(p2 == &half_quarter.invert() * &p1);
     }
 
     #[test]
@@ -189,8 +189,8 @@ mod tests {
         let p2 = Tuple::new_point(f64::sqrt(2.0) / 2.0, 0.0, f64::sqrt(2.0) / 2.0);
         let p3 = Tuple::new_point(1.0, 0.0, 0.0);
 
-        assert!(p2 == half_quarter * p1);
-        assert!(p3 == full_quarter * p1);
+        assert!(p2 == &half_quarter * &p1);
+        assert!(p3 == &full_quarter * &p1);
     }
 
     #[test]
@@ -201,8 +201,8 @@ mod tests {
         let p2 = Tuple::new_point(-f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0, 0.0);
         let p3 = Tuple::new_point(-1.0, 0.0, 0.0);
 
-        assert!(p2 == half_quarter * p1);
-        assert!(p3 == full_quarter * p1);
+        assert!(p2 == &half_quarter * &p1);
+        assert!(p3 == &full_quarter * &p1);
     }
 
     #[test]
@@ -211,7 +211,7 @@ mod tests {
         let p1 = Tuple::new_point(2.0, 3.0, 4.0);
         let p2 = Tuple::new_point(5.0, 3.0, 4.0);
 
-        assert!(p2 == t * p1);
+        assert!(p2 == &t * &p1);
     }
 
     #[test]
@@ -220,7 +220,7 @@ mod tests {
         let p1 = Tuple::new_point(2.0, 3.0, 4.0);
         let p2 = Tuple::new_point(6.0, 3.0, 4.0);
 
-        assert!(p2 == t * p1);
+        assert!(p2 == &t * &p1);
     }
 
     #[test]
@@ -229,7 +229,7 @@ mod tests {
         let p1 = Tuple::new_point(2.0, 3.0, 4.0);
         let p2 = Tuple::new_point(2.0, 5.0, 4.0);
 
-        assert!(p2 == t * p1);
+        assert!(p2 == &t * &p1);
     }
 
     #[test]
@@ -238,7 +238,7 @@ mod tests {
         let p1 = Tuple::new_point(2.0, 3.0, 4.0);
         let p2 = Tuple::new_point(2.0, 7.0, 4.0);
 
-        assert!(p2 == t * p1);
+        assert!(p2 == &t * &p1);
     }
 
     #[test]
@@ -247,7 +247,7 @@ mod tests {
         let p1 = Tuple::new_point(2.0, 3.0, 4.0);
         let p2 = Tuple::new_point(2.0, 3.0, 6.0);
 
-        assert!(p2 == t * p1);
+        assert!(p2 == &t * &p1);
     }
 
     #[test]
@@ -256,7 +256,7 @@ mod tests {
         let p1 = Tuple::new_point(2.0, 3.0, 4.0);
         let p2 = Tuple::new_point(2.0, 3.0, 7.0);
 
-        assert!(p2 == t * p1);
+        assert!(p2 == &t * &p1);
     }
 
     #[test]
@@ -271,16 +271,16 @@ mod tests {
         let p3_expected = Tuple::new_point(5.0, -5.0, 0.0);
         let p4_expected = Tuple::new_point(15.0, 0.0, 7.0);
 
-        let p2 = r.clone() * p1;
+        let p2 = &r * &p1;
         assert!(p2 == p2_expected);
 
-        let p3 = s.clone() * p2;
+        let p3 = &s * &p2;
         assert!(p3 == p3_expected);
 
-        let p4 = t.clone() * p3;
+        let p4 = &t * &p3;
         assert!(p4 == p4_expected);
 
-        assert!(p4 == t * s * r * p1);
+        assert!(p4 == &(t * s * r) * &p1);
     }
 
     #[test]

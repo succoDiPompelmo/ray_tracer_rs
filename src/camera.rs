@@ -44,8 +44,8 @@ impl Camera {
         let world_y = self.half_height - yoffset;
 
         // Remember that canvas is at z = -1
-        let pixel = self.transform.invert() * Tuple::new_point(world_x, world_y, -1.0);
-        let origin = self.transform.invert() * Tuple::new_point(0.0, 0.0, 0.0);
+        let pixel = &self.transform.invert() * &Tuple::new_point(world_x, world_y, -1.0);
+        let origin = &self.transform.invert() * &Tuple::new_point(0.0, 0.0, 0.0);
         let direction = (pixel - origin).normalize();
 
         Ray::new(origin, direction)

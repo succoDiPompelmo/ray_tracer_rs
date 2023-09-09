@@ -1,5 +1,6 @@
-use crate::{matrices::Matrix, transformations::Transformation, tuples::Tuple};
+use crate::{matrices::Matrix, tuples::Tuple};
 
+#[derive(Debug, PartialEq)]
 pub struct Ray {
     origin: Tuple,
     direction: Tuple,
@@ -24,14 +25,16 @@ impl Ray {
 
     pub fn transform(&self, t: Matrix) -> Ray {
         Ray {
-            origin: t.clone() * self.origin,
-            direction: t.clone() * self.direction,
+            origin: &t * &self.origin,
+            direction: &t * &self.direction,
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
+
+    use crate::transformations::Transformation;
 
     use super::*;
 

@@ -179,12 +179,12 @@ impl ops::Mul<Matrix> for Matrix {
     }
 }
 
-impl ops::Mul<Tuple> for Matrix {
+impl ops::Mul<&Tuple> for &Matrix {
     type Output = Tuple;
 
     // We are only interested in 4x4 matrix multiplications, so we can simplify this
     // implementation. No need to be generic.
-    fn mul(self, rhs: Tuple) -> Tuple {
+    fn mul(self, rhs: &Tuple) -> Tuple {
         let mut output: Tuple = Tuple::new(0.0, 0.0, 0.0, 0.0);
 
         for row in 0..4 {
@@ -304,7 +304,7 @@ mod tests {
         let b = Tuple::new(1.0, 2.0, 3.0, 1.0);
         let c = Tuple::new(18.0, 24.0, 33.0, 1.0);
 
-        assert!(a * b == c);
+        assert!(&a * &b == c);
     }
 
     #[test]

@@ -65,7 +65,7 @@ impl Clock {
         let r = Transformation::rotation_z((2.0 * PI) / self.ticks as f64);
 
         Clock {
-            position: r * self.position,
+            position: &r * &self.position,
             ticks: self.ticks,
         }
     }
