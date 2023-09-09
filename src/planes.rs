@@ -3,7 +3,7 @@ use crate::{rays::Ray, shapes::Polygon, tuples::Tuple};
 pub struct Plane {}
 
 impl Plane {
-    fn new() -> Plane {
+    pub fn new() -> Plane {
         Plane {}
     }
 }
