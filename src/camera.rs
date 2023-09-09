@@ -61,15 +61,9 @@ impl Camera {
             }
         }
 
-        let colors: Vec<(usize, usize, Tuple)> = pixels
-            .par_iter()
-            .map(move |(x, y)| {
-                let ray = self.ray_for_pixel(*x, *y);
-                (*x, *y, world.color_at(&ray))
-            })
-            .collect();
-
-        for (x, y, color) in colors {
+        for (x, y) in pixels {
+            let ray = self.ray_for_pixel(x, y);
+            let color = world.color_at(&ray);
             image.write_pixel(color, x as isize, y as isize);
         }
 

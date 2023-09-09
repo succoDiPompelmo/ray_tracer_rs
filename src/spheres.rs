@@ -1,29 +1,24 @@
 use float_cmp::{ApproxEq, F64Margin};
 
-use crate::{
-    intersections::Intersection, materials::Material, matrices::Matrix, rays::Ray, tuples::Tuple,
-};
+use crate::{rays::Ray, shapes::Polygon, tuples::Tuple};
 
 #[derive(Clone, Debug)]
 pub struct Sphere {
-    pub material: Material,
     center: Tuple,
     radius: f64,
-    transform: Matrix,
 }
 
 impl Sphere {
     pub fn new() -> Sphere {
         Sphere {
-            material: Material::default(),
             center: Tuple::new_point(0.0, 0.0, 0.0),
             radius: 1.0,
-            transform: Matrix::identity(4),
         }
     }
+}
 
-    pub fn intersect(&self, original_ray: &Ray) -> Vec<Intersection> {
-        let ray = original_ray.transform(self.get_transform().invert());
+impl Polygon for Sphere {
+    fn intersect(&self, ray: &Ray) -> Vec<f64> {
         let sphere_to_ray = ray.get_origin() - self.center;
 
         let a = ray.get_direction().dot(&ray.get_direction());
@@ -39,36 +34,11 @@ impl Sphere {
         let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
         let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
 
-        Intersection::intersects(&[
-            Intersection::new(t1, self.clone()),
-            Intersection::new(t2, self.clone()),
-        ])
+        vec![t1, t2]
     }
 
-    fn get_transform(&self) -> Matrix {
-        self.transform.clone()
-    }
-
-    pub fn set_transformation(&mut self, t: Matrix) {
-        self.transform = t
-    }
-
-    pub fn normal_at(&self, world_point: &Tuple) -> Tuple {
-        let object_point = &self.transform.invert() * &world_point;
-        let object_normal = object_point - self.center;
-        let mut world_normal = &self.transform.invert().transpose() * &object_normal;
-
-        world_normal.w = 0.0;
-
-        return world_normal.normalize();
-    }
-
-    pub fn get_material(&self) -> Material {
-        self.material.clone()
-    }
-
-    pub fn set_material(&mut self, material: Material) {
-        self.material = material;
+    fn normal_at(&self, object_point: &Tuple) -> Tuple {
+        object_point - &self.center
     }
 }
 
@@ -86,9 +56,12 @@ impl PartialEq for Sphere {
 #[cfg(test)]
 mod tests {
 
-    use std::f64::consts::PI;
+    use std::{
+        f64::consts::PI,
+        sync::{Arc, Mutex},
+    };
 
-    use crate::{rays::Ray, transformations::Transformation, tuples::Tuple};
+    use crate::{rays::Ray, shapes::Shape, transformations::Transformation, tuples::Tuple};
 
     use super::*;
 
@@ -98,13 +71,12 @@ mod tests {
             Tuple::new_point(0.0, 0.0, -5.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
-        let s = Sphere::new();
+        let sphere = Sphere::new();
+        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let xs = s.intersect(&r);
 
         assert!(xs.len() == 2);
-        assert!(xs.get(0).unwrap().get_object() == s);
-        assert!(xs.get(1).unwrap().get_object() == s);
         assert!(xs.get(0).unwrap().get_t() == 4.0);
         assert!(xs.get(1).unwrap().get_t() == 6.0);
     }
@@ -115,13 +87,12 @@ mod tests {
             Tuple::new_point(0.0, 1.0, -5.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
-        let s = Sphere::new();
+        let sphere = Sphere::new();
+        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let xs = s.intersect(&r);
 
         assert!(xs.len() == 2);
-        assert!(xs.get(0).unwrap().get_object() == s);
-        assert!(xs.get(1).unwrap().get_object() == s);
         assert!(xs.get(0).unwrap().get_t() == 5.0);
         assert!(xs.get(1).unwrap().get_t() == 5.0);
     }
@@ -132,7 +103,8 @@ mod tests {
             Tuple::new_point(0.0, 2.0, -5.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
-        let s = Sphere::new();
+        let sphere = Sphere::new();
+        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let xs = s.intersect(&r);
 
@@ -145,13 +117,12 @@ mod tests {
             Tuple::new_point(0.0, 0.0, 0.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
-        let s = Sphere::new();
+        let sphere = Sphere::new();
+        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let xs = s.intersect(&r);
 
         assert!(xs.len() == 2);
-        assert!(xs.get(0).unwrap().get_object() == s);
-        assert!(xs.get(1).unwrap().get_object() == s);
         assert!(xs.get(0).unwrap().get_t() == -1.0);
         assert!(xs.get(1).unwrap().get_t() == 1.0);
     }
@@ -162,31 +133,14 @@ mod tests {
             Tuple::new_point(0.0, 0.0, 5.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
-        let s = Sphere::new();
+        let sphere = Sphere::new();
+        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let xs = s.intersect(&r);
 
         assert!(xs.len() == 2);
-        assert!(xs.get(0).unwrap().get_object() == s);
-        assert!(xs.get(1).unwrap().get_object() == s);
         assert!(xs.get(0).unwrap().get_t() == -6.0);
         assert!(xs.get(1).unwrap().get_t() == -4.0);
-    }
-
-    #[test]
-    fn sphere_default_transformation() {
-        let s = Sphere::new();
-
-        assert!(s.get_transform() == Matrix::identity(4))
-    }
-
-    #[test]
-    fn change_sphere_transformation() {
-        let mut s = Sphere::new();
-        let t = Transformation::translation(2.0, 3.0, 4.0);
-        s.set_transformation(t.clone());
-
-        assert!(s.get_transform() == t);
     }
 
     #[test]
@@ -195,7 +149,9 @@ mod tests {
             Tuple::new_point(0.0, 0.0, -5.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
-        let mut s = Sphere::new();
+        let sphere = Sphere::new();
+        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+
         let t = Transformation::scaling(2.0, 2.0, 2.0);
         s.set_transformation(t.clone());
 
@@ -212,7 +168,9 @@ mod tests {
             Tuple::new_point(0.0, 0.0, -5.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
-        let mut s = Sphere::new();
+        let sphere = Sphere::new();
+        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+
         let t = Transformation::translation(5.0, 0.0, 0.0);
         s.set_transformation(t.clone());
 
@@ -223,7 +181,8 @@ mod tests {
 
     #[test]
     fn normal_on_a_sphere() {
-        let s = Sphere::new();
+        let sphere = Sphere::new();
+        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let v1 = Tuple::new_vector(1.0, 0.0, 0.0);
         assert!(s.normal_at(&Tuple::new_point(1.0, 0.0, 0.0)) == v1);
@@ -241,7 +200,8 @@ mod tests {
 
     #[test]
     fn the_normal_is_a_normalized_vector() {
-        let s = Sphere::new();
+        let sphere = Sphere::new();
+        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let value = 3.0_f64.sqrt() / 3.0;
         let n = s.normal_at(&Tuple::new_point(value, value, value));
@@ -250,7 +210,9 @@ mod tests {
 
     #[test]
     fn normal_on_a_translated_sphere() {
-        let mut s = Sphere::new();
+        let sphere = Sphere::new();
+        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+
         s.set_transformation(Transformation::translation(0.0, 1.0, 0.0));
         let n = s.normal_at(&Tuple::new_point(0.0, 1.70711, -0.70711));
 
@@ -261,7 +223,9 @@ mod tests {
 
     #[test]
     fn normal_on_a_transformed_sphere() {
-        let mut s = Sphere::new();
+        let sphere = Sphere::new();
+        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+
         s.set_transformation(
             Transformation::scaling(1.0, 0.5, 1.0) * Transformation::rotation_z(PI / 5.0),
         );
@@ -272,23 +236,5 @@ mod tests {
         ));
 
         assert!(n == Tuple::new_vector(0.0, 0.9701425001453319, -0.24253562503633294))
-    }
-
-    #[test]
-    fn a_sphere_has_a_default_material() {
-        let s = Sphere::new();
-
-        assert!(s.material == Material::default());
-    }
-
-    #[test]
-    fn a_sphere_may_be_assigned_a_material() {
-        let mut s = Sphere::new();
-        let mut m = Material::default();
-
-        m.set_ambient(1.0);
-        s.set_material(m.clone());
-
-        assert!(s.material == m);
     }
 }
