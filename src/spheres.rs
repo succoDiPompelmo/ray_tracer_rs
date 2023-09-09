@@ -53,7 +53,7 @@ impl Sphere {
         self.transform = t
     }
 
-    pub fn normal_at(&self, world_point: Tuple) -> Tuple {
+    pub fn normal_at(&self, world_point: &Tuple) -> Tuple {
         let object_point = &self.transform.invert() * &world_point;
         let object_normal = object_point - self.center;
         let mut world_normal = &self.transform.invert().transpose() * &object_normal;
@@ -226,17 +226,17 @@ mod tests {
         let s = Sphere::new();
 
         let v1 = Tuple::new_vector(1.0, 0.0, 0.0);
-        assert!(s.normal_at(Tuple::new_point(1.0, 0.0, 0.0)) == v1);
+        assert!(s.normal_at(&Tuple::new_point(1.0, 0.0, 0.0)) == v1);
 
         let v2 = Tuple::new_vector(0.0, 1.0, 0.0);
-        assert!(s.normal_at(Tuple::new_point(0.0, 1.0, 0.0)) == v2);
+        assert!(s.normal_at(&Tuple::new_point(0.0, 1.0, 0.0)) == v2);
 
         let v3 = Tuple::new_vector(0.0, 0.0, 1.0);
-        assert!(s.normal_at(Tuple::new_point(0.0, 0.0, 1.0)) == v3);
+        assert!(s.normal_at(&Tuple::new_point(0.0, 0.0, 1.0)) == v3);
 
         let value = 3.0_f64.sqrt() / 3.0;
         let v4 = Tuple::new_vector(value, value, value);
-        assert!(s.normal_at(Tuple::new_point(value, value, value)) == v4);
+        assert!(s.normal_at(&Tuple::new_point(value, value, value)) == v4);
     }
 
     #[test]
@@ -244,7 +244,7 @@ mod tests {
         let s = Sphere::new();
 
         let value = 3.0_f64.sqrt() / 3.0;
-        let n = s.normal_at(Tuple::new_point(value, value, value));
+        let n = s.normal_at(&Tuple::new_point(value, value, value));
         assert!(n.normalize() == n);
     }
 
@@ -252,7 +252,7 @@ mod tests {
     fn normal_on_a_translated_sphere() {
         let mut s = Sphere::new();
         s.set_transformation(Transformation::translation(0.0, 1.0, 0.0));
-        let n = s.normal_at(Tuple::new_point(0.0, 1.70711, -0.70711));
+        let n = s.normal_at(&Tuple::new_point(0.0, 1.70711, -0.70711));
 
         println!("{:?}", n);
 
@@ -265,7 +265,7 @@ mod tests {
         s.set_transformation(
             Transformation::scaling(1.0, 0.5, 1.0) * Transformation::rotation_z(PI / 5.0),
         );
-        let n = s.normal_at(Tuple::new_point(
+        let n = s.normal_at(&Tuple::new_point(
             0.0,
             2.0_f64.sqrt() / 2.0,
             -2.0_f64.sqrt() / 2.0,

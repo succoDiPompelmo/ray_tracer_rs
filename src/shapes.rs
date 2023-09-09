@@ -1,6 +1,5 @@
 use crate::{
-    intersections::Intersection, materials::Material, matrices::Matrix, rays::Ray, spheres::Sphere,
-    tuples::Tuple,
+    intersections::Intersection, materials::Material, matrices::Matrix, rays::Ray, tuples::Tuple,
 };
 
 #[cfg(test)]
@@ -9,6 +8,7 @@ use mockall::{automock, mock, predicate::*};
 #[cfg_attr(test, automock)]
 pub trait Polygon {
     fn intersect(&self, original_ray: &Ray) -> Vec<Intersection>;
+    fn normal_at(&self, point: &Tuple) -> Tuple;
 }
 
 pub struct Shape {
@@ -46,10 +46,21 @@ impl Shape {
         let local_ray = ray.transform(self.transformation.invert());
         self.polygon.intersect(&local_ray)
     }
+
+    fn normal_at(&self, point: &Tuple) -> Tuple {
+        let local_point = &self.transformation.invert() * point;
+        let local_normal = self.polygon.normal_at(&local_point);
+        let mut world_normal = &self.transformation.invert().transpose() * &local_normal;
+        world_normal.w = 0.0;
+
+        world_normal.normalize()
+    }
 }
 
 #[cfg(test)]
 mod tests {
+
+    use std::f64::consts::PI;
 
     use crate::transformations::Transformation;
 
@@ -135,5 +146,41 @@ mod tests {
 
         let xs = shape.intersect(&r);
         assert!(xs.len() == 0);
+    }
+
+    #[test]
+    fn computing_the_normal_on_a_translated_shape() {
+        let mut mock = Box::new(MockPolygon::default());
+        mock.expect_normal_at()
+            .once()
+            .returning(|p| Tuple::new_vector(p.x, p.y, p.z));
+
+        let mut shape = Shape::default(mock);
+        shape.set_transformation(Transformation::translation(0.0, 1.0, 0.0));
+
+        let n = shape.normal_at(&Tuple::new_point(0.0, 1.70711, -0.70711));
+
+        assert!(n == Tuple::new_vector(0.0, 0.7071067811865475, -0.7071067811865476));
+    }
+
+    #[test]
+    fn computing_the_normal_on_a_transformed_shape() {
+        let mut mock = Box::new(MockPolygon::default());
+        mock.expect_normal_at()
+            .once()
+            .returning(|p| Tuple::new_vector(p.x, p.y, p.z));
+
+        let mut shape = Shape::default(mock);
+        shape.set_transformation(
+            Transformation::scaling(1.0, 0.5, 1.0) * Transformation::rotation_z(PI / 5.0),
+        );
+
+        let n = shape.normal_at(&Tuple::new_point(
+            0.0,
+            2.0_f64.sqrt() / 2.0,
+            -2.0_f64.sqrt() / 2.0,
+        ));
+
+        assert!(n == Tuple::new_vector(0.0, 0.9701425001453319, -0.24253562503633294));
     }
 }
