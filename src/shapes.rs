@@ -16,7 +16,7 @@ pub trait Polygon {
     fn normal_at(&self, point: &Tuple) -> Tuple;
 }
 
-impl Debug for dyn Polygon {
+impl Debug for dyn Polygon + Send + Sync {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "Polygon Debug")
     }
@@ -24,13 +24,13 @@ impl Debug for dyn Polygon {
 
 #[derive(Clone, Debug)]
 pub struct Shape {
-    polygon: Arc<Mutex<dyn Polygon>>,
+    polygon: Arc<Mutex<dyn Polygon + Send + Sync>>,
     pub material: Material,
     transformation: Matrix,
 }
 
 impl Shape {
-    pub fn default(polygon: Arc<Mutex<dyn Polygon>>) -> Shape {
+    pub fn default(polygon: Arc<Mutex<dyn Polygon + Send + Sync>>) -> Shape {
         Shape {
             polygon,
             material: Material::default(),
