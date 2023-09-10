@@ -27,6 +27,7 @@ pub struct Shape {
     polygon: Arc<Mutex<dyn Polygon + Send + Sync>>,
     pub material: Material,
     transformation: Matrix,
+    inverse_transformation: Option<Matrix>,
 }
 
 impl Shape {
@@ -35,6 +36,7 @@ impl Shape {
             polygon,
             material: Material::default(),
             transformation: Matrix::identity(4),
+            inverse_transformation: None,
         }
     }
 
@@ -46,6 +48,10 @@ impl Shape {
         self.transformation = trasformation
     }
 
+    pub fn precompute_inverse_transformation(&mut self) {
+        self.inverse_transformation = Some(self.transformation.invert());
+    }
+
     pub fn get_material(&self) -> &Material {
         &self.material
     }
@@ -55,7 +61,11 @@ impl Shape {
     }
 
     pub fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
-        let local_ray = ray.transform(self.transformation.invert());
+        let inverse_transformation = match &self.inverse_transformation {
+            Some(matrix) => matrix.clone(),
+            None => self.transformation.invert(),
+        };
+        let local_ray = ray.transform(inverse_transformation);
         let polygon = self.polygon.lock().unwrap();
         let intersections_t = polygon.intersect(&local_ray);
 
@@ -68,10 +78,14 @@ impl Shape {
     }
 
     pub fn normal_at(&self, point: &Tuple) -> Tuple {
-        let local_point = &self.transformation.invert() * point;
+        let inverse_transformation = match &self.inverse_transformation {
+            Some(matrix) => matrix.clone(),
+            None => self.transformation.invert(),
+        };
+        let local_point = &inverse_transformation * point;
         let polygon = self.polygon.lock().unwrap();
         let local_normal = polygon.normal_at(&local_point);
-        let mut world_normal = &self.transformation.invert().transpose() * &local_normal;
+        let mut world_normal = &inverse_transformation.transpose() * &local_normal;
         world_normal.w = 0.0;
 
         world_normal.normalize()

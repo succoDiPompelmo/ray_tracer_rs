@@ -122,10 +122,11 @@ impl Matrix {
         }
 
         let mut inverted = Matrix::new(self.width, self.height);
+        let determinant = self.determinant();
 
         for row in 0..self.height {
             for col in 0..self.width {
-                inverted.set(col, row, self.cofactor(row, col) / self.determinant());
+                inverted.set(col, row, self.cofactor(row, col) / determinant);
             }
         }
 
@@ -162,6 +163,29 @@ impl ops::Mul<Matrix> for Matrix {
     // We are only interested in 4x4 matrix multiplications, so we can simplify this
     // implementation. No need to be generic.
     fn mul(self, rhs: Matrix) -> Matrix {
+        let mut output = Matrix::new(4, 4);
+
+        for row in 0..4 {
+            for col in 0..4 {
+                let value = self.get(row, 0) * rhs.get(0, col)
+                    + self.get(row, 1) * rhs.get(1, col)
+                    + self.get(row, 2) * rhs.get(2, col)
+                    + self.get(row, 3) * rhs.get(3, col);
+
+                output.set(row, col, value);
+            }
+        }
+
+        output
+    }
+}
+
+impl ops::Mul<&Matrix> for &Matrix {
+    type Output = Matrix;
+
+    // We are only interested in 4x4 matrix multiplications, so we can simplify this
+    // implementation. No need to be generic.
+    fn mul(self, rhs: &Matrix) -> Matrix {
         let mut output = Matrix::new(4, 4);
 
         for row in 0..4 {
@@ -319,8 +343,8 @@ mod tests {
 
         let b = Matrix::identity(4);
 
-        assert!(a.clone() * b.clone() == a.clone());
-        assert!(b * a.clone() == a.clone())
+        assert!(&a * &b == a);
+        assert!(&b * &a == a)
     }
 
     #[test]
@@ -585,8 +609,8 @@ mod tests {
             4,
         );
 
-        let c = a.clone() * b.clone();
-        assert!(a == c * b.invert());
+        let c = &a * &b;
+        assert!(a == &c * &b.invert());
     }
 
     #[test]
@@ -607,6 +631,6 @@ mod tests {
             4,
         );
 
-        assert!(Matrix::identity(4) == a.clone() * a.invert())
+        assert!(Matrix::identity(4) == &a * &a.invert())
     }
 }

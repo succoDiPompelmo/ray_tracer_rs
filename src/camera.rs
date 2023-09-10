@@ -1,5 +1,3 @@
-use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
-
 use crate::{canvas::Canvas, matrices::Matrix, rays::Ray, tuples::Tuple, world::World};
 
 pub struct Camera {
@@ -7,6 +5,7 @@ pub struct Camera {
     vsize: usize,
     field_of_view: f64,
     transform: Matrix,
+    inverse_transform: Option<Matrix>,
     half_width: f64,
     half_height: f64,
     pixel_size: f64,
@@ -30,6 +29,7 @@ impl Camera {
             vsize,
             field_of_view,
             transform: Matrix::identity(4),
+            inverse_transform: None,
             half_height,
             half_width,
             pixel_size,
@@ -43,9 +43,14 @@ impl Camera {
         let world_x = self.half_width - xoffset;
         let world_y = self.half_height - yoffset;
 
+        let inverse_transform = match &self.inverse_transform {
+            Some(matrix) => matrix.clone(),
+            None => self.transform.invert(),
+        };
+
         // Remember that canvas is at z = -1
-        let pixel = &self.transform.invert() * &Tuple::new_point(world_x, world_y, -1.0);
-        let origin = &self.transform.invert() * &Tuple::new_point(0.0, 0.0, 0.0);
+        let pixel = &inverse_transform * &Tuple::new_point(world_x, world_y, -1.0);
+        let origin = &inverse_transform * &Tuple::new_point(0.0, 0.0, 0.0);
         let direction = (pixel - origin).normalize();
 
         Ray::new(origin, direction)
@@ -61,15 +66,10 @@ impl Camera {
             }
         }
 
-        let colors: Vec<(usize, usize, Tuple)> = pixels
-            .par_iter()
-            .map(move |(x, y)| {
-                let ray = self.ray_for_pixel(*x, *y);
-                (*x, *y, world.color_at(&ray))
-            })
-            .collect();
+        for (x, y) in pixels {
+            let ray = self.ray_for_pixel(x, y);
+            let color = world.color_at(&ray);
 
-        for (x, y, color) in colors {
             image.write_pixel(color, x as isize, y as isize);
         }
 
@@ -78,6 +78,10 @@ impl Camera {
 
     pub fn set_transform(&mut self, transform: Matrix) {
         self.transform = transform;
+    }
+
+    pub fn precompute_inverse_transform(&mut self) {
+        self.inverse_transform = Some(self.transform.invert());
     }
 }
 

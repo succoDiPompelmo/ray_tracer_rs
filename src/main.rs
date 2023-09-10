@@ -13,7 +13,10 @@ mod transformations;
 mod tuples;
 mod world;
 
-use std::{f64::consts::PI, sync::{Arc, Mutex}};
+use std::{
+    f64::consts::PI,
+    sync::{Arc, Mutex},
+};
 
 use camera::Camera;
 use lights::PointLight;
@@ -32,6 +35,7 @@ fn main() {
     floor_material.set_color(Tuple::new_color(1.0, 0.9, 0.9));
     floor_material.set_specular(0.0);
     floor.set_material(floor_material.clone());
+    floor.precompute_inverse_transformation();
 
     let mut middle = Shape::default(Arc::new(Mutex::new(Sphere::new())));
     middle.set_transformation(Transformation::translation(-0.5, 1.0, 0.5));
@@ -40,6 +44,7 @@ fn main() {
     middle_material.set_diffuse(0.7);
     middle_material.set_specular(0.3);
     middle.set_material(middle_material);
+    middle.precompute_inverse_transformation();
 
     let mut right = Shape::default(Arc::new(Mutex::new(Sphere::new())));
     right.set_transformation(
@@ -50,6 +55,7 @@ fn main() {
     right_material.set_diffuse(0.7);
     right_material.set_specular(0.3);
     right.set_material(right_material);
+    right.precompute_inverse_transformation();
 
     let mut left = Shape::default(Arc::new(Mutex::new(Sphere::new())));
     left.set_transformation(
@@ -60,6 +66,7 @@ fn main() {
     left_material.set_diffuse(0.7);
     left_material.set_specular(0.3);
     left.set_material(left_material);
+    left.precompute_inverse_transformation();
 
     let mut world = World::new();
     world.add_objects(&[floor, middle, right, left]);
@@ -68,12 +75,13 @@ fn main() {
         Tuple::new_point(-10.0, 10.0, -10.0),
     ));
 
-    let mut camera = Camera::new(200, 100, PI / 2.0);
+    let mut camera = Camera::new(1000, 500, PI / 2.0);
     camera.set_transform(Transformation::view_transform(
         Tuple::new_point(0.0, 1.5, -5.0),
         Tuple::new_point(0.0, 1.0, 0.0),
         Tuple::new_vector(0.0, 1.0, 0.0),
     ));
+    camera.precompute_inverse_transform();
 
     let canvas = camera.render(world);
     canvas.write_ppm_to_fs()
