@@ -23,6 +23,7 @@ impl Transformation {
         matrix
     }
 
+    #[cfg(test)]
     pub fn rotation_x(rad: f64) -> Matrix {
         let mut matrix = Matrix::identity(4);
 
@@ -34,6 +35,7 @@ impl Transformation {
         matrix
     }
 
+    #[cfg(test)]
     pub fn rotation_y(rad: f64) -> Matrix {
         let mut matrix = Matrix::identity(4);
 
@@ -45,6 +47,7 @@ impl Transformation {
         matrix
     }
 
+    #[cfg(test)]
     pub fn rotation_z(rad: f64) -> Matrix {
         let mut matrix = Matrix::identity(4);
 
@@ -56,6 +59,7 @@ impl Transformation {
         matrix
     }
 
+    #[cfg(test)]
     fn shearing(x_y: f64, x_z: f64, y_x: f64, y_z: f64, z_x: f64, z_y: f64) -> Matrix {
         let mut matrix = Matrix::identity(4);
 

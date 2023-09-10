@@ -18,10 +18,6 @@ impl PointLight {
         self.intensity
     }
 
-    pub fn get_position(&self) -> Tuple {
-        self.position
-    }
-
     pub fn get_position_ref(&self) -> &Tuple {
         &self.position
     }
@@ -39,7 +35,7 @@ mod tests {
 
         let light = PointLight::new(intensity, position);
 
-        assert!(light.get_position() == position);
-        assert!(light.get_intensity() == intensity);
+        assert!(light.position == position);
+        assert!(light.intensity == intensity);
     }
 }

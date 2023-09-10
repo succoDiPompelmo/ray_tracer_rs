@@ -72,7 +72,7 @@ mod tests {
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let xs = s.intersect(&r);
 
@@ -88,7 +88,7 @@ mod tests {
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let xs = s.intersect(&r);
 
@@ -104,7 +104,7 @@ mod tests {
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let xs = s.intersect(&r);
 
@@ -118,7 +118,7 @@ mod tests {
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let xs = s.intersect(&r);
 
@@ -134,7 +134,7 @@ mod tests {
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let xs = s.intersect(&r);
 
@@ -182,7 +182,7 @@ mod tests {
     #[test]
     fn normal_on_a_sphere() {
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let v1 = Tuple::new_vector(1.0, 0.0, 0.0);
         assert!(s.normal_at(&Tuple::new_point(1.0, 0.0, 0.0)) == v1);
@@ -201,7 +201,7 @@ mod tests {
     #[test]
     fn the_normal_is_a_normalized_vector() {
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let value = 3.0_f64.sqrt() / 3.0;
         let n = s.normal_at(&Tuple::new_point(value, value, value));

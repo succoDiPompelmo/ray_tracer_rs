@@ -34,14 +34,6 @@ impl Tuple {
         }
     }
 
-    fn is_vector(&self) -> bool {
-        self.w == 0.0
-    }
-
-    fn is_point(&self) -> bool {
-        self.w == 1.0
-    }
-
     pub fn magnitude(&self) -> f64 {
         (self.x.powf(2.0) + self.y.powf(2.0) + self.z.powf(2.0) + self.w.powf(2.0)).sqrt()
     }
@@ -196,6 +188,16 @@ impl ops::Neg for Tuple {
 mod tests {
 
     use super::*;
+
+    impl Tuple {
+        fn is_vector(&self) -> bool {
+            self.w == 0.0
+        }
+
+        fn is_point(&self) -> bool {
+            self.w == 1.0
+        }
+    }
 
     #[test]
     fn tuple_is_a_point() {

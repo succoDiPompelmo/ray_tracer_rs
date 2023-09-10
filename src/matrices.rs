@@ -20,11 +20,9 @@ impl Matrix {
     }
 
     pub fn identity(size: usize) -> Matrix {
-        let mut grid = vec![vec![0.0; size]; size];
-
-        for i in 0..size {
-            grid[i][i] = 1.0;
-        }
+        let grid: Vec<Vec<f64>> = (0..size)
+            .map(|i| (0..size).map(|j| if i == j { 1.0 } else { 0.0 }).collect())
+            .collect();
 
         Matrix {
             width: size,
@@ -34,14 +32,13 @@ impl Matrix {
     }
 
     pub fn from_vector(a: Vec<f64>, width: usize, height: usize) -> Matrix {
-        let mut grid = vec![vec![0.0; width]; height];
-
-        for row in 0..height {
-            for col in 0..width {
-                let value = a.get(width * row + col).unwrap();
-                grid[row][col] = *value;
-            }
-        }
+        let grid: Vec<Vec<f64>> = (0..height)
+            .map(|row| {
+                (0..width)
+                    .map(|col| *a.get(width * row + col).unwrap())
+                    .collect()
+            })
+            .collect();
 
         Matrix {
             grid,

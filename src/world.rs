@@ -1,16 +1,8 @@
-use std::{
-    sync::{Arc, Mutex},
-    time::Instant,
-};
-
 use crate::{
     intersections::{Computations, Intersection},
     lights::PointLight,
-    materials::Material,
     rays::Ray,
-    shapes::{Polygon, Shape},
-    spheres::Sphere,
-    transformations::Transformation,
+    shapes::Shape,
     tuples::Tuple,
 };
 
@@ -27,34 +19,6 @@ impl World {
         }
     }
 
-    pub fn default() -> World {
-        let light = PointLight::new(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_point(-10.0, 10.0, -10.0),
-        );
-
-        let sphere = Sphere::new();
-        let mut s1 = Shape::default(Arc::new(Mutex::new(sphere)));
-        let mut m = Material::default();
-        m.set_color(Tuple::new_color(0.8, 1.0, 0.6));
-        m.set_diffuse(0.7);
-        m.set_specular(0.2);
-        s1.set_material(m);
-
-        let sphere = Sphere::new();
-        let mut s2 = Shape::default(Arc::new(Mutex::new(sphere)));
-        s2.set_transformation(Transformation::scaling(0.5, 0.5, 0.5));
-
-        World {
-            light: Some(light),
-            objects: vec![s1, s2],
-        }
-    }
-
-    pub fn get_light(&self) -> Option<PointLight> {
-        self.light.clone()
-    }
-
     pub fn get_light_ref(&self) -> &PointLight {
         match &self.light {
             Some(light) => light,
@@ -64,10 +28,6 @@ impl World {
 
     pub fn set_light(&mut self, light: PointLight) {
         self.light = Some(light);
-    }
-
-    pub fn get_objects(&self) -> Vec<Shape> {
-        self.objects.to_vec()
     }
 
     pub fn add_objects(&mut self, shapes: &[Shape]) {
@@ -80,7 +40,7 @@ impl World {
         let mut intersections = vec![];
 
         for object in &self.objects {
-            let xs = object.intersect(&ray);
+            let xs = object.intersect(ray);
             intersections.extend(xs);
         }
 
@@ -119,7 +79,7 @@ impl World {
         let distance = v.magnitude();
         let direction = v.normalize();
 
-        let r = Ray::new(point.clone(), direction);
+        let r = Ray::new(*point, direction);
         let intersections = self.intersect(&r);
 
         let h = Intersection::hit(&intersections);
@@ -136,16 +96,44 @@ impl World {
 #[cfg(test)]
 mod tests {
 
-    use std::{borrow::BorrowMut, sync::Arc};
+    use std::sync::{Arc, Mutex};
+
+    use crate::{materials::Material, spheres::Sphere, transformations::Transformation};
 
     use super::*;
+
+    impl World {
+        pub fn default() -> World {
+            let light = PointLight::new(
+                Tuple::new_color(1.0, 1.0, 1.0),
+                Tuple::new_point(-10.0, 10.0, -10.0),
+            );
+
+            let sphere = Sphere::new();
+            let mut s1 = Shape::default(Arc::new(Mutex::new(sphere)));
+            let mut m = Material::default();
+            m.set_color(Tuple::new_color(0.8, 1.0, 0.6));
+            m.set_diffuse(0.7);
+            m.set_specular(0.2);
+            s1.set_material(m);
+
+            let sphere = Sphere::new();
+            let mut s2 = Shape::default(Arc::new(Mutex::new(sphere)));
+            s2.set_transformation(Transformation::scaling(0.5, 0.5, 0.5));
+
+            World {
+                light: Some(light),
+                objects: vec![s1, s2],
+            }
+        }
+    }
 
     #[test]
     fn creating_a_world() {
         let w = World::new();
 
-        assert!(w.get_light().is_none());
-        assert!(w.get_objects().len() == 0);
+        assert!(w.light.is_none());
+        assert!(w.objects.len() == 0);
     }
 
     #[test]
@@ -169,8 +157,8 @@ mod tests {
 
         let w = World::default();
 
-        assert!(w.get_light() == Some(l));
-        assert!(w.get_objects().len() == 2);
+        assert!(w.light == Some(l));
+        assert!(w.objects.len() == 2);
     }
 
     #[test]
@@ -198,7 +186,7 @@ mod tests {
             Tuple::new_point(0.0, 0.0, -5.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
-        let objects = w.get_objects();
+        let objects = w.objects.to_vec();
 
         let i = Intersection::new(4.0, objects.get(0).unwrap().clone());
         let comps = i.prepare_computations(&r);
@@ -224,7 +212,7 @@ mod tests {
             Tuple::new_point(0.0, 0.0, 0.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
-        let objects = w.get_objects();
+        let objects = w.objects.to_vec();
 
         let i = Intersection::new(0.5, objects.get(1).unwrap().clone());
         let comps = i.prepare_computations(&r);
@@ -319,7 +307,7 @@ mod tests {
         ));
 
         let sphere = Sphere::new();
-        let mut s1 = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s1 = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let sphere = Sphere::new();
         let mut s2 = Shape::default(Arc::new(Mutex::new(sphere)));

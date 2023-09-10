@@ -21,12 +21,12 @@ impl PartialEq for Intersection {
 
 #[derive(Debug)]
 pub struct Computations {
-    t: f64,
+    _t: f64,
     object: Shape,
     point: Tuple,
     eyev: Tuple,
     normalv: Tuple,
-    inside: bool,
+    _inside: bool,
     over_point: Tuple,
 }
 
@@ -35,12 +35,9 @@ impl Intersection {
         Intersection { t, object }
     }
 
+    #[cfg(test)]
     pub fn intersects(intersections: &[Intersection]) -> Vec<Intersection> {
         intersections.to_vec()
-    }
-
-    pub fn get_object(&self) -> Shape {
-        self.object.clone()
     }
 
     pub fn get_t(&self) -> f64 {
@@ -86,12 +83,12 @@ impl Intersection {
         let over_point = point + normalv * Computations::get_epsilon();
 
         Computations {
-            t,
+            _t: t,
             object,
             point,
             eyev,
             normalv,
-            inside,
+            _inside: inside,
             over_point,
         }
     }
@@ -102,24 +99,12 @@ impl Computations {
         self.object.clone()
     }
 
-    pub fn get_point(&self) -> Tuple {
-        self.point
-    }
-
     pub fn get_point_ref(&self) -> &Tuple {
         &self.point
     }
 
-    pub fn get_eyev(&self) -> Tuple {
-        self.eyev
-    }
-
     pub fn get_eyev_ref(&self) -> &Tuple {
         &self.eyev
-    }
-
-    pub fn get_normalv(&self) -> Tuple {
-        self.normalv
     }
 
     pub fn get_normalv_ref(&self) -> &Tuple {
@@ -128,10 +113,6 @@ impl Computations {
 
     fn get_epsilon() -> f64 {
         0.000001
-    }
-
-    pub fn get_over_point(&self) -> Tuple {
-        self.over_point
     }
 
     pub fn get_over_point_ref(&self) -> &Tuple {
@@ -153,7 +134,7 @@ mod tests {
     #[test]
     fn intersection_encapsulates_t_and_object() {
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
         let t = 3.5;
 
         let intersection = Intersection::new(t, s.clone());
@@ -164,7 +145,7 @@ mod tests {
     #[test]
     fn aggregate_intersections() {
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let i1 = Intersection::new(1.0, s.clone());
         let i2 = Intersection::new(2.0, s);
@@ -179,7 +160,7 @@ mod tests {
     #[test]
     fn hit_when_all_intersections_are_positives() {
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let i1 = Intersection::new(1.0, s.clone());
         let i2 = Intersection::new(2.0, s);
@@ -192,7 +173,7 @@ mod tests {
     #[test]
     fn hit_when_some_intersections_are_negatives() {
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let i1 = Intersection::new(-1.0, s.clone());
         let i2 = Intersection::new(1.0, s);
@@ -206,7 +187,7 @@ mod tests {
     fn hit_when_all_intersections_are_negatives() {
         println!("CIAO");
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         println!("CIAO");
 
@@ -226,7 +207,7 @@ mod tests {
     #[test]
     fn hit_is_always_the_lowest_nonnegative_intersection() {
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let i1 = Intersection::new(5.0, s.clone());
         let i2 = Intersection::new(7.0, s.clone());
@@ -246,13 +227,13 @@ mod tests {
         );
 
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let i = Intersection::new(4.0, s);
 
         let comps = i.prepare_computations(&r);
 
-        assert!(comps.t == i.t);
+        assert!(comps._t == i.t);
         assert!(comps.point == Tuple::new_point(0.0, 0.0, -1.0));
         assert!(comps.eyev == Tuple::new_vector(0.0, 0.0, -1.0));
         assert!(comps.normalv == Tuple::new_vector(0.0, 0.0, -1.0));
@@ -265,12 +246,12 @@ mod tests {
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let i = Intersection::new(4.0, s);
 
         let comps = i.prepare_computations(&r);
-        assert!(!comps.inside);
+        assert!(!comps._inside);
     }
 
     #[test]
@@ -280,7 +261,7 @@ mod tests {
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
         let sphere = Sphere::new();
-        let mut s = Shape::default(Arc::new(Mutex::new(sphere)));
+        let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
         let i = Intersection::new(1.0, s);
 
@@ -288,7 +269,7 @@ mod tests {
 
         assert!(comps.point == Tuple::new_point(0.0, 0.0, 1.0));
         assert!(comps.eyev == Tuple::new_vector(0.0, 0.0, -1.0));
-        assert!(comps.inside);
+        assert!(comps._inside);
         assert!(comps.normalv == Tuple::new_vector(0.0, 0.0, -1.0));
     }
 

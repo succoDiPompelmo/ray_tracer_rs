@@ -3,7 +3,7 @@ use crate::{canvas::Canvas, matrices::Matrix, rays::Ray, tuples::Tuple, world::W
 pub struct Camera {
     hsize: usize,
     vsize: usize,
-    field_of_view: f64,
+    _field_of_view: f64,
     transform: Matrix,
     inverse_transform: Option<Matrix>,
     half_width: f64,
@@ -14,7 +14,7 @@ pub struct Camera {
 impl Camera {
     pub fn new(hsize: usize, vsize: usize, field_of_view: f64) -> Camera {
         let half_view = (field_of_view / 2.0).tan();
-        let aspect = (hsize as f64 / vsize as f64);
+        let aspect = hsize as f64 / vsize as f64;
 
         let (half_width, half_height) = if aspect >= 1.0 {
             (half_view, half_view / aspect)
@@ -27,7 +27,7 @@ impl Camera {
         Camera {
             hsize,
             vsize,
-            field_of_view,
+            _field_of_view: field_of_view,
             transform: Matrix::identity(4),
             inverse_transform: None,
             half_height,
@@ -106,7 +106,7 @@ mod tests {
 
         assert!(c.hsize == hsize);
         assert!(c.vsize == vsize);
-        assert!(c.field_of_view == field_of_view);
+        assert!(c._field_of_view == field_of_view);
         assert!(c.transform == Matrix::identity(4));
     }
 

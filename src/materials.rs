@@ -20,38 +20,24 @@ impl Material {
         }
     }
 
+    #[cfg(test)]
     pub fn get_color(&self) -> Tuple {
         self.color
-    }
-
-    fn get_ambient(&self) -> f64 {
-        self.ambient
-    }
-
-    fn get_diffuse(&self) -> f64 {
-        self.diffuse
     }
 
     pub fn set_diffuse(&mut self, diffuse: f64) {
         self.diffuse = diffuse
     }
 
-    fn get_specular(&self) -> f64 {
-        self.specular
-    }
-
     pub fn set_specular(&mut self, specular: f64) {
         self.specular = specular
-    }
-
-    fn get_shininess(&self) -> f64 {
-        self.shininess
     }
 
     pub fn set_color(&mut self, color: Tuple) {
         self.color = color
     }
 
+    #[cfg(test)]
     pub fn set_ambient(&mut self, ambient: f64) {
         self.ambient = ambient;
     }
@@ -73,7 +59,7 @@ impl Material {
             return ambient;
         }
 
-        let light_dot_normal = lightv.dot(&normalv);
+        let light_dot_normal = lightv.dot(normalv);
         let mut diffuse = Tuple::new_color(0.0, 0.0, 0.0);
         let mut specular = Tuple::new_color(0.0, 0.0, 0.0);
 
@@ -104,10 +90,10 @@ mod tests {
         let m = Material::default();
 
         assert!(m.get_color() == Tuple::new_color(1.0, 1.0, 1.0));
-        assert!(m.get_ambient() == 0.1);
-        assert!(m.get_diffuse() == 0.9);
-        assert!(m.get_specular() == 0.9);
-        assert!(m.get_shininess() == 200.0);
+        assert!(m.ambient == 0.1);
+        assert!(m.diffuse == 0.9);
+        assert!(m.specular == 0.9);
+        assert!(m.shininess == 200.0);
     }
 
     #[test]

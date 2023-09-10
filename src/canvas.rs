@@ -21,14 +21,7 @@ impl Canvas {
         }
     }
 
-    fn width(&self) -> usize {
-        self.width
-    }
-
-    pub fn height(&self) -> usize {
-        self.height
-    }
-
+    #[cfg(test)]
     pub fn pixel_at(&self, x: usize, y: usize) -> Tuple {
         self.state[y][x]
     }
@@ -108,8 +101,8 @@ mod tests {
 
         let canvas = Canvas::new(width, height);
 
-        assert!(canvas.width() == width);
-        assert!(canvas.height() == height);
+        assert!(canvas.width == width);
+        assert!(canvas.height == height);
 
         for x in 0..height {
             for y in 0..width {
@@ -151,8 +144,8 @@ mod tests {
     fn canvas_with_high_width_to_ppm() {
         let mut canvas = Canvas::new(8, 3);
         let color = Tuple::new_color(1.0, 0.8, 0.6);
-        for x in 0..canvas.height() {
-            for y in 0..canvas.width() {
+        for x in 0..canvas.height {
+            for y in 0..canvas.width {
                 canvas.write_pixel(color, y as isize, x as isize);
             }
         }

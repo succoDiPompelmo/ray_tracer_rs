@@ -40,10 +40,6 @@ impl Shape {
         }
     }
 
-    pub fn get_transformation(&self) -> &Matrix {
-        &self.transformation
-    }
-
     pub fn set_transformation(&mut self, trasformation: Matrix) {
         self.transformation = trasformation
     }
@@ -105,7 +101,7 @@ mod tests {
     fn default_transformation() {
         let shape = Shape::default(Arc::new(Mutex::new(MockPolygon::new())));
 
-        assert!(shape.get_transformation().clone() == Matrix::identity(4));
+        assert!(shape.transformation == Matrix::identity(4));
     }
 
     #[test]
@@ -113,7 +109,7 @@ mod tests {
         let mut shape = Shape::default(Arc::new(Mutex::new(MockPolygon::new())));
 
         shape.set_transformation(Transformation::translation(2.0, 3.0, 4.0));
-        assert!(shape.get_transformation().clone() == Transformation::translation(2.0, 3.0, 4.0));
+        assert!(shape.transformation == Transformation::translation(2.0, 3.0, 4.0));
     }
 
     #[test]

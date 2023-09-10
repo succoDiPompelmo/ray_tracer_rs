@@ -5,7 +5,6 @@ mod lights;
 mod materials;
 mod matrices;
 mod planes;
-mod play;
 mod rays;
 mod shapes;
 mod spheres;

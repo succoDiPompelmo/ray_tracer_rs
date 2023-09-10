@@ -15,10 +15,10 @@ impl Polygon for Plane {
         }
 
         let t = -original_ray.get_origin().y / original_ray.get_direction().y;
-        return vec![t];
+        vec![t]
     }
 
-    fn normal_at(&self, point: &crate::tuples::Tuple) -> Tuple {
+    fn normal_at(&self, _point: &crate::tuples::Tuple) -> Tuple {
         Tuple::new_vector(0.0, 1.0, 0.0)
     }
 }
