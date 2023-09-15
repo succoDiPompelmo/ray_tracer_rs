@@ -40,6 +40,13 @@ impl Shape {
         }
     }
 
+    pub fn get_inverse_transformation(&self) -> Matrix {
+        match &self.inverse_transformation {
+            Some(matrix) => matrix.clone(),
+            None => self.transformation.invert(),
+        }
+    }
+
     pub fn set_transformation(&mut self, trasformation: Matrix) {
         self.transformation = trasformation
     }
