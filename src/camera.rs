@@ -104,10 +104,10 @@ mod tests {
 
         let c = Camera::new(hsize, vsize, field_of_view);
 
-        assert!(c.hsize == hsize);
-        assert!(c.vsize == vsize);
-        assert!(c._field_of_view == field_of_view);
-        assert!(c.transform == Matrix::identity(4));
+        assert_eq!(c.hsize, hsize);
+        assert_eq!(c.vsize, vsize);
+        assert_eq!(c._field_of_view, field_of_view);
+        assert_eq!(c.transform, Matrix::identity(4));
     }
 
     #[test]
@@ -139,8 +139,8 @@ mod tests {
         let c = Camera::new(201, 101, PI / 2.0);
 
         let r: Ray = c.ray_for_pixel(100, 50);
-        assert!(r.get_origin() == Tuple::new_point(0.0, 0.0, 0.0));
-        assert!(r.get_direction() == Tuple::new_vector(0.0, 0.0, -1.0));
+        assert_eq!(r.get_origin(), Tuple::new_point(0.0, 0.0, 0.0));
+        assert_eq!(r.get_direction(), Tuple::new_vector(0.0, 0.0, -1.0));
     }
 
     #[test]
@@ -148,11 +148,11 @@ mod tests {
         let c = Camera::new(201, 101, PI / 2.0);
 
         let r: Ray = c.ray_for_pixel(0, 0);
-        assert!(r.get_origin() == Tuple::new_point(0.0, 0.0, 0.0));
+        assert_eq!(r.get_origin(), Tuple::new_point(0.0, 0.0, 0.0));
 
-        assert!(
-            r.get_direction()
-                == Tuple::new_vector(0.6651864261194508, 0.3325932130597254, -0.6685123582500481)
+        assert_eq!(
+            r.get_direction(),
+            Tuple::new_vector(0.6651864261194508, 0.3325932130597254, -0.6685123582500481)
         );
     }
 
@@ -162,11 +162,11 @@ mod tests {
         c.transform =
             Transformation::rotation_y(PI / 4.0) * Transformation::translation(0.0, -2.0, 5.0);
         let r: Ray = c.ray_for_pixel(100, 50);
-        assert!(r.get_origin() == Tuple::new_point(0.0, 2.0, -5.0));
+        assert_eq!(r.get_origin(), Tuple::new_point(0.0, 2.0, -5.0));
 
-        assert!(
-            r.get_direction()
-                == Tuple::new_vector(2.0_f64.sqrt() / 2.0, 0.0, -2.0_f64.sqrt() / 2.0)
+        assert_eq!(
+            r.get_direction(),
+            Tuple::new_vector(2.0_f64.sqrt() / 2.0, 0.0, -2.0_f64.sqrt() / 2.0)
         );
     }
 
@@ -182,13 +182,13 @@ mod tests {
         c.transform = Transformation::view_transform(from, to, up);
         let image: Canvas = c.render(w);
 
-        assert!(
-            image.pixel_at(5, 5)
-                == Tuple::new_color(
-                    0.38066119308103435,
-                    0.47582649135129296,
-                    0.28549589481077575
-                )
+        assert_eq!(
+            image.pixel_at(5, 5),
+            Tuple::new_color(
+                0.38066119308103435,
+                0.47582649135129296,
+                0.28549589481077575
+            )
         );
     }
 }

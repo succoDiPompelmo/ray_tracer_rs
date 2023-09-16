@@ -52,8 +52,8 @@ mod tests {
             Tuple::new_color(0.0, 0.0, 0.0),
         );
 
-        assert!(Tuple::new_color(1.0, 1.0, 1.0) == pattern.color_a);
-        assert!(Tuple::new_color(0.0, 0.0, 0.0) == pattern.color_b);
+        assert_eq!(pattern.color_a, Tuple::new_color(1.0, 1.0, 1.0));
+        assert_eq!(pattern.color_b, Tuple::new_color(0.0, 0.0, 0.0));
     }
 
     #[test]
@@ -63,14 +63,17 @@ mod tests {
             Tuple::new_color(0.0, 0.0, 0.0),
         );
 
-        assert!(
-            Tuple::new_color(1.0, 1.0, 1.0) == pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0))
+        assert_eq!(
+            pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0)),
+            Tuple::new_color(1.0, 1.0, 1.0)
         );
-        assert!(
-            Tuple::new_color(1.0, 1.0, 1.0) == pattern.stripe_at(&Tuple::new_point(0.0, 1.0, 0.0))
+        assert_eq!(
+            pattern.stripe_at(&Tuple::new_point(0.0, 1.0, 0.0)),
+            Tuple::new_color(1.0, 1.0, 1.0)
         );
-        assert!(
-            Tuple::new_color(1.0, 1.0, 1.0) == pattern.stripe_at(&Tuple::new_point(0.0, 2.0, 0.0))
+        assert_eq!(
+            pattern.stripe_at(&Tuple::new_point(0.0, 2.0, 0.0)),
+            Tuple::new_color(1.0, 1.0, 1.0)
         );
     }
 
@@ -81,14 +84,17 @@ mod tests {
             Tuple::new_color(0.0, 0.0, 0.0),
         );
 
-        assert!(
-            Tuple::new_color(1.0, 1.0, 1.0) == pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0))
+        assert_eq!(
+            pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0)),
+            Tuple::new_color(1.0, 1.0, 1.0)
         );
-        assert!(
-            Tuple::new_color(1.0, 1.0, 1.0) == pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 1.0))
+        assert_eq!(
+            pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 1.0)),
+            Tuple::new_color(1.0, 1.0, 1.0)
         );
-        assert!(
-            Tuple::new_color(1.0, 1.0, 1.0) == pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 2.0))
+        assert_eq!(
+            pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 2.0)),
+            Tuple::new_color(1.0, 1.0, 1.0)
         );
     }
 
@@ -99,23 +105,29 @@ mod tests {
             Tuple::new_color(0.0, 0.0, 0.0),
         );
 
-        assert!(
-            Tuple::new_color(1.0, 1.0, 1.0) == pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0))
+        assert_eq!(
+            pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0)),
+            Tuple::new_color(1.0, 1.0, 1.0)
         );
-        assert!(
-            Tuple::new_color(1.0, 1.0, 1.0) == pattern.stripe_at(&Tuple::new_point(0.9, 0.0, 1.0))
+        assert_eq!(
+            pattern.stripe_at(&Tuple::new_point(0.9, 0.0, 1.0)),
+            Tuple::new_color(1.0, 1.0, 1.0)
         );
-        assert!(
-            Tuple::new_color(0.0, 0.0, 0.0) == pattern.stripe_at(&Tuple::new_point(1.0, 0.0, 2.0))
+        assert_eq!(
+            pattern.stripe_at(&Tuple::new_point(1.0, 0.0, 2.0)),
+            Tuple::new_color(0.0, 0.0, 0.0)
         );
-        assert!(
-            Tuple::new_color(0.0, 0.0, 0.0) == pattern.stripe_at(&Tuple::new_point(-0.1, 0.0, 0.0))
+        assert_eq!(
+            pattern.stripe_at(&Tuple::new_point(-0.1, 0.0, 0.0)),
+            Tuple::new_color(0.0, 0.0, 0.0)
         );
-        assert!(
-            Tuple::new_color(0.0, 0.0, 0.0) == pattern.stripe_at(&Tuple::new_point(-1.0, 0.0, 1.0))
+        assert_eq!(
+            pattern.stripe_at(&Tuple::new_point(-1.0, 0.0, 1.0)),
+            Tuple::new_color(0.0, 0.0, 0.0)
         );
-        assert!(
-            Tuple::new_color(1.0, 1.0, 1.0) == pattern.stripe_at(&Tuple::new_point(-1.1, 0.0, 2.0))
+        assert_eq!(
+            pattern.stripe_at(&Tuple::new_point(-1.1, 0.0, 2.0)),
+            Tuple::new_color(1.0, 1.0, 1.0)
         );
     }
 

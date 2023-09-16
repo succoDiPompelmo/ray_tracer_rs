@@ -101,12 +101,12 @@ mod tests {
 
         let canvas = Canvas::new(width, height);
 
-        assert!(canvas.width == width);
-        assert!(canvas.height == height);
+        assert_eq!(canvas.width, width);
+        assert_eq!(canvas.height, height);
 
         for x in 0..height {
             for y in 0..width {
-                assert!(canvas.pixel_at(y, x) == Tuple::new_color(0.0, 0.0, 0.0));
+                assert_eq!(canvas.pixel_at(y, x), Tuple::new_color(0.0, 0.0, 0.0));
             }
         }
     }
@@ -118,7 +118,7 @@ mod tests {
 
         canvas.write_pixel(color, 2, 3);
 
-        assert!(canvas.pixel_at(2, 3) == color);
+        assert_eq!(canvas.pixel_at(2, 3), color);
     }
 
     #[test]
@@ -137,7 +137,7 @@ mod tests {
         0 0 0 0 128 0 0 0 0\n\
         0 0 0 0 0 0 0 0 255\n";
 
-        assert!(ppm == expected);
+        assert_eq!(ppm, expected);
     }
 
     #[test]
@@ -164,6 +164,6 @@ mod tests {
         204 153 255 204 153 255 204 153 255 204\n\
         153 255 204 153\n";
 
-        assert!(ppm == expected);
+        assert_eq!(ppm, expected);
     }
 }

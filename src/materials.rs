@@ -96,11 +96,11 @@ mod tests {
     fn default_material() {
         let m = Material::default();
 
-        assert!(m.get_color() == Tuple::new_color(1.0, 1.0, 1.0));
-        assert!(m.ambient == 0.1);
-        assert!(m.diffuse == 0.9);
-        assert!(m.specular == 0.9);
-        assert!(m.shininess == 200.0);
+        assert_eq!(m.get_color(), Tuple::new_color(1.0, 1.0, 1.0));
+        assert_eq!(m.ambient, 0.1);
+        assert_eq!(m.diffuse, 0.9);
+        assert_eq!(m.specular, 0.9);
+        assert_eq!(m.shininess, 200.0);
     }
 
     #[test]
@@ -117,7 +117,7 @@ mod tests {
         let in_shadow = false;
 
         let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
-        assert!(r == Tuple::new_color(1.9, 1.9, 1.9))
+        assert_eq!(r, Tuple::new_color(1.9, 1.9, 1.9))
     }
 
     #[test]
@@ -134,7 +134,7 @@ mod tests {
         let in_shadow = false;
 
         let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
-        assert!(r == Tuple::new_color(1.0, 1.0, 1.0))
+        assert_eq!(r, Tuple::new_color(1.0, 1.0, 1.0))
     }
 
     #[test]
@@ -152,7 +152,7 @@ mod tests {
 
         let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
         let value = 0.1 + 0.9 * 2.0_f64.sqrt() / 2.0 + 0.0;
-        assert!(r == Tuple::new_color(value, value, value))
+        assert_eq!(r, Tuple::new_color(value, value, value))
     }
 
     #[test]
@@ -170,7 +170,7 @@ mod tests {
 
         let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
         let value = 0.1 + 0.9 * 2.0_f64.sqrt() / 2.0 + 0.9;
-        assert!(r == Tuple::new_color(value, value, value))
+        assert_eq!(r, Tuple::new_color(value, value, value))
     }
 
     #[test]
@@ -187,7 +187,7 @@ mod tests {
         let in_shadow = false;
 
         let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
-        assert!(r == Tuple::new_color(0.1, 0.1, 0.1))
+        assert_eq!(r, Tuple::new_color(0.1, 0.1, 0.1))
     }
 
     #[test]
@@ -204,7 +204,7 @@ mod tests {
         let in_shadow = true;
 
         let result = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
-        assert!(result == Tuple::new_color(0.1, 0.1, 0.1))
+        assert_eq!(result, Tuple::new_color(0.1, 0.1, 0.1))
     }
 
     #[test]
