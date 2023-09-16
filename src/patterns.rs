@@ -1,6 +1,6 @@
 use crate::{matrices::Matrix, shapes::Shape, tuples::Tuple};
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct Pattern {
     color_a: Tuple,
     color_b: Tuple,

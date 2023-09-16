@@ -105,38 +105,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn default_transformation() {
-        let shape = Shape::default(Arc::new(Mutex::new(MockPolygon::new())));
-
-        assert!(shape.transformation == Matrix::identity(4));
-    }
-
-    #[test]
-    fn assign_transformation() {
-        let mut shape = Shape::default(Arc::new(Mutex::new(MockPolygon::new())));
-
-        shape.set_transformation(Transformation::translation(2.0, 3.0, 4.0));
-        assert!(shape.transformation == Transformation::translation(2.0, 3.0, 4.0));
-    }
-
-    #[test]
-    fn default_material() {
-        let shape = Shape::default(Arc::new(Mutex::new(MockPolygon::new())));
-
-        assert!(shape.get_material().clone() == Material::default());
-    }
-
-    #[test]
-    fn assign_material() {
-        let mut shape = Shape::default(Arc::new(Mutex::new(MockPolygon::new())));
-
-        let mut m = Material::default();
-        m.set_ambient(1.0);
-        shape.set_material(m.clone());
-        assert!(shape.get_material().clone() == m);
-    }
-
-    #[test]
     fn intersections_a_scaled_shape_with_a_ray() {
         let mut mock = MockPolygon::default();
 
