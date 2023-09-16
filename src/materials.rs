@@ -88,7 +88,7 @@ impl Material {
 #[cfg(test)]
 mod tests {
 
-    use crate::lights::PointLight;
+    use crate::{lights::PointLight, patterns::PatternsKind};
 
     use super::*;
 
@@ -213,6 +213,7 @@ mod tests {
         m.pattern = Some(Pattern::stripe(
             Tuple::new_color(1.0, 1.0, 1.0),
             Tuple::new_color(0.0, 0.0, 0.0),
+            PatternsKind::Stripe,
         ));
         m.ambient = 1.0;
         m.diffuse = 0.0;
