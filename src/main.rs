@@ -21,6 +21,7 @@ use std::{
 use camera::Camera;
 use lights::PointLight;
 use materials::Material;
+use patterns::{Pattern, PatternsKind};
 use planes::Plane;
 use shapes::Shape;
 use spheres::Sphere;
@@ -34,6 +35,12 @@ fn main() {
     let mut floor_material = Material::default();
     floor_material.set_color(Tuple::new_color(1.0, 0.9, 0.9));
     floor_material.set_specular(0.0);
+    let floor_pattern = Pattern::stripe(
+        Tuple::new_color(1.0, 1.0, 1.0),
+        Tuple::new_color(0.0, 0.0, 0.0),
+        PatternsKind::Checker,
+    );
+    floor_material.set_pattern(floor_pattern);
     floor.set_material(floor_material.clone());
     floor.precompute_inverse_transformation();
 
@@ -43,6 +50,12 @@ fn main() {
     middle_material.set_color(Tuple::new_color(0.1, 1.0, 0.5));
     middle_material.set_diffuse(0.7);
     middle_material.set_specular(0.3);
+    let middle_pattern = Pattern::stripe(
+        Tuple::new_color(1.0, 1.0, 1.0),
+        Tuple::new_color(0.0, 0.0, 0.0),
+        PatternsKind::Checker,
+    );
+    middle_material.set_pattern(middle_pattern);
     middle.set_material(middle_material);
     middle.precompute_inverse_transformation();
 

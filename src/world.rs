@@ -54,6 +54,7 @@ impl World {
         let shadowed = self.is_shadowed(comps.get_over_point_ref());
 
         comps.get_object().get_material().lighting(
+            &comps.get_object(),
             light,
             comps.get_point_ref(),
             comps.get_eyev_ref(),

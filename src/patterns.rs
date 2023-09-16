@@ -26,8 +26,8 @@ impl Pattern {
         }
     }
 
-    pub fn stripe_at_object(&self, object: Shape, world_point: Tuple) -> Tuple {
-        let object_point = &object.get_inverse_transformation() * &world_point;
+    pub fn stripe_at_object(&self, object: &Shape, world_point: &Tuple) -> Tuple {
+        let object_point = &object.get_inverse_transformation() * world_point;
         let pattern_point = &self.transformation.invert() * &object_point;
 
         self.stripe_at(&pattern_point)
@@ -177,7 +177,7 @@ mod tests {
             PatternsKind::Stripe,
         );
 
-        let c = pattern.stripe_at_object(object, Tuple::new_point(1.5, 0.0, 0.0));
+        let c = pattern.stripe_at_object(&object, &Tuple::new_point(1.5, 0.0, 0.0));
 
         assert_eq!(Tuple::new_color(1.0, 1.0, 1.0), c);
     }
@@ -194,7 +194,7 @@ mod tests {
 
         pattern.set_transformation(Transformation::scaling(2.0, 2.0, 2.0));
 
-        let c = pattern.stripe_at_object(object, Tuple::new_point(1.5, 0.0, 0.0));
+        let c = pattern.stripe_at_object(&object, &Tuple::new_point(1.5, 0.0, 0.0));
 
         assert_eq!(Tuple::new_color(1.0, 1.0, 1.0), c);
     }
@@ -212,7 +212,7 @@ mod tests {
 
         pattern.set_transformation(Transformation::translation(0.5, 0.0, 0.0));
 
-        let c = pattern.stripe_at_object(object, Tuple::new_point(2.5, 0.0, 0.0));
+        let c = pattern.stripe_at_object(&object, &Tuple::new_point(2.5, 0.0, 0.0));
 
         assert_eq!(Tuple::new_color(1.0, 1.0, 1.0), c);
     }

@@ -1,4 +1,4 @@
-use crate::{lights::PointLight, patterns::Pattern, tuples::Tuple};
+use crate::{lights::PointLight, patterns::Pattern, shapes::Shape, tuples::Tuple};
 
 #[derive(Clone, Debug)]
 pub struct Material {
@@ -39,6 +39,10 @@ impl Material {
         self.color = color
     }
 
+    pub fn set_pattern(&mut self, pattern: Pattern) {
+        self.pattern = Some(pattern)
+    }
+
     #[cfg(test)]
     pub fn set_ambient(&mut self, ambient: f64) {
         self.ambient = ambient;
@@ -46,6 +50,7 @@ impl Material {
 
     pub fn lighting(
         &self,
+        object: &Shape,
         light: &PointLight,
         point: &Tuple,
         eyev: &Tuple,
@@ -53,7 +58,7 @@ impl Material {
         in_shadow: bool,
     ) -> Tuple {
         let color = match &self.pattern {
-            Some(p) => p.stripe_at(point),
+            Some(p) => p.stripe_at_object(object, point),
             None => self.color,
         };
 
@@ -88,7 +93,9 @@ impl Material {
 #[cfg(test)]
 mod tests {
 
-    use crate::{lights::PointLight, patterns::PatternsKind};
+    use std::sync::{Arc, Mutex};
+
+    use crate::{lights::PointLight, patterns::PatternsKind, spheres::Sphere};
 
     use super::*;
 
@@ -115,8 +122,9 @@ mod tests {
             Tuple::new_point(0.0, 0.0, -10.0),
         );
         let in_shadow = false;
+        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
-        let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
+        let r = m.lighting(&object, &light, &point, &eyev, &normalv, in_shadow);
         assert_eq!(r, Tuple::new_color(1.9, 1.9, 1.9))
     }
 
@@ -132,8 +140,9 @@ mod tests {
             Tuple::new_point(0.0, 0.0, -10.0),
         );
         let in_shadow = false;
+        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
-        let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
+        let r = m.lighting(&object, &light, &point, &eyev, &normalv, in_shadow);
         assert_eq!(r, Tuple::new_color(1.0, 1.0, 1.0))
     }
 
@@ -149,8 +158,9 @@ mod tests {
             Tuple::new_point(0.0, 10.0, -10.0),
         );
         let in_shadow = false;
+        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
-        let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
+        let r = m.lighting(&object, &light, &point, &eyev, &normalv, in_shadow);
         let value = 0.1 + 0.9 * 2.0_f64.sqrt() / 2.0 + 0.0;
         assert_eq!(r, Tuple::new_color(value, value, value))
     }
@@ -167,8 +177,9 @@ mod tests {
             Tuple::new_point(0.0, 10.0, -10.0),
         );
         let in_shadow = false;
+        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
-        let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
+        let r = m.lighting(&object, &light, &point, &eyev, &normalv, in_shadow);
         let value = 0.1 + 0.9 * 2.0_f64.sqrt() / 2.0 + 0.9;
         assert_eq!(r, Tuple::new_color(value, value, value))
     }
@@ -185,8 +196,9 @@ mod tests {
             Tuple::new_point(0.0, 0.0, 10.0),
         );
         let in_shadow = false;
+        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
-        let r = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
+        let r = m.lighting(&object, &light, &point, &eyev, &normalv, in_shadow);
         assert_eq!(r, Tuple::new_color(0.1, 0.1, 0.1))
     }
 
@@ -202,8 +214,9 @@ mod tests {
             Tuple::new_point(0.0, 0.0, -10.0),
         );
         let in_shadow = true;
+        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
-        let result = m.lighting(&light, &point, &eyev, &normalv, in_shadow);
+        let result = m.lighting(&object, &light, &point, &eyev, &normalv, in_shadow);
         assert_eq!(result, Tuple::new_color(0.1, 0.1, 0.1))
     }
 
@@ -225,8 +238,10 @@ mod tests {
             Tuple::new_color(1.0, 1.0, 1.0),
             Tuple::new_point(0.0, 0.0, -10.0),
         );
+        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
         let c1 = m.lighting(
+            &object,
             &light,
             &Tuple::new_point(0.9, 0.0, 0.0),
             &eyev,
@@ -234,6 +249,7 @@ mod tests {
             false,
         );
         let c2 = m.lighting(
+            &object,
             &light,
             &Tuple::new_point(1.1, 0.0, 0.0),
             &eyev,
