@@ -7,6 +7,7 @@ pub struct Material {
     diffuse: f64,
     specular: f64,
     shininess: f64,
+    reflective: f64,
     pattern: Option<Pattern>,
 }
 
@@ -18,6 +19,7 @@ impl Material {
             diffuse: 0.9,
             specular: 0.9,
             shininess: 200.0,
+            reflective: 0.0,
             pattern: None,
         }
     }
@@ -25,6 +27,10 @@ impl Material {
     #[cfg(test)]
     pub fn get_color(&self) -> Tuple {
         self.color
+    }
+
+    pub fn get_reflective(&self) -> f64 {
+        self.reflective
     }
 
     pub fn set_diffuse(&mut self, diffuse: f64) {
@@ -46,6 +52,10 @@ impl Material {
     #[cfg(test)]
     pub fn set_ambient(&mut self, ambient: f64) {
         self.ambient = ambient;
+    }
+
+    pub fn set_reflective(&mut self, reflective: f64) {
+        self.reflective = reflective
     }
 
     pub fn lighting(
@@ -95,6 +105,8 @@ mod tests {
 
     use std::sync::{Arc, Mutex};
 
+    use float_cmp::{ApproxEq, F64Margin};
+
     use crate::{lights::PointLight, patterns::PatternsKind, spheres::Sphere};
 
     use super::*;
@@ -122,7 +134,7 @@ mod tests {
             Tuple::new_point(0.0, 0.0, -10.0),
         );
         let in_shadow = false;
-        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
+        let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
         let r = m.lighting(&object, &light, &point, &eyev, &normalv, in_shadow);
         assert_eq!(r, Tuple::new_color(1.9, 1.9, 1.9))
@@ -140,7 +152,7 @@ mod tests {
             Tuple::new_point(0.0, 0.0, -10.0),
         );
         let in_shadow = false;
-        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
+        let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
         let r = m.lighting(&object, &light, &point, &eyev, &normalv, in_shadow);
         assert_eq!(r, Tuple::new_color(1.0, 1.0, 1.0))
@@ -158,7 +170,7 @@ mod tests {
             Tuple::new_point(0.0, 10.0, -10.0),
         );
         let in_shadow = false;
-        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
+        let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
         let r = m.lighting(&object, &light, &point, &eyev, &normalv, in_shadow);
         let value = 0.1 + 0.9 * 2.0_f64.sqrt() / 2.0 + 0.0;
@@ -177,7 +189,7 @@ mod tests {
             Tuple::new_point(0.0, 10.0, -10.0),
         );
         let in_shadow = false;
-        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
+        let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
         let r = m.lighting(&object, &light, &point, &eyev, &normalv, in_shadow);
         let value = 0.1 + 0.9 * 2.0_f64.sqrt() / 2.0 + 0.9;
@@ -196,7 +208,7 @@ mod tests {
             Tuple::new_point(0.0, 0.0, 10.0),
         );
         let in_shadow = false;
-        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
+        let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
         let r = m.lighting(&object, &light, &point, &eyev, &normalv, in_shadow);
         assert_eq!(r, Tuple::new_color(0.1, 0.1, 0.1))
@@ -214,7 +226,7 @@ mod tests {
             Tuple::new_point(0.0, 0.0, -10.0),
         );
         let in_shadow = true;
-        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
+        let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
         let result = m.lighting(&object, &light, &point, &eyev, &normalv, in_shadow);
         assert_eq!(result, Tuple::new_color(0.1, 0.1, 0.1))
@@ -238,7 +250,7 @@ mod tests {
             Tuple::new_color(1.0, 1.0, 1.0),
             Tuple::new_point(0.0, 0.0, -10.0),
         );
-        let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
+        let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
         let c1 = m.lighting(
             &object,
@@ -259,5 +271,17 @@ mod tests {
 
         assert_eq!(Tuple::new_color(1.0, 1.0, 1.0), c1);
         assert_eq!(Tuple::new_color(0.0, 0.0, 0.0), c2);
+    }
+
+    #[test]
+    fn reflectivity_for_the_default_material() {
+        let material = Material::default();
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        assert!(material.reflective.approx_eq(0.0, margin));
     }
 }

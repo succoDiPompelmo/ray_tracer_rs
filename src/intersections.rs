@@ -26,6 +26,7 @@ pub struct Computations {
     point: Tuple,
     eyev: Tuple,
     normalv: Tuple,
+    reflectv: Tuple,
     _inside: bool,
     over_point: Tuple,
 }
@@ -80,6 +81,8 @@ impl Intersection {
             normalv = -normalv
         }
 
+        let reflectv = ray.get_direction().reflect(&normalv);
+
         let over_point = point + normalv * Computations::get_epsilon();
 
         Computations {
@@ -88,6 +91,7 @@ impl Intersection {
             point,
             eyev,
             normalv,
+            reflectv,
             _inside: inside,
             over_point,
         }
@@ -118,6 +122,10 @@ impl Computations {
     pub fn get_over_point_ref(&self) -> &Tuple {
         &self.over_point
     }
+
+    pub fn get_reflectv(&self) -> &Tuple {
+        &self.reflectv
+    }
 }
 
 #[cfg(test)]
@@ -126,7 +134,8 @@ mod tests {
     use std::sync::{Arc, Mutex};
 
     use crate::{
-        rays::Ray, shapes::Shape, spheres::Sphere, transformations::Transformation, tuples::Tuple,
+        planes::Plane, rays::Ray, shapes::Shape, spheres::Sphere, transformations::Transformation,
+        tuples::Tuple,
     };
 
     use super::*;
@@ -289,5 +298,24 @@ mod tests {
 
         assert!(comps.over_point.z < -Computations::get_epsilon() / 2.0);
         assert!(comps.point.z > comps.over_point.z);
+    }
+
+    #[test]
+    fn precomputing_the_reflection_vector() {
+        let plane = Plane::new();
+        let s = Shape::default(Arc::new(Mutex::new(plane)));
+
+        let r = Ray::new(
+            Tuple::new_point(0.0, 1.0, -1.0),
+            Tuple::new_vector(0.0, -2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0),
+        );
+        let i = Intersection::new(2.0_f64.sqrt(), s);
+
+        let comps = i.prepare_computations(&r);
+
+        assert_eq!(
+            comps.reflectv,
+            Tuple::new_vector(0.0, 2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0)
+        );
     }
 }
