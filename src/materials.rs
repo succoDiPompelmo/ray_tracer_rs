@@ -8,6 +8,8 @@ pub struct Material {
     specular: f64,
     shininess: f64,
     reflective: f64,
+    transparency: f64,
+    refractive_index: f64,
     pattern: Option<Pattern>,
 }
 
@@ -20,6 +22,8 @@ impl Material {
             specular: 0.9,
             shininess: 200.0,
             reflective: 0.0,
+            transparency: 0.0,
+            refractive_index: 1.0,
             pattern: None,
         }
     }
@@ -31,6 +35,14 @@ impl Material {
 
     pub fn get_reflective(&self) -> f64 {
         self.reflective
+    }
+
+    pub fn get_transparency(&self) -> f64 {
+        self.transparency
+    }
+
+    pub fn get_refractive_index(&self) -> f64 {
+        self.refractive_index
     }
 
     pub fn set_diffuse(&mut self, diffuse: f64) {
@@ -56,6 +68,14 @@ impl Material {
 
     pub fn set_reflective(&mut self, reflective: f64) {
         self.reflective = reflective
+    }
+
+    pub fn set_transparency(&mut self, transparency: f64) {
+        self.transparency = transparency
+    }
+
+    pub fn set_refractive_index(&mut self, refractive_index: f64) {
+        self.refractive_index = refractive_index
     }
 
     pub fn lighting(
@@ -283,5 +303,18 @@ mod tests {
         };
 
         assert!(material.reflective.approx_eq(0.0, margin));
+    }
+
+    #[test]
+    fn transparency_and_refractive_index_for_default_material() {
+        let material = Material::default();
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        assert!(material.transparency.approx_eq(0.0, margin));
+        assert!(material.refractive_index.approx_eq(1.0, margin));
     }
 }

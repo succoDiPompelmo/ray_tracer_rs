@@ -40,6 +40,19 @@ impl Shape {
         }
     }
 
+    pub fn glass(polygon: Arc<Mutex<dyn Polygon + Send + Sync>>) -> Shape {
+        let mut material = Material::default();
+        material.set_transparency(1.0);
+        material.set_refractive_index(1.5);
+
+        Shape {
+            polygon,
+            material,
+            transformation: Matrix::identity(4),
+            inverse_transformation: None,
+        }
+    }
+
     pub fn get_inverse_transformation(&self) -> Matrix {
         match &self.inverse_transformation {
             Some(matrix) => matrix.clone(),
@@ -99,6 +112,8 @@ impl Shape {
 mod tests {
 
     use std::f64::consts::PI;
+
+    use float_cmp::{ApproxEq, F64Margin};
 
     use crate::transformations::Transformation;
 
@@ -188,5 +203,20 @@ mod tests {
         ));
 
         assert!(n == Tuple::new_vector(0.0, 0.9701425001453319, -0.24253562503633294));
+    }
+
+    #[test]
+    fn a_helper_for_producing_a_shape_with_a_glassy_material() {
+        let mock = MockPolygon::default();
+        let shape = Shape::glass(Arc::new(Mutex::new(mock)));
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        assert!(shape.transformation == Matrix::identity(4));
+        assert!(shape.material.get_transparency().approx_eq(1.0, margin));
+        assert!(shape.material.get_refractive_index().approx_eq(1.5, margin));
     }
 }
