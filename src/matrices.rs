@@ -115,7 +115,7 @@ impl Matrix {
 
     pub fn invert(&self) -> Matrix {
         if !self.is_invertible() {
-            panic!("Matrix cannot be inverted")
+            panic!("Matrix {:?} cannot be inverted", self)
         }
 
         let mut inverted = Matrix::new(self.width, self.height);

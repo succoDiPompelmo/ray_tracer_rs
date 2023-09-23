@@ -75,7 +75,7 @@ impl World {
         match Intersection::hit(&intersections) {
             None => Tuple::new_color(0.0, 0.0, 0.0),
             Some(hit) => {
-                let comps = hit.prepare_computations(ray);
+                let comps = hit.prepare_computations(ray, &intersections);
                 self.shade_hit(&comps, recursion_depth_left)
             }
         }
@@ -223,7 +223,7 @@ mod tests {
         let objects = w.objects.to_vec();
 
         let i = Intersection::new(4.0, objects.get(0).unwrap().clone());
-        let comps = i.prepare_computations(&r);
+        let comps = i.prepare_computations(&r, &[]);
         let c = w.shade_hit(&comps, 5);
         assert!(
             c == Tuple::new_color(
@@ -249,7 +249,7 @@ mod tests {
         let objects = w.objects.to_vec();
 
         let i = Intersection::new(0.5, objects.get(1).unwrap().clone());
-        let comps = i.prepare_computations(&r);
+        let comps = i.prepare_computations(&r, &[]);
         let c = w.shade_hit(&comps, 5);
 
         assert!(c == Tuple::new_color(0.9049844720832575, 0.9049844720832575, 0.9049844720832575));
@@ -354,7 +354,7 @@ mod tests {
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
         let i = Intersection::new(4.0, s2);
-        let comps = i.prepare_computations(&r);
+        let comps = i.prepare_computations(&r, &[]);
         let c = w.shade_hit(&comps, 5);
 
         assert!(c == Tuple::new_color(0.1, 0.1, 0.1));
@@ -372,7 +372,7 @@ mod tests {
         shape.material.set_ambient(1.0);
 
         let i = Intersection::new(1.0, shape.clone());
-        let comps = i.prepare_computations(&r);
+        let comps = i.prepare_computations(&r, &[]);
         let color = w.reflected_color(&comps, 5);
 
         assert_eq!(color, Tuple::new_color(0.0, 0.0, 0.0));
@@ -398,7 +398,7 @@ mod tests {
         );
 
         let i = Intersection::new(2.0_f64.sqrt(), s.clone());
-        let comps = i.prepare_computations(&r);
+        let comps = i.prepare_computations(&r, &[]);
         let color = w.reflected_color(&comps, 5);
 
         assert_eq!(
@@ -427,7 +427,7 @@ mod tests {
         );
 
         let i = Intersection::new(2.0_f64.sqrt(), s.clone());
-        let comps = i.prepare_computations(&r);
+        let comps = i.prepare_computations(&r, &[]);
         let color = w.shade_hit(&comps, 5);
 
         assert_eq!(
@@ -465,8 +465,6 @@ mod tests {
 
         let color = w.color_at(&r, 5);
 
-        println!("{:?}", color);
-
         // No infinite recursion happened and we safely reached this assetion
         assert!(true)
     }
@@ -487,7 +485,7 @@ mod tests {
         );
         let i = Intersection::new(2.0_f64.sqrt(), shape);
 
-        let comps = i.prepare_computations(&r);
+        let comps = i.prepare_computations(&r, &[]);
         let color = w.reflected_color(&comps, 0);
 
         assert_eq!(color, Tuple::new_color(0.0, 0.0, 0.0))

@@ -216,8 +216,6 @@ mod tests {
         s.set_transformation(Transformation::translation(0.0, 1.0, 0.0));
         let n = s.normal_at(&Tuple::new_point(0.0, 1.70711, -0.70711));
 
-        println!("{:?}", n);
-
         assert!(n == Tuple::new_vector(0.0, 0.7071067811865475, -0.7071067811865476))
     }
 

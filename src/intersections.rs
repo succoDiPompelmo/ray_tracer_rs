@@ -27,6 +27,8 @@ pub struct Computations {
     eyev: Tuple,
     normalv: Tuple,
     reflectv: Tuple,
+    n1: f64,
+    n2: f64,
     _inside: bool,
     over_point: Tuple,
 }
@@ -65,7 +67,7 @@ impl Intersection {
         hit.cloned()
     }
 
-    pub fn prepare_computations(&self, ray: &Ray) -> Computations {
+    pub fn prepare_computations(&self, ray: &Ray, xs: &[Intersection]) -> Computations {
         let t = self.t;
         let object = self.object.clone();
 
@@ -85,6 +87,39 @@ impl Intersection {
 
         let over_point = point + normalv * Computations::get_epsilon();
 
+        let mut containers: Vec<Shape> = vec![];
+
+        let mut n1 = 1.0;
+        let mut n2 = 1.0;
+
+        for i in xs {
+            if self == i && !containers.is_empty() {
+                n1 = containers
+                    .last()
+                    .unwrap()
+                    .get_material()
+                    .get_refractive_index();
+            }
+
+            if containers.contains(&i.object) {
+                containers.retain(|element| &i.object != element);
+            } else {
+                containers.push(i.object.clone())
+            }
+
+            if self == i {
+                if !containers.is_empty() {
+                    n2 = containers
+                        .last()
+                        .unwrap()
+                        .get_material()
+                        .get_refractive_index();
+                }
+
+                break;
+            }
+        }
+
         Computations {
             _t: t,
             object,
@@ -92,6 +127,8 @@ impl Intersection {
             eyev,
             normalv,
             reflectv,
+            n1,
+            n2,
             _inside: inside,
             over_point,
         }
@@ -126,12 +163,22 @@ impl Computations {
     pub fn get_reflectv(&self) -> &Tuple {
         &self.reflectv
     }
+
+    pub fn get_n1(&self) -> f64 {
+        self.n1
+    }
+
+    pub fn get_n2(&self) -> f64 {
+        self.n2
+    }
 }
 
 #[cfg(test)]
 mod tests {
 
     use std::sync::{Arc, Mutex};
+
+    use rayon::vec;
 
     use crate::{
         planes::Plane, rays::Ray, shapes::Shape, spheres::Sphere, transformations::Transformation,
@@ -194,19 +241,11 @@ mod tests {
 
     #[test]
     fn hit_when_all_intersections_are_negatives() {
-        println!("CIAO");
         let sphere = Sphere::new();
         let s = Shape::default(Arc::new(Mutex::new(sphere)));
 
-        println!("CIAO");
-
         let i1 = Intersection::new(-2.0, s.clone());
-
-        println!("CIAO");
-
         let i2 = Intersection::new(-1.0, s);
-
-        println!("CIAO");
 
         let xs = Intersection::intersects(&[i1, i2]);
 
@@ -240,7 +279,7 @@ mod tests {
 
         let i = Intersection::new(4.0, s);
 
-        let comps = i.prepare_computations(&r);
+        let comps = i.prepare_computations(&r, &[]);
 
         assert!(comps._t == i.t);
         assert!(comps.point == Tuple::new_point(0.0, 0.0, -1.0));
@@ -259,7 +298,7 @@ mod tests {
 
         let i = Intersection::new(4.0, s);
 
-        let comps = i.prepare_computations(&r);
+        let comps = i.prepare_computations(&r, &[]);
         assert!(!comps._inside);
     }
 
@@ -274,7 +313,7 @@ mod tests {
 
         let i = Intersection::new(1.0, s);
 
-        let comps = i.prepare_computations(&r);
+        let comps = i.prepare_computations(&r, &[]);
 
         assert!(comps.point == Tuple::new_point(0.0, 0.0, 1.0));
         assert!(comps.eyev == Tuple::new_vector(0.0, 0.0, -1.0));
@@ -294,7 +333,7 @@ mod tests {
         s.set_transformation(Transformation::translation(0.0, 0.0, 1.0));
 
         let i = Intersection::new(5.0, s);
-        let comps = i.prepare_computations(&r);
+        let comps = i.prepare_computations(&r, &[]);
 
         assert!(comps.over_point.z < -Computations::get_epsilon() / 2.0);
         assert!(comps.point.z > comps.over_point.z);
@@ -311,7 +350,7 @@ mod tests {
         );
         let i = Intersection::new(2.0_f64.sqrt(), s);
 
-        let comps = i.prepare_computations(&r);
+        let comps = i.prepare_computations(&r, &[]);
 
         assert_eq!(
             comps.reflectv,

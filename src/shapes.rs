@@ -30,6 +30,12 @@ pub struct Shape {
     inverse_transformation: Option<Matrix>,
 }
 
+impl PartialEq for Shape {
+    fn eq(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.polygon, &other.polygon)
+    }
+}
+
 impl Shape {
     pub fn default(polygon: Arc<Mutex<dyn Polygon + Send + Sync>>) -> Shape {
         Shape {
@@ -115,7 +121,7 @@ mod tests {
 
     use float_cmp::{ApproxEq, F64Margin};
 
-    use crate::transformations::Transformation;
+    use crate::{spheres::Sphere, transformations::Transformation};
 
     use super::*;
 
@@ -218,5 +224,134 @@ mod tests {
         assert!(shape.transformation == Matrix::identity(4));
         assert!(shape.material.get_transparency().approx_eq(1.0, margin));
         assert!(shape.material.get_refractive_index().approx_eq(1.5, margin));
+    }
+
+    fn n1_n2_scenario() -> (Shape, Shape, Shape, Ray, Vec<Intersection>) {
+        let mut a = Shape::glass(Arc::new(Mutex::new(Sphere::new())));
+
+        let a_transform = Transformation::translation(2.0, 2.0, 2.0);
+        let mut a_material = Material::default();
+        a_material.set_transparency(1.0);
+        a_material.set_refractive_index(1.5);
+        a.set_transformation(a_transform);
+        a.set_material(a_material);
+
+        let mut b = Shape::glass(Arc::new(Mutex::new(Sphere::new())));
+
+        let b_transform = Transformation::translation(0.0, 0.0, -0.25);
+        let mut b_material = Material::default();
+        b_material.set_transparency(1.0);
+        b_material.set_refractive_index(2.0);
+        b.set_transformation(b_transform);
+        b.set_material(b_material);
+
+        let mut c = Shape::glass(Arc::new(Mutex::new(Sphere::new())));
+
+        let c_transform = Transformation::translation(0.0, 0.0, 0.25);
+        let mut c_material = Material::default();
+        c_material.set_transparency(1.0);
+        c_material.set_refractive_index(2.5);
+        c.set_transformation(c_transform);
+        c.set_material(c_material);
+
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, -4.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+
+        let xs = Intersection::intersects(&[
+            Intersection::new(2.0, a.clone()),
+            Intersection::new(2.75, b.clone()),
+            Intersection::new(3.25, c.clone()),
+            Intersection::new(4.75, b.clone()),
+            Intersection::new(5.25, c.clone()),
+            Intersection::new(6.0, a.clone()),
+        ]);
+
+        (a, b, c, r, xs)
+    }
+
+    #[test]
+    fn finding_n1_and_n2_at_various_intersections_0() {
+        let (a, b, c, r, xs) = n1_n2_scenario();
+        let comps = xs.get(0).unwrap().prepare_computations(&r, &xs);
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        assert!(comps.get_n1().approx_eq(1.0, margin));
+        assert!(comps.get_n2().approx_eq(1.5, margin));
+    }
+
+    #[test]
+    fn finding_n1_and_n2_at_various_intersections_1() {
+        let (a, b, c, r, xs) = n1_n2_scenario();
+        let comps = xs.get(1).unwrap().prepare_computations(&r, &xs);
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        assert!(comps.get_n1().approx_eq(1.5, margin));
+        assert!(comps.get_n2().approx_eq(2.0, margin));
+    }
+
+    #[test]
+    fn finding_n1_and_n2_at_various_intersections_2() {
+        let (a, b, c, r, xs) = n1_n2_scenario();
+        let comps = xs.get(2).unwrap().prepare_computations(&r, &xs);
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        assert!(comps.get_n1().approx_eq(2.0, margin));
+        assert!(comps.get_n2().approx_eq(2.5, margin));
+    }
+
+    #[test]
+    fn finding_n1_and_n2_at_various_intersections_3() {
+        let (a, b, c, r, xs) = n1_n2_scenario();
+        let comps = xs.get(3).unwrap().prepare_computations(&r, &xs);
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        assert!(comps.get_n1().approx_eq(2.5, margin));
+        assert!(comps.get_n2().approx_eq(2.5, margin));
+    }
+
+    #[test]
+    fn finding_n1_and_n2_at_various_intersections_4() {
+        let (a, b, c, r, xs) = n1_n2_scenario();
+        let comps = xs.get(4).unwrap().prepare_computations(&r, &xs);
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        assert!(comps.get_n1().approx_eq(2.5, margin));
+        assert!(comps.get_n2().approx_eq(1.5, margin));
+    }
+
+    #[test]
+    fn finding_n1_and_n2_at_various_intersections_5() {
+        let (a, b, c, r, xs) = n1_n2_scenario();
+        let comps = xs.get(5).unwrap().prepare_computations(&r, &xs);
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        assert!(comps.get_n1().approx_eq(1.5, margin));
+        assert!(comps.get_n2().approx_eq(1.0, margin));
     }
 }
