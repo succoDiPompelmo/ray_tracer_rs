@@ -123,6 +123,24 @@ impl World {
 
         return color * comps.get_object().get_material().get_reflective();
     }
+
+    pub fn refracted_color(&self, comps: &Computations, remaining: usize) -> Tuple {
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        if comps
+            .get_object()
+            .get_material()
+            .get_transparency()
+            .approx_eq(0.0, margin)
+        {
+            return Tuple::new_color(0.0, 0.0, 0.0);
+        }
+
+        Tuple::new_color(1.0, 1.0, 1.0)
+    }
 }
 
 #[cfg(test)]
@@ -489,5 +507,24 @@ mod tests {
         let color = w.reflected_color(&comps, 0);
 
         assert_eq!(color, Tuple::new_color(0.0, 0.0, 0.0))
+    }
+
+    #[test]
+    fn the_refracted_color_with_an_opaque_surface() {
+        let w = World::default();
+        let shape = w.objects.get(0).unwrap();
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, -5.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+
+        let xs = Intersection::intersects(&[
+            Intersection::new(4.0, shape.clone()),
+            Intersection::new(6.0, shape.clone()),
+        ]);
+        let comps = xs.get(0).unwrap().prepare_computations(&r, &xs);
+
+        let c = w.refracted_color(&comps, 5);
+        assert_eq!(c, Tuple::new_color(0.0, 0.0, 0.0))
     }
 }
