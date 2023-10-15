@@ -125,7 +125,11 @@ impl World {
     }
 
     #[cfg(test)]
-    pub fn refracted_color(&self, comps: &Computations, _remaining: usize) -> Tuple {
+    pub fn refracted_color(&self, comps: &Computations, remaining: usize) -> Tuple {
+        if remaining == 0 {
+            return Tuple::black();
+        }
+
         let margin = F64Margin {
             ulps: 2,
             epsilon: 1e-14,
@@ -520,6 +524,30 @@ mod tests {
         let comps = xs.get(0).unwrap().prepare_computations(&r, &xs);
 
         let c = w.refracted_color(&comps, 5);
+        assert_eq!(c, Tuple::black())
+    }
+
+    #[test]
+    fn the_refracted_color_at_the_maximum_recursive_depth() {
+        let mut w = World::default();
+        let shape = w.objects.get_mut(0).unwrap();
+
+        let mut material = Material::default();
+        material.set_transparency(1.0);
+        material.set_refractive_index(1.5);
+        shape.set_material(material);
+
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, -5.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+        let xs = Intersection::intersects(&[
+            Intersection::new(4.0, shape.clone()),
+            Intersection::new(6.0, shape.clone()),
+        ]);
+        let comps = xs.get(0).unwrap().prepare_computations(&r, &xs);
+
+        let c = w.reflected_color(&comps, 0);
         assert_eq!(c, Tuple::black())
     }
 }
