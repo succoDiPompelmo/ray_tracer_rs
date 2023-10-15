@@ -31,6 +31,7 @@ pub struct Computations {
     n2: f64,
     _inside: bool,
     over_point: Tuple,
+    under_point: Tuple,
 }
 
 impl Intersection {
@@ -86,6 +87,7 @@ impl Intersection {
         let reflectv = ray.get_direction().reflect(&normalv);
 
         let over_point = point + normalv * Computations::get_epsilon();
+        let under_point = point - normalv * Computations::get_epsilon();
 
         let mut containers: Vec<Shape> = vec![];
 
@@ -131,6 +133,7 @@ impl Intersection {
             n2,
             _inside: inside,
             over_point,
+            under_point,
         }
     }
 }
@@ -356,5 +359,24 @@ mod tests {
             comps.reflectv,
             Tuple::new_vector(0.0, 2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0)
         );
+    }
+
+    #[test]
+    fn the_under_point_is_offset_below_the_surface() {
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, -5.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+        let mut s = Shape::glass(Arc::new(Mutex::new(Sphere::new())));
+
+        let transform = Transformation::translation(0.0, 0.0, 1.0);
+        s.set_transformation(transform);
+
+        let i = Intersection::new(5.0, s);
+        let xs = Intersection::intersects(&[i.clone()]);
+
+        let comps = i.prepare_computations(&r, &xs);
+        assert!(comps.under_point.z > 0.0);
+        assert!(comps.point.z < comps.under_point.z);
     }
 }
