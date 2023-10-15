@@ -73,7 +73,7 @@ impl World {
         let intersections = self.intersect(ray);
 
         match Intersection::hit(&intersections) {
-            None => Tuple::new_color(0.0, 0.0, 0.0),
+            None => Tuple::black(),
             Some(hit) => {
                 let comps = hit.prepare_computations(ray, &intersections);
                 self.shade_hit(&comps, recursion_depth_left)
@@ -101,7 +101,7 @@ impl World {
 
     pub fn reflected_color(&self, comps: &Computations, recursion_depth_left: usize) -> Tuple {
         if recursion_depth_left == 0 {
-            return Tuple::new_color(0.0, 0.0, 0.0);
+            return Tuple::black();
         }
 
         let margin = F64Margin {
@@ -115,7 +115,7 @@ impl World {
             .get_reflective()
             .approx_eq(0.0, margin)
         {
-            return Tuple::new_color(0.0, 0.0, 0.0);
+            return Tuple::black();
         }
 
         let reflected_ray = Ray::new(*comps.get_over_point_ref(), *comps.get_reflectv());
@@ -136,10 +136,10 @@ impl World {
             .get_transparency()
             .approx_eq(0.0, margin)
         {
-            return Tuple::new_color(0.0, 0.0, 0.0);
+            return Tuple::black();
         }
 
-        Tuple::new_color(1.0, 1.0, 1.0)
+        Tuple::white()
     }
 }
 
@@ -156,10 +156,7 @@ mod tests {
 
     impl World {
         pub fn default() -> World {
-            let light = PointLight::new(
-                Tuple::new_color(1.0, 1.0, 1.0),
-                Tuple::new_point(-10.0, 10.0, -10.0),
-            );
+            let light = PointLight::new(Tuple::white(), Tuple::new_point(-10.0, 10.0, -10.0));
 
             let sphere = Sphere::new();
             let mut s1 = Shape::default(Arc::new(Mutex::new(sphere)));
@@ -190,10 +187,7 @@ mod tests {
 
     #[test]
     fn the_default_world() {
-        let l = PointLight::new(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_point(-10.0, 10.0, -10.0),
-        );
+        let l = PointLight::new(Tuple::white(), Tuple::new_point(-10.0, 10.0, -10.0));
 
         let sphere = Sphere::new();
         let mut s1 = Shape::default(Arc::new(Mutex::new(sphere)));
@@ -256,7 +250,7 @@ mod tests {
     fn shading_an_intersection_from_the_inside() {
         let mut w = World::default();
         w.set_light(PointLight::new(
-            Tuple::new_color(1.0, 1.0, 1.0),
+            Tuple::white(),
             Tuple::new_point(0.0, 0.25, 0.0),
         ));
 
@@ -282,7 +276,7 @@ mod tests {
         );
         let c = w.color_at(&r, 5);
 
-        assert!(c == Tuple::new_color(0.0, 0.0, 0.0));
+        assert!(c == Tuple::black());
     }
 
     #[test]
@@ -354,7 +348,7 @@ mod tests {
     fn intersection_in_shadow() {
         let mut w = World::default();
         w.set_light(PointLight::new(
-            Tuple::new_color(1.0, 1.0, 1.0),
+            Tuple::white(),
             Tuple::new_point(0.0, 0.0, -10.0),
         ));
 
@@ -393,7 +387,7 @@ mod tests {
         let comps = i.prepare_computations(&r, &[]);
         let color = w.reflected_color(&comps, 5);
 
-        assert_eq!(color, Tuple::new_color(0.0, 0.0, 0.0));
+        assert_eq!(color, Tuple::black());
     }
 
     #[test]
@@ -458,7 +452,7 @@ mod tests {
     fn color_at_with_mutually_reflecive_surfaces() {
         let mut w = World::new();
         w.set_light(PointLight::new(
-            Tuple::new_color(1.0, 1.0, 1.0),
+            Tuple::white(),
             Tuple::new_point(0.0, 0.0, 0.0),
         ));
 
@@ -506,7 +500,7 @@ mod tests {
         let comps = i.prepare_computations(&r, &[]);
         let color = w.reflected_color(&comps, 0);
 
-        assert_eq!(color, Tuple::new_color(0.0, 0.0, 0.0))
+        assert_eq!(color, Tuple::black())
     }
 
     #[test]
@@ -525,6 +519,6 @@ mod tests {
         let comps = xs.get(0).unwrap().prepare_computations(&r, &xs);
 
         let c = w.refracted_color(&comps, 5);
-        assert_eq!(c, Tuple::new_color(0.0, 0.0, 0.0))
+        assert_eq!(c, Tuple::black())
     }
 }

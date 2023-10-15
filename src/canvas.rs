@@ -13,7 +13,7 @@ pub struct Canvas {
 
 impl Canvas {
     pub fn new(width: usize, height: usize) -> Canvas {
-        let state = vec![vec![Tuple::new_color(0.0, 0.0, 0.0); width]; height];
+        let state = vec![vec![Tuple::black(); width]; height];
         Canvas {
             width,
             height,
@@ -106,7 +106,7 @@ mod tests {
 
         for x in 0..height {
             for y in 0..width {
-                assert_eq!(canvas.pixel_at(y, x), Tuple::new_color(0.0, 0.0, 0.0));
+                assert_eq!(canvas.pixel_at(y, x), Tuple::black());
             }
         }
     }

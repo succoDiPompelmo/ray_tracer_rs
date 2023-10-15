@@ -30,7 +30,7 @@ mod tests {
 
     #[test]
     fn a_point_light_has_a_position_and_intensity() {
-        let intensity = Tuple::new_color(1.0, 1.0, 1.0);
+        let intensity = Tuple::white();
         let position = Tuple::new_point(0.0, 0.0, 0.0);
 
         let light = PointLight::new(intensity, position);

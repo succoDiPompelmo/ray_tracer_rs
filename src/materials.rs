@@ -16,7 +16,7 @@ pub struct Material {
 impl Material {
     pub fn default() -> Material {
         Material {
-            color: Tuple::new_color(1.0, 1.0, 1.0),
+            color: Tuple::white(),
             ambient: 0.1,
             diffuse: 0.9,
             specular: 0.9,
@@ -102,8 +102,8 @@ impl Material {
         }
 
         let light_dot_normal = lightv.dot(normalv);
-        let mut diffuse = Tuple::new_color(0.0, 0.0, 0.0);
-        let mut specular = Tuple::new_color(0.0, 0.0, 0.0);
+        let mut diffuse = Tuple::black();
+        let mut specular = Tuple::black();
 
         if light_dot_normal > 0.0 {
             diffuse = effective_color * self.diffuse * light_dot_normal;
@@ -135,7 +135,7 @@ mod tests {
     fn default_material() {
         let m = Material::default();
 
-        assert_eq!(m.get_color(), Tuple::new_color(1.0, 1.0, 1.0));
+        assert_eq!(m.get_color(), Tuple::white());
         assert_eq!(m.ambient, 0.1);
         assert_eq!(m.diffuse, 0.9);
         assert_eq!(m.specular, 0.9);
@@ -149,10 +149,7 @@ mod tests {
 
         let eyev = Tuple::new_vector(0.0, 0.0, -1.0);
         let normalv = Tuple::new_vector(0.0, 0.0, -1.0);
-        let light = PointLight::new(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_point(0.0, 0.0, -10.0),
-        );
+        let light = PointLight::new(Tuple::white(), Tuple::new_point(0.0, 0.0, -10.0));
         let in_shadow = false;
         let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
@@ -167,15 +164,12 @@ mod tests {
 
         let eyev = Tuple::new_vector(0.0, 2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0);
         let normalv = Tuple::new_vector(0.0, 0.0, -1.0);
-        let light = PointLight::new(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_point(0.0, 0.0, -10.0),
-        );
+        let light = PointLight::new(Tuple::white(), Tuple::new_point(0.0, 0.0, -10.0));
         let in_shadow = false;
         let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
         let r = m.lighting(&object, &light, &point, &eyev, &normalv, in_shadow);
-        assert_eq!(r, Tuple::new_color(1.0, 1.0, 1.0))
+        assert_eq!(r, Tuple::white())
     }
 
     #[test]
@@ -185,10 +179,7 @@ mod tests {
 
         let eyev = Tuple::new_vector(0.0, 0.0, -1.0);
         let normalv = Tuple::new_vector(0.0, 0.0, -1.0);
-        let light = PointLight::new(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_point(0.0, 10.0, -10.0),
-        );
+        let light = PointLight::new(Tuple::white(), Tuple::new_point(0.0, 10.0, -10.0));
         let in_shadow = false;
         let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
@@ -204,10 +195,7 @@ mod tests {
 
         let eyev = Tuple::new_vector(0.0, -2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0);
         let normalv = Tuple::new_vector(0.0, 0.0, -1.0);
-        let light = PointLight::new(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_point(0.0, 10.0, -10.0),
-        );
+        let light = PointLight::new(Tuple::white(), Tuple::new_point(0.0, 10.0, -10.0));
         let in_shadow = false;
         let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
@@ -223,10 +211,7 @@ mod tests {
 
         let eyev = Tuple::new_vector(0.0, 0.0, -1.0);
         let normalv = Tuple::new_vector(0.0, 0.0, -1.0);
-        let light = PointLight::new(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_point(0.0, 0.0, 10.0),
-        );
+        let light = PointLight::new(Tuple::white(), Tuple::new_point(0.0, 0.0, 10.0));
         let in_shadow = false;
         let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
@@ -241,10 +226,7 @@ mod tests {
 
         let eyev = Tuple::new_vector(0.0, 0.0, -1.0);
         let normalv = Tuple::new_vector(0.0, 0.0, -1.0);
-        let light = PointLight::new(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_point(0.0, 0.0, -10.0),
-        );
+        let light = PointLight::new(Tuple::white(), Tuple::new_point(0.0, 0.0, -10.0));
         let in_shadow = true;
         let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
@@ -256,8 +238,8 @@ mod tests {
     fn lighting_with_a_pattern_applied() {
         let mut m = Material::default();
         m.pattern = Some(Pattern::stripe(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_color(0.0, 0.0, 0.0),
+            Tuple::white(),
+            Tuple::black(),
             PatternsKind::Stripe,
         ));
         m.ambient = 1.0;
@@ -266,10 +248,7 @@ mod tests {
 
         let eyev = Tuple::new_vector(0.0, 0.0, -1.0);
         let normalv = Tuple::new_vector(0.0, 0.0, -1.0);
-        let light = PointLight::new(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_point(0.0, 0.0, -10.0),
-        );
+        let light = PointLight::new(Tuple::white(), Tuple::new_point(0.0, 0.0, -10.0));
         let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
         let c1 = m.lighting(
@@ -289,8 +268,8 @@ mod tests {
             false,
         );
 
-        assert_eq!(Tuple::new_color(1.0, 1.0, 1.0), c1);
-        assert_eq!(Tuple::new_color(0.0, 0.0, 0.0), c2);
+        assert_eq!(Tuple::white(), c1);
+        assert_eq!(Tuple::black(), c2);
     }
 
     #[test]

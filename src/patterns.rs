@@ -78,91 +78,75 @@ mod tests {
 
     #[test]
     fn creating_a_stripe_pattern() {
-        let pattern = Pattern::stripe(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_color(0.0, 0.0, 0.0),
-            PatternsKind::Stripe,
-        );
+        let pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Stripe);
 
-        assert_eq!(pattern.color_a, Tuple::new_color(1.0, 1.0, 1.0));
-        assert_eq!(pattern.color_b, Tuple::new_color(0.0, 0.0, 0.0));
+        assert_eq!(pattern.color_a, Tuple::white());
+        assert_eq!(pattern.color_b, Tuple::black());
     }
 
     #[test]
     fn a_stripe_pattern_is_constant_in_y() {
-        let pattern = Pattern::stripe(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_color(0.0, 0.0, 0.0),
-            PatternsKind::Stripe,
-        );
+        let pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Stripe);
 
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 1.0, 0.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 2.0, 0.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
     }
 
     #[test]
     fn a_stripe_pattern_is_constant_in_z() {
-        let pattern = Pattern::stripe(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_color(0.0, 0.0, 0.0),
-            PatternsKind::Stripe,
-        );
+        let pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Stripe);
 
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 1.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 2.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
     }
 
     #[test]
     fn a_stripe_pattern_alternates_in_x() {
-        let pattern = Pattern::stripe(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_color(0.0, 0.0, 0.0),
-            PatternsKind::Stripe,
-        );
+        let pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Stripe);
 
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.9, 0.0, 1.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(1.0, 0.0, 2.0)),
-            Tuple::new_color(0.0, 0.0, 0.0)
+            Tuple::black()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(-0.1, 0.0, 0.0)),
-            Tuple::new_color(0.0, 0.0, 0.0)
+            Tuple::black()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(-1.0, 0.0, 1.0)),
-            Tuple::new_color(0.0, 0.0, 0.0)
+            Tuple::black()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(-1.1, 0.0, 2.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
     }
 
@@ -171,32 +155,24 @@ mod tests {
         let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
         object.set_transformation(Transformation::scaling(2.0, 2.0, 2.0));
 
-        let pattern = Pattern::stripe(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_color(0.0, 0.0, 0.0),
-            PatternsKind::Stripe,
-        );
+        let pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Stripe);
 
         let c = pattern.stripe_at_object(&object, &Tuple::new_point(1.5, 0.0, 0.0));
 
-        assert_eq!(Tuple::new_color(1.0, 1.0, 1.0), c);
+        assert_eq!(Tuple::white(), c);
     }
 
     #[test]
     fn stripes_with_an_pattern_transformation() {
         let object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
 
-        let mut pattern = Pattern::stripe(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_color(0.0, 0.0, 0.0),
-            PatternsKind::Stripe,
-        );
+        let mut pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Stripe);
 
         pattern.set_transformation(Transformation::scaling(2.0, 2.0, 2.0));
 
         let c = pattern.stripe_at_object(&object, &Tuple::new_point(1.5, 0.0, 0.0));
 
-        assert_eq!(Tuple::new_color(1.0, 1.0, 1.0), c);
+        assert_eq!(Tuple::white(), c);
     }
 
     #[test]
@@ -204,30 +180,22 @@ mod tests {
         let mut object = Shape::default(Arc::new(Mutex::new(Sphere::new())));
         object.set_transformation(Transformation::scaling(2.0, 2.0, 2.0));
 
-        let mut pattern = Pattern::stripe(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_color(0.0, 0.0, 0.0),
-            PatternsKind::Stripe,
-        );
+        let mut pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Stripe);
 
         pattern.set_transformation(Transformation::translation(0.5, 0.0, 0.0));
 
         let c = pattern.stripe_at_object(&object, &Tuple::new_point(2.5, 0.0, 0.0));
 
-        assert_eq!(Tuple::new_color(1.0, 1.0, 1.0), c);
+        assert_eq!(Tuple::white(), c);
     }
 
     #[test]
     fn a_gradient_linearly_interpolates_between_colors() {
-        let pattern = Pattern::stripe(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_color(0.0, 0.0, 0.0),
-            PatternsKind::Gradient,
-        );
+        let pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Gradient);
 
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.25, 0.0, 0.0)),
@@ -245,23 +213,19 @@ mod tests {
 
     #[test]
     fn a_ring_should_extend_in_both_x_and_z() {
-        let pattern = Pattern::stripe(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_color(0.0, 0.0, 0.0),
-            PatternsKind::Ring,
-        );
+        let pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Ring);
 
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(1.0, 0.0, 0.0)),
-            Tuple::new_color(0.0, 0.0, 0.0)
+            Tuple::black()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 1.0)),
-            Tuple::new_color(0.0, 0.0, 0.0)
+            Tuple::black()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(
@@ -269,73 +233,61 @@ mod tests {
                 0.0,
                 2.0_f64.sqrt() / 2.0
             )),
-            Tuple::new_color(0.0, 0.0, 0.0)
+            Tuple::black()
         );
     }
 
     #[test]
     fn checkers_should_repeat_in_x() {
-        let pattern = Pattern::stripe(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_color(0.0, 0.0, 0.0),
-            PatternsKind::Checker,
-        );
+        let pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Checker);
 
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.99, 0.0, 0.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(1.01, 0.0, 0.0)),
-            Tuple::new_color(0.0, 0.0, 0.0)
+            Tuple::black()
         );
     }
 
     #[test]
     fn checkers_should_repeat_in_y() {
-        let pattern = Pattern::stripe(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_color(0.0, 0.0, 0.0),
-            PatternsKind::Checker,
-        );
+        let pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Checker);
 
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.99, 0.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 1.01, 0.0)),
-            Tuple::new_color(0.0, 0.0, 0.0)
+            Tuple::black()
         );
     }
 
     #[test]
     fn checkers_should_repeat_in_z() {
-        let pattern = Pattern::stripe(
-            Tuple::new_color(1.0, 1.0, 1.0),
-            Tuple::new_color(0.0, 0.0, 0.0),
-            PatternsKind::Checker,
-        );
+        let pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Checker);
 
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.0)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 0.99)),
-            Tuple::new_color(1.0, 1.0, 1.0)
+            Tuple::white()
         );
         assert_eq!(
             pattern.stripe_at(&Tuple::new_point(0.0, 0.0, 1.01)),
-            Tuple::new_color(0.0, 0.0, 0.0)
+            Tuple::black()
         );
     }
 }

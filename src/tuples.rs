@@ -34,6 +34,14 @@ impl Tuple {
         }
     }
 
+    pub fn black() -> Tuple {
+        Self::new_color(0.0, 0.0, 0.0)
+    }
+
+    pub fn white() -> Tuple {
+        Self::new_color(1.0, 1.0, 1.0)
+    }
+
     pub fn magnitude(&self) -> f64 {
         (self.x.powf(2.0) + self.y.powf(2.0) + self.z.powf(2.0) + self.w.powf(2.0)).sqrt()
     }
