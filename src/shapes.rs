@@ -226,7 +226,7 @@ mod tests {
         assert!(shape.material.get_refractive_index().approx_eq(1.5, margin));
     }
 
-    fn n1_n2_scenario() -> (Shape, Shape, Shape, Ray, Vec<Intersection>) {
+    fn n1_n2_scenario() -> (Ray, Vec<Intersection>) {
         let mut a = Shape::glass(Arc::new(Mutex::new(Sphere::new())));
 
         let a_transform = Transformation::translation(2.0, 2.0, 2.0);
@@ -268,12 +268,12 @@ mod tests {
             Intersection::new(6.0, a.clone()),
         ]);
 
-        (a, b, c, r, xs)
+        (r, xs)
     }
 
     #[test]
     fn finding_n1_and_n2_at_various_intersections_0() {
-        let (a, b, c, r, xs) = n1_n2_scenario();
+        let (r, xs) = n1_n2_scenario();
         let comps = xs.get(0).unwrap().prepare_computations(&r, &xs);
 
         let margin = F64Margin {
@@ -287,7 +287,7 @@ mod tests {
 
     #[test]
     fn finding_n1_and_n2_at_various_intersections_1() {
-        let (a, b, c, r, xs) = n1_n2_scenario();
+        let (r, xs) = n1_n2_scenario();
         let comps = xs.get(1).unwrap().prepare_computations(&r, &xs);
 
         let margin = F64Margin {
@@ -301,7 +301,7 @@ mod tests {
 
     #[test]
     fn finding_n1_and_n2_at_various_intersections_2() {
-        let (a, b, c, r, xs) = n1_n2_scenario();
+        let (r, xs) = n1_n2_scenario();
         let comps = xs.get(2).unwrap().prepare_computations(&r, &xs);
 
         let margin = F64Margin {
@@ -315,7 +315,7 @@ mod tests {
 
     #[test]
     fn finding_n1_and_n2_at_various_intersections_3() {
-        let (a, b, c, r, xs) = n1_n2_scenario();
+        let (r, xs) = n1_n2_scenario();
         let comps = xs.get(3).unwrap().prepare_computations(&r, &xs);
 
         let margin = F64Margin {
@@ -329,7 +329,7 @@ mod tests {
 
     #[test]
     fn finding_n1_and_n2_at_various_intersections_4() {
-        let (a, b, c, r, xs) = n1_n2_scenario();
+        let (r, xs) = n1_n2_scenario();
         let comps = xs.get(4).unwrap().prepare_computations(&r, &xs);
 
         let margin = F64Margin {
@@ -343,7 +343,7 @@ mod tests {
 
     #[test]
     fn finding_n1_and_n2_at_various_intersections_5() {
-        let (a, b, c, r, xs) = n1_n2_scenario();
+        let (r, xs) = n1_n2_scenario();
         let comps = xs.get(5).unwrap().prepare_computations(&r, &xs);
 
         let margin = F64Margin {
