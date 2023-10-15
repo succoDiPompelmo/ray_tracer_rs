@@ -167,10 +167,12 @@ impl Computations {
         &self.reflectv
     }
 
+    #[cfg(test)]
     pub fn get_n1(&self) -> f64 {
         self.n1
     }
 
+    #[cfg(test)]
     pub fn get_n2(&self) -> f64 {
         self.n2
     }
@@ -180,8 +182,6 @@ impl Computations {
 mod tests {
 
     use std::sync::{Arc, Mutex};
-
-    use rayon::vec;
 
     use crate::{
         planes::Plane, rays::Ray, shapes::Shape, spheres::Sphere, transformations::Transformation,

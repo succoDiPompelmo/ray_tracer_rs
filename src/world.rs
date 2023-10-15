@@ -124,7 +124,8 @@ impl World {
         return color * comps.get_object().get_material().get_reflective();
     }
 
-    pub fn refracted_color(&self, comps: &Computations, remaining: usize) -> Tuple {
+    #[cfg(test)]
+    pub fn refracted_color(&self, comps: &Computations, _remaining: usize) -> Tuple {
         let margin = F64Margin {
             ulps: 2,
             epsilon: 1e-14,
@@ -475,7 +476,7 @@ mod tests {
             Tuple::new_vector(0.0, 1.0, 0.0),
         );
 
-        let color = w.color_at(&r, 5);
+        w.color_at(&r, 5);
 
         // No infinite recursion happened and we safely reached this assetion
         assert!(true)

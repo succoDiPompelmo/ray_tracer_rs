@@ -46,6 +46,7 @@ impl Shape {
         }
     }
 
+    #[cfg(test)]
     pub fn glass(polygon: Arc<Mutex<dyn Polygon + Send + Sync>>) -> Shape {
         let mut material = Material::default();
         material.set_transparency(1.0);

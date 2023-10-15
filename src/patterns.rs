@@ -62,6 +62,7 @@ impl Pattern {
         }
     }
 
+    #[cfg(test)]
     pub fn set_transformation(&mut self, transformation: Matrix) {
         self.transformation = transformation;
     }
