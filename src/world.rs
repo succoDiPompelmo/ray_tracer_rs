@@ -144,6 +144,14 @@ impl World {
             return Tuple::black();
         }
 
+        let n_ratio = comps.get_n1() / comps.get_n2();
+        let cos_i = comps.get_eyev_ref().dot(comps.get_normalv_ref());
+        let sin2_t = n_ratio.powi(2) * (1.0 - cos_i.powi(2));
+
+        if sin2_t > 1.0 {
+            return Tuple::black();
+        }
+
         Tuple::white()
     }
 }
@@ -548,6 +556,31 @@ mod tests {
         let comps = xs.get(0).unwrap().prepare_computations(&r, &xs);
 
         let c = w.reflected_color(&comps, 0);
+        assert_eq!(c, Tuple::black())
+    }
+
+    #[test]
+    fn the_refracted_color_under_total_internal_reflection() {
+        let mut w = World::default();
+        let shape = w.objects.get_mut(0).unwrap();
+
+        let mut material = Material::default();
+        material.set_transparency(1.0);
+        material.set_refractive_index(1.5);
+        shape.set_material(material);
+
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, 2.0_f64.sqrt() / 2.0),
+            Tuple::new_vector(0.0, 1.0, 0.0),
+        );
+        let xs = Intersection::intersects(&[
+            Intersection::new(-2.0_f64.sqrt() / 2.0, shape.clone()),
+            Intersection::new(2.0_f64.sqrt() / 2.0, shape.clone()),
+        ]);
+
+        let comps = xs.get(1).unwrap().prepare_computations(&r, &xs);
+
+        let c = w.refracted_color(&comps, 5);
         assert_eq!(c, Tuple::black())
     }
 }
