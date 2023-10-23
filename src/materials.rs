@@ -37,7 +37,6 @@ impl Material {
         self.reflective
     }
 
-    #[cfg(test)]
     pub fn get_transparency(&self) -> f64 {
         self.transparency
     }

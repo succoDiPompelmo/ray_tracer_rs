@@ -171,12 +171,10 @@ impl Computations {
         &self.reflectv
     }
 
-    #[cfg(test)]
     pub fn get_n1(&self) -> f64 {
         self.n1
     }
 
-    #[cfg(test)]
     pub fn get_n2(&self) -> f64 {
         self.n2
     }
