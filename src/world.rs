@@ -152,7 +152,13 @@ impl World {
             return Tuple::black();
         }
 
-        Tuple::white()
+        let cos_t = (1.0 - sin2_t).sqrt();
+        let direction =
+            comps.get_normalv_ref() * (n_ratio * cos_i - cos_t) - comps.get_eyev_ref() * n_ratio;
+        let refracted_ray = Ray::new(comps.get_under_point_ref().clone(), direction);
+
+        self.color_at(&refracted_ray, remaining - 1)
+            * comps.get_object().get_material().get_transparency()
     }
 }
 
@@ -162,7 +168,11 @@ mod tests {
     use std::sync::{Arc, Mutex};
 
     use crate::{
-        materials::Material, planes::Plane, spheres::Sphere, transformations::Transformation,
+        materials::Material,
+        patterns::{Pattern, PatternsKind},
+        planes::Plane,
+        spheres::Sphere,
+        transformations::Transformation,
     };
 
     use super::*;
@@ -582,5 +592,43 @@ mod tests {
 
         let c = w.refracted_color(&comps, 5);
         assert_eq!(c, Tuple::black())
+    }
+
+    #[test]
+    fn the_refracted_color_with_a_refracted_ray() {
+        let mut w = World::default();
+
+        let mut a_material = Material::default();
+        a_material.set_ambient(1.0);
+        let a_pattern = Pattern::stripe(Tuple::black(), Tuple::black(), PatternsKind::Test);
+        a_material.set_pattern(a_pattern);
+        w.objects.get_mut(0).unwrap().set_material(a_material);
+
+        let mut b_material = Material::default();
+        b_material.set_transparency(1.0);
+        b_material.set_refractive_index(1.5);
+        w.objects.get_mut(1).unwrap().set_material(b_material);
+
+        let a = w.objects.get(0).unwrap();
+        let b = w.objects.get(1).unwrap();
+
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, 0.1),
+            Tuple::new_vector(0.0, 1.0, 0.0),
+        );
+        let xs = Intersection::intersects(&[
+            Intersection::new(-0.9899, a.clone()),
+            Intersection::new(-0.4899, b.clone()),
+            Intersection::new(0.4899, b.clone()),
+            Intersection::new(0.9899, a.clone()),
+        ]);
+
+        let comps = xs.get(2).unwrap().prepare_computations(&r, &xs);
+        let c = w.refracted_color(&comps, 5);
+
+        assert_eq!(
+            c,
+            Tuple::new_color(0.0, 0.9988846684722223, 0.04721672469727399)
+        );
     }
 }

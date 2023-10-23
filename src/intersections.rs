@@ -163,6 +163,10 @@ impl Computations {
         &self.over_point
     }
 
+    pub fn get_under_point_ref(&self) -> &Tuple {
+        &self.under_point
+    }
+
     pub fn get_reflectv(&self) -> &Tuple {
         &self.reflectv
     }

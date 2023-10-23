@@ -6,6 +6,7 @@ pub enum PatternsKind {
     Gradient,
     Ring,
     Checker,
+    Test,
 }
 
 #[derive(Clone, Debug)]
@@ -59,6 +60,7 @@ impl Pattern {
                 }
                 self.color_b
             }
+            PatternsKind::Test => Tuple::new_color(point.x, point.y, point.z),
         }
     }
 
