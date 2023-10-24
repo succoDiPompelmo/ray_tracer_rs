@@ -46,8 +46,10 @@ fn main() {
     middle_material.set_color(Tuple::new_color(0.1, 1.0, 0.5));
     middle_material.set_diffuse(0.7);
     middle_material.set_specular(0.3);
-    let middle_pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Checker);
-    middle_material.set_pattern(middle_pattern);
+    middle_material.set_transparency(0.8);
+    middle_material.set_refractive_index(0.4);
+    // let middle_pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Checker);
+    // middle_material.set_pattern(middle_pattern);
     middle.set_material(middle_material);
     middle.precompute_inverse_transformation();
 

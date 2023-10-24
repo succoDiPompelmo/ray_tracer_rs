@@ -71,12 +71,10 @@ impl Material {
         self.reflective = reflective
     }
 
-    #[cfg(test)]
     pub fn set_transparency(&mut self, transparency: f64) {
         self.transparency = transparency
     }
 
-    #[cfg(test)]
     pub fn set_refractive_index(&mut self, refractive_index: f64) {
         self.refractive_index = refractive_index
     }
