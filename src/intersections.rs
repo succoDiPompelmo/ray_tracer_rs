@@ -180,7 +180,7 @@ impl Computations {
     }
 
     pub fn schlick(&self) -> f64 {
-        let cos = self.eyev.dot(&self.normalv);
+        let mut cos = self.eyev.dot(&self.normalv);
 
         if self.n1 > self.n2 {
             let n = self.n1 / self.n2;
@@ -189,9 +189,13 @@ impl Computations {
             if sin2_t > 1.0 {
                 return 1.0;
             }
+
+            let cos_t = (1.0 - sin2_t).sqrt();
+            cos = cos_t;
         }
 
-        return 0.0;
+        let r0 = ((self.n1 - self.n2) / (self.n1 + self.n2)).powi(2);
+        r0 + (1.0 - r0) * (1.0 - cos).powi(5)
     }
 }
 
@@ -418,5 +422,48 @@ mod tests {
         };
 
         assert!(reflectance.approx_eq(1.0, margin));
+    }
+
+    #[test]
+    fn determine_reflectance_of_a_perpendicular_ray() {
+        let shape = Shape::glass(Arc::new(Mutex::new(Sphere::new())));
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, 0.0),
+            Tuple::new_vector(0.0, 1.0, 0.0),
+        );
+        let xs = Intersection::intersects(&[
+            Intersection::new(-1.0, shape.clone()),
+            Intersection::new(1.0, shape.clone()),
+        ]);
+
+        let comps: Computations = xs.get(1).unwrap().prepare_computations(&r, &xs);
+        let reflectance = comps.schlick();
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        assert!(reflectance.approx_eq(0.04, margin));
+    }
+
+    #[test]
+    fn the_schlick_approximation_with_small_angle_and_n2_greater_than_n1() {
+        let shape = Shape::glass(Arc::new(Mutex::new(Sphere::new())));
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.99, -2.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+        let xs = Intersection::intersects(&[Intersection::new(1.8589, shape.clone())]);
+
+        let comps: Computations = xs.get(0).unwrap().prepare_computations(&r, &xs);
+        let reflectance = comps.schlick();
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        assert!(reflectance.approx_eq(0.48873081012212183, margin));
     }
 }

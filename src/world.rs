@@ -67,6 +67,13 @@ impl World {
         let reflected = self.reflected_color(comps, recursion_depth_left);
         let refracted = self.refracted_color(comps, recursion_depth_left);
 
+        if comps.get_object().get_material().get_reflective() > 0.0
+            && comps.get_object().get_material().get_transparency() > 0.0
+        {
+            let reflectance = comps.schlick();
+            return surface + reflected * reflectance + refracted * (1.0 - reflectance);
+        }
+
         surface + reflected + refracted
     }
 
@@ -662,6 +669,40 @@ mod tests {
         assert_eq!(
             color,
             Tuple::new_color(0.9364253889815014, 0.6864253889815014, 0.6864253889815014)
+        );
+    }
+
+    #[test]
+    fn shade_hit_with_a_reflective_transparent_material() {
+        let mut w = World::default();
+
+        let mut floor = Shape::default(Arc::new(Mutex::new(Plane::new())));
+        let mut floor_material = Material::default();
+        floor_material.set_transparency(0.5);
+        floor_material.set_refractive_index(1.5);
+        floor_material.set_reflective(0.5);
+        floor.set_transformation(Transformation::translation(0.0, -1.0, 0.0));
+        floor.set_material(floor_material);
+        w.add_objects(&[floor.clone()]);
+
+        let mut ball = Shape::default(Arc::new(Mutex::new(Sphere::new())));
+        let mut ball_material = Material::default();
+        ball_material.set_color(Tuple::new_color(1.0, 0.0, 0.0));
+        ball_material.set_ambient(0.5);
+        ball.set_transformation(Transformation::translation(0.0, -3.5, -0.5));
+        ball.set_material(ball_material);
+        w.add_objects(&[ball]);
+
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, -3.0),
+            Tuple::new_vector(0.0, -2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0),
+        );
+        let xs = Intersection::intersects(&[Intersection::new(2.0_f64.sqrt(), floor)]);
+        let comps = xs.get(0).unwrap().prepare_computations(&r, &xs);
+        let color = w.shade_hit(&comps, 5);
+        assert_eq!(
+            color,
+            Tuple::new_color(0.9339151478022591, 0.6964342353588149, 0.6924306968078895)
         );
     }
 }
