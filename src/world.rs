@@ -155,7 +155,7 @@ impl World {
         let cos_t = (1.0 - sin2_t).sqrt();
         let direction =
             comps.get_normalv_ref() * (n_ratio * cos_i - cos_t) - comps.get_eyev_ref() * n_ratio;
-        let refracted_ray = Ray::new(comps.get_under_point_ref().clone(), direction);
+        let refracted_ray = Ray::new(*comps.get_under_point_ref(), direction);
 
         self.color_at(&refracted_ray, remaining - 1)
             * comps.get_object().get_material().get_transparency()
