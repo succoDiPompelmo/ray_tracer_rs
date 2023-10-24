@@ -178,6 +178,21 @@ impl Computations {
     pub fn get_n2(&self) -> f64 {
         self.n2
     }
+
+    pub fn schlick(&self) -> f64 {
+        let cos = self.eyev.dot(&self.normalv);
+
+        if self.n1 > self.n2 {
+            let n = self.n1 / self.n2;
+            let sin2_t = n.powi(2) * (1.0 - cos.powi(2));
+
+            if sin2_t > 1.0 {
+                return 1.0;
+            }
+        }
+
+        return 0.0;
+    }
 }
 
 #[cfg(test)]
@@ -380,5 +395,28 @@ mod tests {
         let comps = i.prepare_computations(&r, &xs);
         assert!(comps.under_point.z > 0.0);
         assert!(comps.point.z < comps.under_point.z);
+    }
+
+    #[test]
+    fn the_schlick_approximation_under_total_internal_reflection() {
+        let shape = Shape::glass(Arc::new(Mutex::new(Sphere::new())));
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.0, 2.0_f64.sqrt() / 2.0),
+            Tuple::new_vector(0.0, 1.0, 0.0),
+        );
+        let xs = Intersection::intersects(&[
+            Intersection::new(-2.0_f64.sqrt() / 2.0, shape.clone()),
+            Intersection::new(2.0_f64.sqrt() / 2.0, shape.clone()),
+        ]);
+
+        let comps: Computations = xs.get(1).unwrap().prepare_computations(&r, &xs);
+        let reflectance = comps.schlick();
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        assert!(reflectance.approx_eq(1.0, margin));
     }
 }
