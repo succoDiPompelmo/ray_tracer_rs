@@ -1,4 +1,6 @@
-use crate::{rays::Ray, shapes::Polygon, tuples::Tuple, intersections::Intersection};
+use float_cmp::{ApproxEq, F64Margin};
+
+use crate::{rays::Ray, shapes::Polygon, tuples::Tuple};
 
 pub struct Cube {}
 
@@ -10,22 +12,40 @@ impl Cube {
 
 impl Polygon for Cube {
     fn intersect(&self, original_ray: &Ray) -> Vec<f64> {
-        let (xtmin, xtmax) = check_axis(original_ray.get_origin().x, original_ray.get_direction().x);
-        let (ytmin, ytmax) = check_axis(original_ray.get_origin().y, original_ray.get_direction().y);
-        let (ztmin, ztmax) = check_axis(original_ray.get_origin().z, original_ray.get_direction().z);
+        let (xtmin, xtmax) =
+            check_axis(original_ray.get_origin().x, original_ray.get_direction().x);
+        let (ytmin, ytmax) =
+            check_axis(original_ray.get_origin().y, original_ray.get_direction().y);
+        let (ztmin, ztmax) =
+            check_axis(original_ray.get_origin().z, original_ray.get_direction().z);
 
         let tmin = xtmin.max(ytmin).max(ztmin);
         let tmax = xtmax.min(ytmax).min(ztmax);
 
         if tmin > tmax {
-            return vec![]
+            return vec![];
         }
 
         vec![tmin, tmax]
     }
 
     fn normal_at(&self, point: &Tuple) -> Tuple {
-        todo!()
+        let maxc = point.x.abs().max(point.y.abs()).max(point.z.abs());
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        if maxc.approx_eq(point.x.abs(), margin) {
+            return Tuple::new_vector(point.x, 0.0, 0.0);
+        }
+
+        if maxc.approx_eq(point.y.abs(), margin) {
+            return Tuple::new_vector(0.0, point.y, 0.0);
+        }
+
+        Tuple::new_vector(0.0, 0.0, point.z)
     }
 }
 
@@ -36,14 +56,17 @@ fn check_axis(origin: f64, direction: f64) -> (f64, f64) {
     let (tmin, tmax) = if direction.abs() > 0.0000001 {
         (tmin_numerator / direction, tmax_numerator / direction)
     } else {
-        (tmin_numerator * 1_000_000_000_000_000.0, tmax_numerator * 1_000_000_000_000_000.0)
+        (
+            tmin_numerator * 1_000_000_000_000_000.0,
+            tmax_numerator * 1_000_000_000_000_000.0,
+        )
     };
 
     if tmin > tmax {
         return (tmax, tmin);
     }
 
-    return (tmin, tmax)
+    (tmin, tmax)
 }
 
 #[cfg(test)]
@@ -145,11 +168,70 @@ mod tests {
 
     #[test]
     fn a_ray_misses_a_cube_scenarios() {
-        a_ray_misses_a_cube(Tuple::new_point(-2.0, 0.0, 0.0), Tuple::new_vector(0.2673, 0.5345, 0.8018));
-        a_ray_misses_a_cube(Tuple::new_point(0.0, -2.0, 0.0), Tuple::new_vector(0.8018, 0.2673, 0.5345));
-        a_ray_misses_a_cube(Tuple::new_point(0.0, 0.0, -2.0), Tuple::new_vector(0.5345, 0.8018, 0.2673));
-        a_ray_misses_a_cube(Tuple::new_point(2.0, 0.0, 2.0), Tuple::new_vector(0.0, 0.0, -1.0));
-        a_ray_misses_a_cube(Tuple::new_point(0.0, 2.0, 2.0), Tuple::new_vector(0.0, -1.0, 0.0));
-        a_ray_misses_a_cube(Tuple::new_point(2.0, 2.0, 0.0), Tuple::new_vector(-1.0, 0.0, 0.0));
+        a_ray_misses_a_cube(
+            Tuple::new_point(-2.0, 0.0, 0.0),
+            Tuple::new_vector(0.2673, 0.5345, 0.8018),
+        );
+        a_ray_misses_a_cube(
+            Tuple::new_point(0.0, -2.0, 0.0),
+            Tuple::new_vector(0.8018, 0.2673, 0.5345),
+        );
+        a_ray_misses_a_cube(
+            Tuple::new_point(0.0, 0.0, -2.0),
+            Tuple::new_vector(0.5345, 0.8018, 0.2673),
+        );
+        a_ray_misses_a_cube(
+            Tuple::new_point(2.0, 0.0, 2.0),
+            Tuple::new_vector(0.0, 0.0, -1.0),
+        );
+        a_ray_misses_a_cube(
+            Tuple::new_point(0.0, 2.0, 2.0),
+            Tuple::new_vector(0.0, -1.0, 0.0),
+        );
+        a_ray_misses_a_cube(
+            Tuple::new_point(2.0, 2.0, 0.0),
+            Tuple::new_vector(-1.0, 0.0, 0.0),
+        );
+    }
+
+    fn the_normal_on_the_surface_of_a_cube(point: Tuple, normal: Tuple) {
+        let c = Cube::new();
+        assert_eq!(normal, c.normal_at(&point));
+    }
+
+    #[test]
+    fn the_normal_on_the_surface_of_a_cube_scenarios() {
+        the_normal_on_the_surface_of_a_cube(
+            Tuple::new_point(1.0, 0.5, -0.8),
+            Tuple::new_vector(1.0, 0.0, 0.0),
+        );
+        the_normal_on_the_surface_of_a_cube(
+            Tuple::new_point(-1.0, -0.2, 0.9),
+            Tuple::new_vector(-1.0, 0.0, 0.0),
+        );
+        the_normal_on_the_surface_of_a_cube(
+            Tuple::new_point(-0.4, 1.0, -0.1),
+            Tuple::new_vector(0.0, 1.0, 0.0),
+        );
+        the_normal_on_the_surface_of_a_cube(
+            Tuple::new_point(0.3, -1.0, -0.7),
+            Tuple::new_vector(0.0, -1.0, 0.0),
+        );
+        the_normal_on_the_surface_of_a_cube(
+            Tuple::new_point(-0.6, 0.3, 1.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+        the_normal_on_the_surface_of_a_cube(
+            Tuple::new_point(0.4, 0.4, -1.0),
+            Tuple::new_vector(0.0, 0.0, -1.0),
+        );
+        the_normal_on_the_surface_of_a_cube(
+            Tuple::new_point(1.0, 1.0, 1.0),
+            Tuple::new_vector(1.0, 0.0, 0.0),
+        );
+        the_normal_on_the_surface_of_a_cube(
+            Tuple::new_point(-1.0, -1.0, -1.0),
+            Tuple::new_vector(-1.0, 0.0, 0.0),
+        );
     }
 }
