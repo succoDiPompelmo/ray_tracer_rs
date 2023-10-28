@@ -72,8 +72,6 @@ fn check_axis(origin: f64, direction: f64) -> (f64, f64) {
 #[cfg(test)]
 mod tests {
 
-    use crate::{rays::Ray, tuples::Tuple};
-
     use super::*;
 
     fn a_ray_intersects_a_cube(point: Tuple, direction: Tuple, t1: f64, t2: f64) {

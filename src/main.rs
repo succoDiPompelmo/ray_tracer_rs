@@ -1,6 +1,7 @@
 mod camera;
 mod canvas;
 mod cubes;
+mod cylinders;
 mod intersections;
 mod lights;
 mod materials;
