@@ -41,7 +41,7 @@ impl Polygon for Cylinder {
     }
 
     fn normal_at(&self, point: &Tuple) -> Tuple {
-        todo!()
+        Tuple::new_vector(point.x, 0.0, point.z)
     }
 }
 
@@ -103,6 +103,33 @@ mod tests {
             Tuple::new_vector(0.1, 1.0, 1.0),
             6.80798191702732,
             7.088723439378861,
+        );
+    }
+
+    fn normal_vector_on_a_cylinder(point: Tuple, normal: Tuple) {
+        let cyl = Cylinder::new();
+        let n = cyl.normal_at(&point);
+
+        assert_eq!(n, normal);
+    }
+
+    #[test]
+    fn normal_vector_on_a_cylinder_scenarios() {
+        normal_vector_on_a_cylinder(
+            Tuple::new_point(1.0, 0.0, 0.0),
+            Tuple::new_vector(1.0, 0.0, 0.0),
+        );
+        normal_vector_on_a_cylinder(
+            Tuple::new_point(0.0, 5.0, -1.0),
+            Tuple::new_vector(0.0, 0.0, -1.0),
+        );
+        normal_vector_on_a_cylinder(
+            Tuple::new_point(0.0, -2.0, 1.0),
+            Tuple::new_vector(0.0, 0.0, 1.0),
+        );
+        normal_vector_on_a_cylinder(
+            Tuple::new_point(-1.0, 1.0, 0.0),
+            Tuple::new_vector(-1.0, 0.0, 0.0),
         );
     }
 }
