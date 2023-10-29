@@ -91,6 +91,21 @@ impl Polygon for Cylinder {
     }
 
     fn normal_at(&self, point: &Tuple) -> Tuple {
+        let dist = point.x.powi(2) + point.z.powi(2);
+
+        let margin = F64Margin {
+            ulps: 2,
+            epsilon: 1e-14,
+        };
+
+        if dist < 1.0 && (point.y.approx_eq(self.maximum, margin) || point.y > self.maximum) {
+            return Tuple::new_vector(0.0, 1.0, 0.0);
+        }
+
+        if dist < 1.0 && (point.y.approx_eq(self.minimum, margin) || point.y < self.minimum) {
+            return Tuple::new_vector(0.0, -1.0, 0.0);
+        }
+
         Tuple::new_vector(point.x, 0.0, point.z)
     }
 }
@@ -293,6 +308,44 @@ mod tests {
             Tuple::new_point(0.0, -1.0, -2.0),
             Tuple::new_vector(0.0, 1.0, 1.0),
             2,
+        );
+    }
+
+    fn the_normal_vector_on_a_cylinders_end_caps(point: Tuple, normal: Tuple) {
+        let mut cyl = Cylinder::new();
+        cyl.minimum = 1.0;
+        cyl.maximum = 2.0;
+        cyl.closed = true;
+
+        let n = cyl.normal_at(&point);
+        assert_eq!(n, normal);
+    }
+
+    #[test]
+    fn the_normal_vector_on_a_cylinders_end_caps_scenarios() {
+        the_normal_vector_on_a_cylinders_end_caps(
+            Tuple::new_point(0.0, 1.0, 0.0),
+            Tuple::new_vector(0.0, -1.0, 0.0),
+        );
+        the_normal_vector_on_a_cylinders_end_caps(
+            Tuple::new_point(0.5, 1.0, 0.0),
+            Tuple::new_vector(0.0, -1.0, 0.0),
+        );
+        the_normal_vector_on_a_cylinders_end_caps(
+            Tuple::new_point(0.0, 1.0, 0.5),
+            Tuple::new_vector(0.0, -1.0, 0.0),
+        );
+        the_normal_vector_on_a_cylinders_end_caps(
+            Tuple::new_point(0.0, 2.0, 0.0),
+            Tuple::new_vector(0.0, 1.0, 0.0),
+        );
+        the_normal_vector_on_a_cylinders_end_caps(
+            Tuple::new_point(0.5, 2.0, 0.0),
+            Tuple::new_vector(0.0, 1.0, 0.0),
+        );
+        the_normal_vector_on_a_cylinders_end_caps(
+            Tuple::new_point(0.0, 2.0, 0.5),
+            Tuple::new_vector(0.0, 1.0, 0.0),
         );
     }
 }
