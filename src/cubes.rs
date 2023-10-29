@@ -5,6 +5,7 @@ use crate::{rays::Ray, shapes::Polygon, tuples::Tuple};
 pub struct Cube {}
 
 impl Cube {
+    #[cfg(test)]
     fn new() -> Cube {
         Cube {}
     }
