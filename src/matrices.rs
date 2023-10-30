@@ -1,7 +1,7 @@
 use std::ops;
 
-use crate::tuples::Tuple;
-use float_cmp::{ApproxEq, F64Margin};
+use crate::{margin::Margin, tuples::Tuple};
+use float_cmp::ApproxEq;
 
 #[derive(Clone, Debug)]
 pub struct Matrix {
@@ -110,7 +110,7 @@ impl Matrix {
     }
 
     fn is_invertible(&self) -> bool {
-        !self.determinant().approx_eq(0.0, F64Margin::default())
+        !self.determinant().approx_eq(0.0, Margin::default_f64())
     }
 
     pub fn invert(&self) -> Matrix {
@@ -133,18 +133,16 @@ impl Matrix {
 
 impl PartialEq for Matrix {
     fn eq(&self, other: &Self) -> bool {
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
         if !(self.width == other.width && self.height == other.height) {
             return false;
         }
 
         for row in 0..self.height {
             for col in 0..self.width {
-                if !self.get(row, col).approx_eq(other.get(row, col), margin) {
+                if !self
+                    .get(row, col)
+                    .approx_eq(other.get(row, col), Margin::default_f64())
+                {
                     return false;
                 }
             }
@@ -237,13 +235,13 @@ mod tests {
             4,
         );
 
-        assert!(matrix.get(0, 0).approx_eq(1.0, F64Margin::default()));
-        assert!(matrix.get(0, 3).approx_eq(4.0, F64Margin::default()));
-        assert!(matrix.get(1, 0).approx_eq(5.5, F64Margin::default()));
-        assert!(matrix.get(1, 2).approx_eq(7.5, F64Margin::default()));
-        assert!(matrix.get(2, 2).approx_eq(11.0, F64Margin::default()));
-        assert!(matrix.get(3, 0).approx_eq(13.5, F64Margin::default()));
-        assert!(matrix.get(3, 2).approx_eq(15.5, F64Margin::default()));
+        assert!(matrix.get(0, 0).approx_eq(1.0, Margin::default_f64()));
+        assert!(matrix.get(0, 3).approx_eq(4.0, Margin::default_f64()));
+        assert!(matrix.get(1, 0).approx_eq(5.5, Margin::default_f64()));
+        assert!(matrix.get(1, 2).approx_eq(7.5, Margin::default_f64()));
+        assert!(matrix.get(2, 2).approx_eq(11.0, Margin::default_f64()));
+        assert!(matrix.get(3, 0).approx_eq(13.5, Margin::default_f64()));
+        assert!(matrix.get(3, 2).approx_eq(15.5, Margin::default_f64()));
     }
 
     #[test]
@@ -251,19 +249,19 @@ mod tests {
         let matrix =
             Matrix::from_vector(vec![-3.0, 5.0, 0.0, 1.0, -2.0, -7.0, 0.0, 1.0, 1.0], 3, 3);
 
-        assert!(matrix.get(0, 0).approx_eq(-3.0, F64Margin::default()));
-        assert!(matrix.get(1, 1).approx_eq(-2.0, F64Margin::default()));
-        assert!(matrix.get(2, 2).approx_eq(1.0, F64Margin::default()));
+        assert!(matrix.get(0, 0).approx_eq(-3.0, Margin::default_f64()));
+        assert!(matrix.get(1, 1).approx_eq(-2.0, Margin::default_f64()));
+        assert!(matrix.get(2, 2).approx_eq(1.0, Margin::default_f64()));
     }
 
     #[test]
     fn two_by_two_matrix_is_representable() {
         let matrix = Matrix::from_vector(vec![-3.0, 5.0, 1.0, -2.0], 2, 2);
 
-        assert!(matrix.get(0, 0).approx_eq(-3.0, F64Margin::default()));
-        assert!(matrix.get(0, 1).approx_eq(5.0, F64Margin::default()));
-        assert!(matrix.get(1, 0).approx_eq(1.0, F64Margin::default()));
-        assert!(matrix.get(1, 1).approx_eq(-2.0, F64Margin::default()));
+        assert!(matrix.get(0, 0).approx_eq(-3.0, Margin::default_f64()));
+        assert!(matrix.get(0, 1).approx_eq(5.0, Margin::default_f64()));
+        assert!(matrix.get(1, 0).approx_eq(1.0, Margin::default_f64()));
+        assert!(matrix.get(1, 1).approx_eq(-2.0, Margin::default_f64()));
     }
 
     #[test]

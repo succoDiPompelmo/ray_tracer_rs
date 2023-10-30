@@ -1,6 +1,6 @@
-use float_cmp::{ApproxEq, F64Margin};
+use float_cmp::ApproxEq;
 
-use crate::{rays::Ray, shapes::Shape, tuples::Tuple};
+use crate::{margin::Margin, rays::Ray, shapes::Shape, tuples::Tuple};
 
 #[derive(Clone, Debug)]
 pub struct Intersection {
@@ -10,12 +10,7 @@ pub struct Intersection {
 
 impl PartialEq for Intersection {
     fn eq(&self, other: &Self) -> bool {
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        self.t.approx_eq(other.get_t(), margin)
+        self.t.approx_eq(other.get_t(), Margin::default_f64())
     }
 }
 
@@ -416,12 +411,7 @@ mod tests {
         let comps: Computations = xs.get(1).unwrap().prepare_computations(&r, &xs);
         let reflectance = comps.schlick();
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        assert!(reflectance.approx_eq(1.0, margin));
+        assert!(reflectance.approx_eq(1.0, Margin::default_f64()));
     }
 
     #[test]
@@ -439,12 +429,7 @@ mod tests {
         let comps: Computations = xs.get(1).unwrap().prepare_computations(&r, &xs);
         let reflectance = comps.schlick();
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        assert!(reflectance.approx_eq(0.04, margin));
+        assert!(reflectance.approx_eq(0.04, Margin::default_f64()));
     }
 
     #[test]
@@ -459,11 +444,6 @@ mod tests {
         let comps: Computations = xs.get(0).unwrap().prepare_computations(&r, &xs);
         let reflectance = comps.schlick();
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        assert!(reflectance.approx_eq(0.48873081012212183, margin));
+        assert!(reflectance.approx_eq(0.48873081012212183, Margin::default_f64()));
     }
 }

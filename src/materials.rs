@@ -126,9 +126,9 @@ mod tests {
 
     use std::sync::{Arc, Mutex};
 
-    use float_cmp::{ApproxEq, F64Margin};
+    use float_cmp::ApproxEq;
 
-    use crate::{lights::PointLight, patterns::PatternsKind, spheres::Sphere};
+    use crate::{lights::PointLight, margin::Margin, patterns::PatternsKind, spheres::Sphere};
 
     use super::*;
 
@@ -277,24 +277,16 @@ mod tests {
     fn reflectivity_for_the_default_material() {
         let material = Material::default();
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        assert!(material.reflective.approx_eq(0.0, margin));
+        assert!(material.reflective.approx_eq(0.0, Margin::default_f64()));
     }
 
     #[test]
     fn transparency_and_refractive_index_for_default_material() {
         let material = Material::default();
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        assert!(material.transparency.approx_eq(0.0, margin));
-        assert!(material.refractive_index.approx_eq(1.0, margin));
+        assert!(material.transparency.approx_eq(0.0, Margin::default_f64()));
+        assert!(material
+            .refractive_index
+            .approx_eq(1.0, Margin::default_f64()));
     }
 }

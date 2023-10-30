@@ -4,6 +4,7 @@ mod cubes;
 mod cylinders;
 mod intersections;
 mod lights;
+mod margin;
 mod materials;
 mod matrices;
 mod patterns;

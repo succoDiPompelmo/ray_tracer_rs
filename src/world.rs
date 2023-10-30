@@ -1,8 +1,9 @@
-use float_cmp::{ApproxEq, F64Margin};
+use float_cmp::ApproxEq;
 
 use crate::{
     intersections::{Computations, Intersection},
     lights::PointLight,
+    margin::Margin,
     rays::Ray,
     shapes::Shape,
     tuples::Tuple,
@@ -112,16 +113,11 @@ impl World {
             return Tuple::black();
         }
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
         if comps
             .get_object()
             .get_material()
             .get_reflective()
-            .approx_eq(0.0, margin)
+            .approx_eq(0.0, Margin::default_f64())
         {
             return Tuple::black();
         }
@@ -137,16 +133,11 @@ impl World {
             return Tuple::black();
         }
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
         if comps
             .get_object()
             .get_material()
             .get_transparency()
-            .approx_eq(0.0, margin)
+            .approx_eq(0.0, Margin::default_f64())
         {
             return Tuple::black();
         }

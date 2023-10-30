@@ -26,9 +26,9 @@ impl Polygon for Plane {
 #[cfg(test)]
 mod tests {
 
-    use float_cmp::{ApproxEq, F64Margin};
+    use float_cmp::ApproxEq;
 
-    use crate::{rays::Ray, tuples::Tuple};
+    use crate::{margin::Margin, rays::Ray, tuples::Tuple};
 
     use super::*;
 
@@ -79,13 +79,8 @@ mod tests {
         );
         let xs = p.intersect(&r);
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
         assert!(xs.len() == 1);
-        assert!(xs.get(0).unwrap().approx_eq(1.0, margin));
+        assert!(xs.get(0).unwrap().approx_eq(1.0, Margin::default_f64()));
     }
 
     #[test]
@@ -97,12 +92,7 @@ mod tests {
         );
         let xs = p.intersect(&r);
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
         assert!(xs.len() == 1);
-        assert!(xs.get(0).unwrap().approx_eq(1.0, margin));
+        assert!(xs.get(0).unwrap().approx_eq(1.0, Margin::default_f64()));
     }
 }

@@ -90,9 +90,11 @@ mod tests {
 
     use std::f64::consts::PI;
 
-    use float_cmp::{ApproxEq, F64Margin};
-
-    use crate::{canvas::Canvas, transformations::Transformation, tuples::Tuple, world::World};
+    use crate::{
+        canvas::Canvas, margin::Margin, transformations::Transformation, tuples::Tuple,
+        world::World,
+    };
+    use float_cmp::ApproxEq;
 
     use super::*;
 
@@ -114,24 +116,14 @@ mod tests {
     fn pixel_size_for_a_horizontal_canvas() {
         let c = Camera::new(200, 125, PI / 2.0);
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        assert!(c.pixel_size.approx_eq(0.01, margin));
+        assert!(c.pixel_size.approx_eq(0.01, Margin::default_f64()));
     }
 
     #[test]
     fn pixel_size_for_a_vertical_canvas() {
         let c = Camera::new(125, 200, PI / 2.0);
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        assert!(c.pixel_size.approx_eq(0.01, margin));
+        assert!(c.pixel_size.approx_eq(0.01, Margin::default_f64()));
     }
 
     #[test]

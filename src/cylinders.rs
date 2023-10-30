@@ -1,6 +1,6 @@
-use float_cmp::{ApproxEq, F64Margin};
+use float_cmp::ApproxEq;
 
-use crate::{rays::Ray, shapes::Polygon, tuples::Tuple};
+use crate::{margin::Margin, rays::Ray, shapes::Polygon, tuples::Tuple};
 
 pub struct Cylinder {
     minimum: f64,
@@ -19,12 +19,7 @@ impl Cylinder {
     }
 
     fn intersect_caps(&self, ray: &Ray) -> Vec<f64> {
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        if !self.closed || ray.get_direction().y.approx_eq(0.0, margin) {
+        if !self.closed || ray.get_direction().y.approx_eq(0.0, Margin::default_f64()) {
             return vec![];
         }
 
@@ -48,15 +43,10 @@ impl Polygon for Cylinder {
     fn intersect(&self, original_ray: &Ray) -> Vec<f64> {
         let a = original_ray.get_direction().x.powi(2) + original_ray.get_direction().z.powi(2);
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
         let mut xs = vec![];
 
         // ray is parallel to the y axis
-        if !a.approx_eq(0.0, margin) {
+        if !a.approx_eq(0.0, Margin::default_f64()) {
             let b = 2.0 * original_ray.get_origin().x * original_ray.get_direction().x
                 + 2.0 * original_ray.get_origin().z * original_ray.get_direction().z;
             let c = original_ray.get_origin().x.powi(2) + original_ray.get_origin().z.powi(2) - 1.0;
@@ -93,16 +83,15 @@ impl Polygon for Cylinder {
     fn normal_at(&self, point: &Tuple) -> Tuple {
         let dist = point.x.powi(2) + point.z.powi(2);
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        if dist < 1.0 && (point.y.approx_eq(self.maximum, margin) || point.y > self.maximum) {
+        if dist < 1.0
+            && (point.y.approx_eq(self.maximum, Margin::default_f64()) || point.y > self.maximum)
+        {
             return Tuple::new_vector(0.0, 1.0, 0.0);
         }
 
-        if dist < 1.0 && (point.y.approx_eq(self.minimum, margin) || point.y < self.minimum) {
+        if dist < 1.0
+            && (point.y.approx_eq(self.minimum, Margin::default_f64()) || point.y < self.minimum)
+        {
             return Tuple::new_vector(0.0, -1.0, 0.0);
         }
 
@@ -114,12 +103,7 @@ fn check_cap(ray: &Ray, t: f64) -> bool {
     let x = ray.get_origin().x + t * ray.get_direction().x;
     let z = ray.get_origin().z + t * ray.get_direction().z;
 
-    let margin = F64Margin {
-        ulps: 2,
-        epsilon: 1e-14,
-    };
-
-    (x.powi(2) + z.powi(2)) < 1.0 || (x.powi(2) + z.powi(2)).approx_eq(1.0, margin)
+    (x.powi(2) + z.powi(2)) < 1.0 || (x.powi(2) + z.powi(2)).approx_eq(1.0, Margin::default_f64())
 }
 
 #[cfg(test)]

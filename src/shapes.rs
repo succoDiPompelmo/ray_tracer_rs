@@ -120,9 +120,9 @@ mod tests {
 
     use std::f64::consts::PI;
 
-    use float_cmp::{ApproxEq, F64Margin};
+    use float_cmp::ApproxEq;
 
-    use crate::{spheres::Sphere, transformations::Transformation};
+    use crate::{margin::Margin, spheres::Sphere, transformations::Transformation};
 
     use super::*;
 
@@ -217,14 +217,15 @@ mod tests {
         let mock = MockPolygon::default();
         let shape = Shape::glass(Arc::new(Mutex::new(mock)));
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
         assert!(shape.transformation == Matrix::identity(4));
-        assert!(shape.material.get_transparency().approx_eq(1.0, margin));
-        assert!(shape.material.get_refractive_index().approx_eq(1.5, margin));
+        assert!(shape
+            .material
+            .get_transparency()
+            .approx_eq(1.0, Margin::default_f64()));
+        assert!(shape
+            .material
+            .get_refractive_index()
+            .approx_eq(1.5, Margin::default_f64()));
     }
 
     fn n1_n2_scenario() -> (Ray, Vec<Intersection>) {
@@ -277,13 +278,8 @@ mod tests {
         let (r, xs) = n1_n2_scenario();
         let comps = xs.get(0).unwrap().prepare_computations(&r, &xs);
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        assert!(comps.get_n1().approx_eq(1.0, margin));
-        assert!(comps.get_n2().approx_eq(1.5, margin));
+        assert!(comps.get_n1().approx_eq(1.0, Margin::default_f64()));
+        assert!(comps.get_n2().approx_eq(1.5, Margin::default_f64()));
     }
 
     #[test]
@@ -291,13 +287,8 @@ mod tests {
         let (r, xs) = n1_n2_scenario();
         let comps = xs.get(1).unwrap().prepare_computations(&r, &xs);
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        assert!(comps.get_n1().approx_eq(1.5, margin));
-        assert!(comps.get_n2().approx_eq(2.0, margin));
+        assert!(comps.get_n1().approx_eq(1.5, Margin::default_f64()));
+        assert!(comps.get_n2().approx_eq(2.0, Margin::default_f64()));
     }
 
     #[test]
@@ -305,13 +296,8 @@ mod tests {
         let (r, xs) = n1_n2_scenario();
         let comps = xs.get(2).unwrap().prepare_computations(&r, &xs);
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        assert!(comps.get_n1().approx_eq(2.0, margin));
-        assert!(comps.get_n2().approx_eq(2.5, margin));
+        assert!(comps.get_n1().approx_eq(2.0, Margin::default_f64()));
+        assert!(comps.get_n2().approx_eq(2.5, Margin::default_f64()));
     }
 
     #[test]
@@ -319,13 +305,8 @@ mod tests {
         let (r, xs) = n1_n2_scenario();
         let comps = xs.get(3).unwrap().prepare_computations(&r, &xs);
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        assert!(comps.get_n1().approx_eq(2.5, margin));
-        assert!(comps.get_n2().approx_eq(2.5, margin));
+        assert!(comps.get_n1().approx_eq(2.5, Margin::default_f64()));
+        assert!(comps.get_n2().approx_eq(2.5, Margin::default_f64()));
     }
 
     #[test]
@@ -333,13 +314,8 @@ mod tests {
         let (r, xs) = n1_n2_scenario();
         let comps = xs.get(4).unwrap().prepare_computations(&r, &xs);
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        assert!(comps.get_n1().approx_eq(2.5, margin));
-        assert!(comps.get_n2().approx_eq(1.5, margin));
+        assert!(comps.get_n1().approx_eq(2.5, Margin::default_f64()));
+        assert!(comps.get_n2().approx_eq(1.5, Margin::default_f64()));
     }
 
     #[test]
@@ -347,12 +323,7 @@ mod tests {
         let (r, xs) = n1_n2_scenario();
         let comps = xs.get(5).unwrap().prepare_computations(&r, &xs);
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        assert!(comps.get_n1().approx_eq(1.5, margin));
-        assert!(comps.get_n2().approx_eq(1.0, margin));
+        assert!(comps.get_n1().approx_eq(1.5, Margin::default_f64()));
+        assert!(comps.get_n2().approx_eq(1.0, Margin::default_f64()));
     }
 }

@@ -1,6 +1,8 @@
 use std::ops;
 
-use float_cmp::{ApproxEq, F64Margin};
+use float_cmp::ApproxEq;
+
+use crate::margin::Margin;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Tuple {
@@ -89,14 +91,9 @@ impl Tuple {
 
 impl PartialEq for Tuple {
     fn eq(&self, other: &Self) -> bool {
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        self.x.approx_eq(other.x, margin)
-            && self.y.approx_eq(other.y, margin)
-            && self.z.approx_eq(other.z, margin)
+        self.x.approx_eq(other.x, Margin::default_f64())
+            && self.y.approx_eq(other.y, Margin::default_f64())
+            && self.z.approx_eq(other.z, Margin::default_f64())
             && self.w == other.w
     }
 }
@@ -373,7 +370,7 @@ mod tests {
             3.0 / (14.0_f64).sqrt(),
         );
         assert!(outcome == expected);
-        assert!(outcome.magnitude().approx_eq(1.0, F64Margin::default()));
+        assert!(outcome.magnitude().approx_eq(1.0, Margin::default_f64()));
     }
 
     #[test]

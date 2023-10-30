@@ -1,6 +1,6 @@
-use float_cmp::{ApproxEq, F64Margin};
+use float_cmp::ApproxEq;
 
-use crate::{rays::Ray, shapes::Polygon, tuples::Tuple};
+use crate::{margin::Margin, rays::Ray, shapes::Polygon, tuples::Tuple};
 
 pub struct Cube {}
 
@@ -33,16 +33,11 @@ impl Polygon for Cube {
     fn normal_at(&self, point: &Tuple) -> Tuple {
         let maxc = point.x.abs().max(point.y.abs()).max(point.z.abs());
 
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        if maxc.approx_eq(point.x.abs(), margin) {
+        if maxc.approx_eq(point.x.abs(), Margin::default_f64()) {
             return Tuple::new_vector(point.x, 0.0, 0.0);
         }
 
-        if maxc.approx_eq(point.y.abs(), margin) {
+        if maxc.approx_eq(point.y.abs(), Margin::default_f64()) {
             return Tuple::new_vector(0.0, point.y, 0.0);
         }
 

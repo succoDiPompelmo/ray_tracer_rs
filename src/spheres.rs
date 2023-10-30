@@ -1,6 +1,6 @@
-use float_cmp::{ApproxEq, F64Margin};
+use float_cmp::ApproxEq;
 
-use crate::{rays::Ray, shapes::Polygon, tuples::Tuple};
+use crate::{margin::Margin, rays::Ray, shapes::Polygon, tuples::Tuple};
 
 #[derive(Clone, Debug)]
 pub struct Sphere {
@@ -44,12 +44,7 @@ impl Polygon for Sphere {
 
 impl PartialEq for Sphere {
     fn eq(&self, other: &Self) -> bool {
-        let margin = F64Margin {
-            ulps: 2,
-            epsilon: 1e-14,
-        };
-
-        self.center == other.center && self.radius.approx_eq(other.radius, margin)
+        self.center == other.center && self.radius.approx_eq(other.radius, Margin::default_f64())
     }
 }
 
