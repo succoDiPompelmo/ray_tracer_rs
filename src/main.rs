@@ -2,6 +2,7 @@ mod camera;
 mod canvas;
 mod cubes;
 mod cylinders;
+mod groups;
 mod intersections;
 mod lights;
 mod margin;
