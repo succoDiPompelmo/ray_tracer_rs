@@ -1,34 +1,32 @@
 use r3bl_rs_utils::Arena;
 
-use crate::{
-    intersections::Intersection, matrices::Matrix, rays::Ray, shapes::Shape, tuples::Tuple,
-};
+use crate::{intersections::Intersection, matrices::Matrix, rays::Ray, shapes::Shape};
 
 #[derive(Debug)]
 pub struct Group {
-    arena: Arena<NodeTypes>,
+    pub arena: Arena<NodeTypes>,
 }
 
 #[derive(Clone, Debug)]
-enum NodeTypes {
+pub enum NodeTypes {
     Shape(Box<Shape>),
     Matrix(Matrix),
 }
 
 impl Group {
-    fn new() -> Group {
+    pub fn new() -> Group {
         let mut arena = Arena::<NodeTypes>::new();
         arena.add_new_node(NodeTypes::Matrix(Matrix::identity(4)), None);
 
         Group { arena }
     }
 
-    fn add_matrix(&mut self, matrix: Matrix, parent_id: Option<usize>) -> usize {
+    pub fn add_matrix(&mut self, matrix: Matrix, parent_id: Option<usize>) -> usize {
         self.arena
             .add_new_node(NodeTypes::Matrix(matrix), parent_id)
     }
 
-    fn add_node(&mut self, shape: Shape, parent_id: Option<usize>) -> usize {
+    pub fn add_node(&mut self, shape: Shape, parent_id: Option<usize>) -> usize {
         self.arena
             .add_new_node(NodeTypes::Shape(Box::new(shape)), parent_id)
     }
@@ -60,10 +58,6 @@ impl Group {
 
         xs
     }
-
-    fn normal_at(&self, point: &Tuple) -> Tuple {
-        todo!()
-    }
 }
 
 #[cfg(test)]
@@ -71,7 +65,7 @@ mod tests {
 
     use std::sync::{Arc, Mutex};
 
-    use crate::{spheres::Sphere, transformations::Transformation};
+    use crate::{spheres::Sphere, transformations::Transformation, tuples::Tuple};
 
     use super::*;
 

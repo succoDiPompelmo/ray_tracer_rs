@@ -70,7 +70,7 @@ impl Intersection {
         let point = ray.position(t);
         let eyev = -ray.get_direction();
 
-        let mut normalv = object.normal_at(&point);
+        let mut normalv = object.normal_at(&point, None);
 
         let mut inside = false;
 
