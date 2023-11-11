@@ -9,13 +9,20 @@ pub struct Cylinder {
 }
 
 impl Cylinder {
-    #[cfg(test)]
     pub fn new() -> Cylinder {
         Cylinder {
             minimum: f64::NEG_INFINITY,
             maximum: f64::INFINITY,
             closed: false,
         }
+    }
+
+    pub fn set_maximum(&mut self, max: f64) {
+        self.maximum = max
+    }
+
+    pub fn set_minimum(&mut self, min: f64) {
+        self.minimum = min
     }
 
     fn intersect_caps(&self, ray: &Ray) -> Vec<f64> {

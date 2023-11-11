@@ -35,7 +35,6 @@ impl Transformation {
         matrix
     }
 
-    #[cfg(test)]
     pub fn rotation_y(rad: f64) -> Matrix {
         let mut matrix = Matrix::identity(4);
 
@@ -47,7 +46,6 @@ impl Transformation {
         matrix
     }
 
-    #[cfg(test)]
     pub fn rotation_z(rad: f64) -> Matrix {
         let mut matrix = Matrix::identity(4);
 

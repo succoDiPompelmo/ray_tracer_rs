@@ -18,8 +18,6 @@ impl Group {
         let mut arena = Arena::<NodeTypes>::new();
         let root_id = arena.add_new_node(NodeTypes::Matrix(Matrix::identity(4)), None);
 
-        println!("Root Node ID: {:?}", root_id);
-
         Group { arena }
     }
 
