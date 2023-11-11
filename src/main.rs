@@ -100,5 +100,5 @@ fn main() {
     camera.precompute_inverse_transform();
 
     let canvas = camera.render(world);
-    canvas.write_ppm_to_fs()
+    canvas.save();
 }

@@ -20,3 +20,4 @@ Cargo.lock
 
 # Ray tracer output
 *.ppm
+*.png

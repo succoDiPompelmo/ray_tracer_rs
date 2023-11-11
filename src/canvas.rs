@@ -1,4 +1,4 @@
-use std::{fs::File, io::Write};
+use image::{ImageBuffer, RgbImage, Rgb};
 
 use crate::tuples::Tuple;
 
@@ -32,60 +32,24 @@ impl Canvas {
         }
     }
 
-    fn to_ppm(&self) -> String {
-        let magic_number = "P3".to_owned();
-        let size = format!("{} {}", self.width, self.height);
-        let max_color_value = "255".to_owned();
-
-        let mut rows: Vec<String> = vec![];
-
+    pub fn save(&self) {
+        let mut img: RgbImage = ImageBuffer::new(self.width as u32, self.height as u32);
         for x in 0..self.height {
-            let mut row = vec![];
-
             for y in 0..self.width {
                 let pixel = self.state[x][y];
-                row.push(pixel.x);
-                row.push(pixel.y);
-                row.push(pixel.z);
+                img.put_pixel(y as u32, x as u32, Rgb(Canvas::format_pixel(pixel)))
             }
-
-            let format_row = row
-                .iter()
-                .map(|el| el * 255.0)
-                .map(|el| el.round() as usize)
-                .map(|el| el.clamp(0, 255))
-                .map(|el| el.to_string())
-                .collect::<Vec<String>>()
-                .join(" ");
-
-            let mut space_cnt = 0;
-            let mut output = vec![];
-            for el in format_row.chars() {
-                if el.is_ascii_whitespace() {
-                    space_cnt += 1;
-                }
-
-                if space_cnt % 10 == 0 && el.is_ascii_whitespace() {
-                    output.push('\n');
-                } else {
-                    output.push(el);
-                }
-            }
-
-            rows.push(output.into_iter().collect());
         }
-        let body = rows.join("\n");
 
-        format!(
-            "{}\n{}\n{}\n{}\n",
-            magic_number, size, max_color_value, body
-        )
+        img.save("ciao.png").unwrap();
     }
 
-    pub fn write_ppm_to_fs(&self) {
-        let ppm = self.to_ppm();
-        let mut file = File::create("foo.ppm").unwrap();
-        file.write_all(ppm.as_bytes()).unwrap();
+    fn format_pixel(pixel: Tuple) -> [u8; 3] {
+        let x = ((pixel.x * 255.0).round() as u8).clamp(0, 255);
+        let y = ((pixel.y * 255.0).round() as u8).clamp(0, 255);
+        let z = ((pixel.z * 255.0).round() as u8).clamp(0, 255);        
+
+        return [x, y, z]
     }
 }
 
@@ -119,51 +83,5 @@ mod tests {
         canvas.write_pixel(color, 2, 3);
 
         assert_eq!(canvas.pixel_at(2, 3), color);
-    }
-
-    #[test]
-    fn canvas_to_ppm() {
-        let mut canvas = Canvas::new(3, 3);
-        canvas.write_pixel(Tuple::new_color(1.5, 0.0, 0.0), 0, 0);
-        canvas.write_pixel(Tuple::new_color(0.0, 0.5, 0.0), 1, 1);
-        canvas.write_pixel(Tuple::new_color(-0.5, 0.0, 1.0), 2, 2);
-        let ppm = canvas.to_ppm();
-
-        let expected = "\
-        P3\n\
-        3 3\n\
-        255\n\
-        255 0 0 0 0 0 0 0 0\n\
-        0 0 0 0 128 0 0 0 0\n\
-        0 0 0 0 0 0 0 0 255\n";
-
-        assert_eq!(ppm, expected);
-    }
-
-    #[test]
-    fn canvas_with_high_width_to_ppm() {
-        let mut canvas = Canvas::new(8, 3);
-        let color = Tuple::new_color(1.0, 0.8, 0.6);
-        for x in 0..canvas.height {
-            for y in 0..canvas.width {
-                canvas.write_pixel(color, y as isize, x as isize);
-            }
-        }
-        let ppm = canvas.to_ppm();
-        let expected = "\
-        P3\n\
-        8 3\n\
-        255\n\
-        255 204 153 255 204 153 255 204 153 255\n\
-        204 153 255 204 153 255 204 153 255 204\n\
-        153 255 204 153\n\
-        255 204 153 255 204 153 255 204 153 255\n\
-        204 153 255 204 153 255 204 153 255 204\n\
-        153 255 204 153\n\
-        255 204 153 255 204 153 255 204 153 255\n\
-        204 153 255 204 153 255 204 153 255 204\n\
-        153 255 204 153\n";
-
-        assert_eq!(ppm, expected);
     }
 }
