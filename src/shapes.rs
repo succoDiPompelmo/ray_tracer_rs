@@ -115,7 +115,7 @@ impl Shape {
             Some(matrix) => matrix.clone(),
             None => self.transformation.invert(),
         };
-        let local_ray = ray.transform(inverse_transformation);
+        let local_ray = ray.transform(&inverse_transformation);
         let polygon = self.polygon.lock().unwrap();
         let intersections_t = polygon.intersect(&local_ray);
 
@@ -154,10 +154,10 @@ impl Shape {
             let b = &a.read().unwrap().payload;
 
             let parent_matrix = match b {
-                NodeTypes::Matrix(matrix) => matrix.invert(),
+                NodeTypes::Matrix((_, inverse)) => inverse.clone(),
                 NodeTypes::Shape(shape) => shape.get_inverse_transformation(),
             };
-            matrices_chain.push(parent_matrix);
+            matrices_chain.push(parent_matrix.clone());
 
             parent_id = g.unwrap().arena.get_parent_of(parent_id.unwrap());
         }
@@ -192,7 +192,7 @@ impl Shape {
             let b = &a.read().unwrap().payload;
 
             let parent_matrix = match b {
-                NodeTypes::Matrix(matrix) => matrix.invert(),
+                NodeTypes::Matrix((_, inverse)) => inverse.clone(),
                 NodeTypes::Shape(shape) => shape.get_inverse_transformation(),
             };
             matrices_chain.push(parent_matrix);

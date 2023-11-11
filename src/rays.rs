@@ -23,10 +23,10 @@ impl Ray {
         self.origin + self.direction * distance
     }
 
-    pub fn transform(&self, t: Matrix) -> Ray {
+    pub fn transform(&self, t: &Matrix) -> Ray {
         Ray {
-            origin: &t * &self.origin,
-            direction: &t * &self.direction,
+            origin: t * &self.origin,
+            direction: t * &self.direction,
         }
     }
 }
@@ -73,7 +73,7 @@ mod tests {
         let p = Tuple::new_point(4.0, 6.0, 8.0);
         let v = Tuple::new_vector(0.0, 1.0, 0.0);
 
-        let r2 = r.transform(t);
+        let r2 = r.transform(&t);
 
         assert!(r2.get_origin() == p);
         assert!(r2.get_direction() == v);
@@ -90,7 +90,7 @@ mod tests {
         let p = Tuple::new_point(2.0, 6.0, 12.0);
         let v = Tuple::new_vector(0.0, 3.0, 0.0);
 
-        let r2 = r.transform(t);
+        let r2 = r.transform(&t);
 
         assert!(r2.get_origin() == p);
         assert!(r2.get_direction() == v);

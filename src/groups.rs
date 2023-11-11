@@ -10,20 +10,21 @@ pub struct Group {
 #[derive(Clone, Debug)]
 pub enum NodeTypes {
     Shape(Box<Shape>),
-    Matrix(Matrix),
+    Matrix((Matrix, Matrix)),
 }
 
 impl Group {
     pub fn new() -> Group {
         let mut arena = Arena::<NodeTypes>::new();
-        let root_id = arena.add_new_node(NodeTypes::Matrix(Matrix::identity(4)), None);
+        let root_id = arena.add_new_node(NodeTypes::Matrix((Matrix::identity(4), Matrix::identity(4))), None);
 
         Group { arena }
     }
 
     pub fn add_matrix(&mut self, matrix: Matrix, parent_id: Option<usize>) -> usize {
+        let inverse = matrix.invert();
         self.arena
-            .add_new_node(NodeTypes::Matrix(matrix), parent_id)
+            .add_new_node(NodeTypes::Matrix((matrix, inverse)), parent_id)
     }
 
     pub fn add_node(&mut self, shape: Shape, parent_id: Option<usize>) -> usize {
@@ -43,8 +44,8 @@ impl Group {
                     Some(a) => {
                         let payload = a.read().unwrap();
                         match &payload.payload {
-                            NodeTypes::Matrix(matrix) => {
-                                let local_ray = original_ray.transform(matrix.invert());
+                            NodeTypes::Matrix((_, inverse)) => {
+                                let local_ray = original_ray.transform(inverse);
                                 self.intersect(&local_ray, payload.id)
                             }
                             NodeTypes::Shape(shape) => shape.intersect(original_ray),
