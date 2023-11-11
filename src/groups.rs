@@ -16,7 +16,9 @@ pub enum NodeTypes {
 impl Group {
     pub fn new() -> Group {
         let mut arena = Arena::<NodeTypes>::new();
-        arena.add_new_node(NodeTypes::Matrix(Matrix::identity(4)), None);
+        let root_id = arena.add_new_node(NodeTypes::Matrix(Matrix::identity(4)), None);
+
+        println!("Root Node ID: {:?}", root_id);
 
         Group { arena }
     }
@@ -31,7 +33,7 @@ impl Group {
             .add_new_node(NodeTypes::Shape(Box::new(shape)), parent_id)
     }
 
-    fn intersect(&mut self, original_ray: &Ray, node_id: usize) -> Vec<Intersection> {
+    pub fn intersect(&mut self, original_ray: &Ray, node_id: usize) -> Vec<Intersection> {
         let mut xs = vec![];
 
         let maybe_childs = self.arena.get_children_of(node_id);

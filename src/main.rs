@@ -8,6 +8,7 @@ mod lights;
 mod margin;
 mod materials;
 mod matrices;
+mod objects;
 mod patterns;
 mod planes;
 mod rays;
@@ -23,6 +24,7 @@ use std::{
 };
 
 use camera::Camera;
+use groups::Group;
 use lights::PointLight;
 use materials::Material;
 use patterns::{Pattern, PatternsKind};
@@ -50,10 +52,6 @@ fn main() {
     middle_material.set_color(Tuple::new_color(0.1, 1.0, 0.5));
     middle_material.set_diffuse(0.7);
     middle_material.set_specular(0.3);
-    middle_material.set_transparency(0.8);
-    middle_material.set_refractive_index(0.4);
-    // let middle_pattern = Pattern::stripe(Tuple::white(), Tuple::black(), PatternsKind::Checker);
-    // middle_material.set_pattern(middle_pattern);
     middle.set_material(middle_material);
     middle.precompute_inverse_transformation();
 
@@ -80,7 +78,14 @@ fn main() {
     left.precompute_inverse_transformation();
 
     let mut world = World::new();
-    world.add_objects(&[floor, middle, right, left]);
+
+    let mut group = Group::new();
+    group.add_node(left, Some(0));
+    group.add_node(middle, Some(0));
+    group.add_node(right, Some(0));
+
+    world.add_shapes(&[floor]);
+    world.add_group(group);
     world.set_light(PointLight::new(
         Tuple::white(),
         Tuple::new_point(-10.0, 10.0, -10.0),

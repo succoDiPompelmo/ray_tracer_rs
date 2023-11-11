@@ -4,14 +4,15 @@ use crate::{
     intersections::{Computations, Intersection},
     lights::PointLight,
     margin::Margin,
+    objects::Objects,
     rays::Ray,
     shapes::Shape,
-    tuples::Tuple,
+    tuples::Tuple, groups::Group,
 };
 
 pub struct World {
     light: Option<PointLight>,
-    objects: Vec<Shape>,
+    objects: Vec<Objects>,
 }
 
 impl World {
@@ -33,16 +34,20 @@ impl World {
         self.light = Some(light);
     }
 
-    pub fn add_objects(&mut self, shapes: &[Shape]) {
+    pub fn add_shapes(&mut self, shapes: &[Shape]) {
         for shape in shapes {
-            self.objects.push(shape.clone());
+            self.objects.push(Objects::Shape(shape.clone()));
         }
     }
 
-    pub fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
+    pub fn add_group(&mut self, group: Group) {
+        self.objects.push(Objects::Group(group))
+    }
+
+    pub fn intersect(&mut self, ray: &Ray) -> Vec<Intersection> {
         let mut intersections = vec![];
 
-        for object in &self.objects {
+        for object in &mut self.objects {
             let xs = object.intersect(ray);
             intersections.extend(xs);
         }
@@ -51,11 +56,10 @@ impl World {
         intersections
     }
 
-    pub fn shade_hit(&self, comps: &Computations, recursion_depth_left: usize) -> Tuple {
-        let light = self.light.as_ref().unwrap();
-
+    pub fn shade_hit(&mut self, comps: &Computations, recursion_depth_left: usize) -> Tuple {
         let shadowed = self.is_shadowed(comps.get_over_point_ref());
 
+        let light = self.light.as_ref().unwrap();
         let surface = comps.get_object().get_material().lighting(
             &comps.get_object(),
             light,
@@ -78,7 +82,7 @@ impl World {
         surface + reflected + refracted
     }
 
-    pub fn color_at(&self, ray: &Ray, recursion_depth_left: usize) -> Tuple {
+    pub fn color_at(&mut self, ray: &Ray, recursion_depth_left: usize) -> Tuple {
         let intersections = self.intersect(ray);
 
         match Intersection::hit(&intersections) {
@@ -90,7 +94,7 @@ impl World {
         }
     }
 
-    fn is_shadowed(&self, point: &Tuple) -> bool {
+    fn is_shadowed(&mut self, point: &Tuple) -> bool {
         let v = self.get_light_ref().get_position_ref() - point;
         let distance = v.magnitude();
         let direction = v.normalize();
@@ -108,7 +112,7 @@ impl World {
         false
     }
 
-    pub fn reflected_color(&self, comps: &Computations, recursion_depth_left: usize) -> Tuple {
+    pub fn reflected_color(&mut self, comps: &Computations, recursion_depth_left: usize) -> Tuple {
         if recursion_depth_left == 0 {
             return Tuple::black();
         }
@@ -128,7 +132,7 @@ impl World {
         return color * comps.get_object().get_material().get_reflective();
     }
 
-    pub fn refracted_color(&self, comps: &Computations, remaining: usize) -> Tuple {
+    pub fn refracted_color(&mut self, comps: &Computations, remaining: usize) -> Tuple {
         if remaining == 0 {
             return Tuple::black();
         }
@@ -193,7 +197,7 @@ mod tests {
 
             World {
                 light: Some(light),
-                objects: vec![s1, s2],
+                objects: vec![Objects::Shape(s1), Objects::Shape(s2)],
             }
         }
     }
@@ -230,7 +234,7 @@ mod tests {
 
     #[test]
     fn intersect_a_world_with_a_ray() {
-        let w = World::default();
+        let mut w = World::default();
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, -5.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
@@ -247,15 +251,19 @@ mod tests {
 
     #[test]
     fn shading_an_intersection() {
-        let w = World::default();
+        let mut w = World::default();
 
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, -5.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
-        let objects = w.objects.to_vec();
 
-        let i = Intersection::new(4.0, objects.get(0).unwrap().clone());
+        let shape = match w.objects.get(0).unwrap() {
+            Objects::Shape(s) => s.clone(),
+            Objects::Group(_) => panic!(),
+        };
+
+        let i = Intersection::new(4.0, shape);
         let comps = i.prepare_computations(&r, &[]);
         let c = w.shade_hit(&comps, 5);
         assert!(
@@ -279,9 +287,13 @@ mod tests {
             Tuple::new_point(0.0, 0.0, 0.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
-        let objects = w.objects.to_vec();
 
-        let i = Intersection::new(0.5, objects.get(1).unwrap().clone());
+        let shape = match w.objects.get(1).unwrap() {
+            Objects::Shape(s) => s.clone(),
+            Objects::Group(_) => panic!(),
+        };
+
+        let i = Intersection::new(0.5, shape);
         let comps = i.prepare_computations(&r, &[]);
         let c = w.shade_hit(&comps, 5);
 
@@ -290,7 +302,7 @@ mod tests {
 
     #[test]
     fn the_color_when_a_ray_misses() {
-        let w = World::default();
+        let mut w = World::default();
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, -5.0),
             Tuple::new_vector(0.0, 1.0, 0.0),
@@ -302,7 +314,7 @@ mod tests {
 
     #[test]
     fn the_color_when_a_ray_hits() {
-        let w = World::default();
+        let mut w = World::default();
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, -5.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
@@ -322,20 +334,32 @@ mod tests {
     fn the_color_with_an_intersection_behind_the_ray() {
         let mut w = World::default();
 
-        w.objects.get_mut(0).unwrap().material.set_ambient(1.0);
-        w.objects.get_mut(1).unwrap().material.set_ambient(1.0);
+        match w.objects.get_mut(0).unwrap() {
+            Objects::Shape(s) => s.material.set_ambient(1.0),
+            Objects::Group(_) => panic!(),
+        };
+
+        match w.objects.get_mut(1).unwrap() {
+            Objects::Shape(s) => s.material.set_ambient(1.0),
+            Objects::Group(_) => panic!(),
+        };
 
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, 0.75),
             Tuple::new_vector(0.0, 0.0, -1.0),
         );
 
-        assert!(w.objects.get(1).unwrap().material.get_color() == w.color_at(&r, 5));
+        let color = match w.objects.get(1).unwrap() {
+            Objects::Shape(s) => s.material.get_color(),
+            Objects::Group(_) => panic!(),
+        };
+
+        assert_eq!(color, w.color_at(&r, 5));
     }
 
     #[test]
     fn there_is_no_shadow_when_nothing_is_collinear_with_point_and_light() {
-        let w = World::default();
+        let mut w = World::default();
         let p = Tuple::new_point(0.0, 10.0, 0.0);
 
         assert!(!w.is_shadowed(&p));
@@ -343,7 +367,7 @@ mod tests {
 
     #[test]
     fn shadow_when_an_object_is_between_the_point_and_the_light() {
-        let w = World::default();
+        let mut w = World::default();
         let p = Tuple::new_point(10.0, -10.0, 10.0);
 
         assert!(w.is_shadowed(&p));
@@ -351,7 +375,7 @@ mod tests {
 
     #[test]
     fn there_is_no_shadow_when_an_object_is_behind_the_light() {
-        let w = World::default();
+        let mut w = World::default();
         let p = Tuple::new_point(-20.0, 20.0, -20.0);
 
         assert!(!w.is_shadowed(&p));
@@ -359,7 +383,7 @@ mod tests {
 
     #[test]
     fn there_is_no_shadow_when_an_object_is_behind_the_point() {
-        let w = World::default();
+        let mut w = World::default();
         let p = Tuple::new_point(-2.0, 2.0, -2.0);
 
         assert!(!w.is_shadowed(&p));
@@ -380,7 +404,7 @@ mod tests {
         let mut s2 = Shape::default(Arc::new(Mutex::new(sphere)));
         s2.set_transformation(Transformation::translation(0.0, 0.0, 10.0));
 
-        w.add_objects(&[s1, s2.clone()]);
+        w.add_shapes(&[s1, s2.clone()]);
 
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, 5.0),
@@ -401,10 +425,17 @@ mod tests {
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
 
-        let shape = w.objects.get_mut(1).unwrap();
-        shape.material.set_ambient(1.0);
+        match w.objects.get_mut(1).unwrap() {
+            Objects::Shape(s) => s.material.set_ambient(1.0),
+            Objects::Group(_) => panic!(),
+        };
 
-        let i = Intersection::new(1.0, shape.clone());
+        let shape = match w.objects.get(1).unwrap() {
+            Objects::Shape(s) => s.clone(),
+            Objects::Group(_) => panic!(),
+        };
+
+        let i = Intersection::new(1.0, shape);
         let comps = i.prepare_computations(&r, &[]);
         let color = w.reflected_color(&comps, 5);
 
@@ -423,7 +454,7 @@ mod tests {
 
         s.set_material(plane_material);
         s.set_transformation(Transformation::translation(0.0, -1.0, 0.0));
-        w.add_objects(&[s.clone()]);
+        w.add_shapes(&[s.clone()]);
 
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, -3.0),
@@ -452,7 +483,7 @@ mod tests {
 
         s.set_material(plane_material);
         s.set_transformation(Transformation::translation(0.0, -1.0, 0.0));
-        w.add_objects(&[s.clone()]);
+        w.add_shapes(&[s.clone()]);
 
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, -3.0),
@@ -489,7 +520,7 @@ mod tests {
         upper.set_material(upper_material);
         upper.set_transformation(Transformation::translation(0.0, 1.0, 0.0));
 
-        w.add_objects(&[lower, upper]);
+        w.add_shapes(&[lower, upper]);
 
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, 0.0),
@@ -504,7 +535,7 @@ mod tests {
 
     #[test]
     fn the_reflected_color_at_the_maximum_recursive_depth() {
-        let w = World::default();
+        let mut w = World::default();
 
         let mut shape = Shape::default(Arc::new(Mutex::new(Plane::new())));
         let mut shape_material = Material::default();
@@ -526,8 +557,13 @@ mod tests {
 
     #[test]
     fn the_refracted_color_with_an_opaque_surface() {
-        let w = World::default();
-        let shape = w.objects.get(0).unwrap();
+        let mut w = World::default();
+
+        let shape = match w.objects.get(0).unwrap() {
+            Objects::Shape(s) => s.clone(),
+            Objects::Group(_) => panic!(),
+        };
+
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, -5.0),
             Tuple::new_vector(0.0, 0.0, 1.0),
@@ -546,12 +582,20 @@ mod tests {
     #[test]
     fn the_refracted_color_at_the_maximum_recursive_depth() {
         let mut w = World::default();
-        let shape = w.objects.get_mut(0).unwrap();
 
         let mut material = Material::default();
         material.set_transparency(1.0);
         material.set_refractive_index(1.5);
-        shape.set_material(material);
+
+        match w.objects.get_mut(0).unwrap() {
+            Objects::Shape(s) => s.set_material(material),
+            Objects::Group(_) => panic!(),
+        };
+
+        let shape = match w.objects.get(0).unwrap() {
+            Objects::Shape(s) => s.clone(),
+            Objects::Group(_) => panic!(),
+        };
 
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, -5.0),
@@ -570,12 +614,20 @@ mod tests {
     #[test]
     fn the_refracted_color_under_total_internal_reflection() {
         let mut w = World::default();
-        let shape = w.objects.get_mut(0).unwrap();
 
         let mut material = Material::default();
         material.set_transparency(1.0);
         material.set_refractive_index(1.5);
-        shape.set_material(material);
+
+        match w.objects.get_mut(0).unwrap() {
+            Objects::Shape(s) => s.set_material(material),
+            Objects::Group(_) => panic!(),
+        };
+
+        let shape = match w.objects.get(0).unwrap() {
+            Objects::Shape(s) => s.clone(),
+            Objects::Group(_) => panic!(),
+        };
 
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, 2.0_f64.sqrt() / 2.0),
@@ -600,15 +652,28 @@ mod tests {
         a_material.set_ambient(1.0);
         let a_pattern = Pattern::stripe(Tuple::black(), Tuple::black(), PatternsKind::Test);
         a_material.set_pattern(a_pattern);
-        w.objects.get_mut(0).unwrap().set_material(a_material);
+        match w.objects.get_mut(0).unwrap() {
+            Objects::Shape(s) => s.set_material(a_material),
+            Objects::Group(_) => panic!(),
+        };
+
+        let a = match w.objects.get(0).unwrap() {
+            Objects::Shape(s) => s.clone(),
+            Objects::Group(_) => panic!(),
+        };
 
         let mut b_material = Material::default();
         b_material.set_transparency(1.0);
         b_material.set_refractive_index(1.5);
-        w.objects.get_mut(1).unwrap().set_material(b_material);
+        match w.objects.get_mut(1).unwrap() {
+            Objects::Shape(s) => s.set_material(b_material),
+            Objects::Group(_) => panic!(),
+        };
 
-        let a = w.objects.get(0).unwrap();
-        let b = w.objects.get(1).unwrap();
+        let b = match w.objects.get(1).unwrap() {
+            Objects::Shape(s) => s.clone(),
+            Objects::Group(_) => panic!(),
+        };
 
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, 0.1),
@@ -640,7 +705,7 @@ mod tests {
         floor_material.set_refractive_index(1.5);
         floor.set_transformation(Transformation::translation(0.0, -1.0, 0.0));
         floor.set_material(floor_material);
-        w.add_objects(&[floor.clone()]);
+        w.add_shapes(&[floor.clone()]);
 
         let mut ball = Shape::default(Arc::new(Mutex::new(Sphere::new())));
         let mut ball_material = Material::default();
@@ -648,7 +713,7 @@ mod tests {
         ball_material.set_ambient(0.5);
         ball.set_transformation(Transformation::translation(0.0, -3.5, -0.5));
         ball.set_material(ball_material);
-        w.add_objects(&[ball]);
+        w.add_shapes(&[ball]);
 
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, -3.0),
@@ -674,7 +739,7 @@ mod tests {
         floor_material.set_reflective(0.5);
         floor.set_transformation(Transformation::translation(0.0, -1.0, 0.0));
         floor.set_material(floor_material);
-        w.add_objects(&[floor.clone()]);
+        w.add_shapes(&[floor.clone()]);
 
         let mut ball = Shape::default(Arc::new(Mutex::new(Sphere::new())));
         let mut ball_material = Material::default();
@@ -682,7 +747,7 @@ mod tests {
         ball_material.set_ambient(0.5);
         ball.set_transformation(Transformation::translation(0.0, -3.5, -0.5));
         ball.set_material(ball_material);
-        w.add_objects(&[ball]);
+        w.add_shapes(&[ball]);
 
         let r = Ray::new(
             Tuple::new_point(0.0, 0.0, -3.0),

@@ -56,7 +56,7 @@ impl Camera {
         Ray::new(origin, direction)
     }
 
-    pub fn render(&self, world: World) -> Canvas {
+    pub fn render(&self, mut world: World) -> Canvas {
         let mut image = Canvas::new(self.hsize, self.vsize);
         let mut pixels = vec![];
 
