@@ -1,6 +1,6 @@
 use float_cmp::ApproxEq;
 
-use crate::{margin::Margin, rays::Ray, shapes::Shape, tuples::Tuple};
+use crate::{margin::Margin, rays::Ray, shapes::Shape, tuples::Tuple, groups::Group};
 
 #[derive(Clone, Debug)]
 pub struct Intersection {
@@ -63,14 +63,14 @@ impl Intersection {
         hit.cloned()
     }
 
-    pub fn prepare_computations(&self, ray: &Ray, xs: &[Intersection]) -> Computations {
+    pub fn prepare_computations(&self, ray: &Ray, xs: &[Intersection], group: &Group) -> Computations {
         let t = self.t;
         let object = self.object.clone();
 
         let point = ray.position(t);
         let eyev = -ray.get_direction();
 
-        let mut normalv = object.normal_at(&point, None);
+        let mut normalv = object.normal_at(&point, Some(group));
 
         let mut inside = false;
 
@@ -298,7 +298,7 @@ mod tests {
 
         let i = Intersection::new(4.0, s);
 
-        let comps = i.prepare_computations(&r, &[]);
+        let comps = i.prepare_computations(&r, &[], &Group::new());
 
         assert!(comps._t == i.t);
         assert!(comps.point == Tuple::new_point(0.0, 0.0, -1.0));
@@ -317,7 +317,7 @@ mod tests {
 
         let i = Intersection::new(4.0, s);
 
-        let comps = i.prepare_computations(&r, &[]);
+        let comps = i.prepare_computations(&r, &[], &Group::new());
         assert!(!comps._inside);
     }
 
@@ -332,7 +332,7 @@ mod tests {
 
         let i = Intersection::new(1.0, s);
 
-        let comps = i.prepare_computations(&r, &[]);
+        let comps = i.prepare_computations(&r, &[], &Group::new());
 
         assert!(comps.point == Tuple::new_point(0.0, 0.0, 1.0));
         assert!(comps.eyev == Tuple::new_vector(0.0, 0.0, -1.0));
@@ -352,7 +352,7 @@ mod tests {
         s.set_transformation(Transformation::translation(0.0, 0.0, 1.0));
 
         let i = Intersection::new(5.0, s);
-        let comps = i.prepare_computations(&r, &[]);
+        let comps = i.prepare_computations(&r, &[], &Group::new());
 
         assert!(comps.over_point.z < -Computations::get_epsilon() / 2.0);
         assert!(comps.point.z > comps.over_point.z);
@@ -369,7 +369,7 @@ mod tests {
         );
         let i = Intersection::new(2.0_f64.sqrt(), s);
 
-        let comps = i.prepare_computations(&r, &[]);
+        let comps = i.prepare_computations(&r, &[], &Group::new());
 
         assert_eq!(
             comps.reflectv,
@@ -391,7 +391,7 @@ mod tests {
         let i = Intersection::new(5.0, s);
         let xs = Intersection::intersects(&[i.clone()]);
 
-        let comps = i.prepare_computations(&r, &xs);
+        let comps = i.prepare_computations(&r, &xs, &Group::new());
         assert!(comps.under_point.z > 0.0);
         assert!(comps.point.z < comps.under_point.z);
     }
@@ -408,7 +408,7 @@ mod tests {
             Intersection::new(2.0_f64.sqrt() / 2.0, shape.clone()),
         ]);
 
-        let comps: Computations = xs.get(1).unwrap().prepare_computations(&r, &xs);
+        let comps: Computations = xs.get(1).unwrap().prepare_computations(&r, &xs, &Group::new());
         let reflectance = comps.schlick();
 
         assert!(reflectance.approx_eq(1.0, Margin::default_f64()));
@@ -426,7 +426,7 @@ mod tests {
             Intersection::new(1.0, shape.clone()),
         ]);
 
-        let comps: Computations = xs.get(1).unwrap().prepare_computations(&r, &xs);
+        let comps: Computations = xs.get(1).unwrap().prepare_computations(&r, &xs, &Group::new());
         let reflectance = comps.schlick();
 
         assert!(reflectance.approx_eq(0.04, Margin::default_f64()));
@@ -441,7 +441,7 @@ mod tests {
         );
         let xs = Intersection::intersects(&[Intersection::new(1.8589, shape.clone())]);
 
-        let comps: Computations = xs.get(0).unwrap().prepare_computations(&r, &xs);
+        let comps: Computations = xs.get(0).unwrap().prepare_computations(&r, &xs, &Group::new());
         let reflectance = comps.schlick();
 
         assert!(reflectance.approx_eq(0.48873081012212183, Margin::default_f64()));

@@ -375,7 +375,7 @@ mod tests {
     #[test]
     fn finding_n1_and_n2_at_various_intersections_0() {
         let (r, xs) = n1_n2_scenario();
-        let comps = xs.get(0).unwrap().prepare_computations(&r, &xs);
+        let comps = xs.get(0).unwrap().prepare_computations(&r, &xs, &Group::new());
 
         assert!(comps.get_n1().approx_eq(1.0, Margin::default_f64()));
         assert!(comps.get_n2().approx_eq(1.5, Margin::default_f64()));
@@ -384,7 +384,7 @@ mod tests {
     #[test]
     fn finding_n1_and_n2_at_various_intersections_1() {
         let (r, xs) = n1_n2_scenario();
-        let comps = xs.get(1).unwrap().prepare_computations(&r, &xs);
+        let comps = xs.get(1).unwrap().prepare_computations(&r, &xs, &Group::new());
 
         assert!(comps.get_n1().approx_eq(1.5, Margin::default_f64()));
         assert!(comps.get_n2().approx_eq(2.0, Margin::default_f64()));
@@ -393,7 +393,7 @@ mod tests {
     #[test]
     fn finding_n1_and_n2_at_various_intersections_2() {
         let (r, xs) = n1_n2_scenario();
-        let comps = xs.get(2).unwrap().prepare_computations(&r, &xs);
+        let comps = xs.get(2).unwrap().prepare_computations(&r, &xs, &Group::new());
 
         assert!(comps.get_n1().approx_eq(2.0, Margin::default_f64()));
         assert!(comps.get_n2().approx_eq(2.5, Margin::default_f64()));
@@ -402,7 +402,7 @@ mod tests {
     #[test]
     fn finding_n1_and_n2_at_various_intersections_3() {
         let (r, xs) = n1_n2_scenario();
-        let comps = xs.get(3).unwrap().prepare_computations(&r, &xs);
+        let comps = xs.get(3).unwrap().prepare_computations(&r, &xs, &Group::new());
 
         assert!(comps.get_n1().approx_eq(2.5, Margin::default_f64()));
         assert!(comps.get_n2().approx_eq(2.5, Margin::default_f64()));
@@ -411,7 +411,7 @@ mod tests {
     #[test]
     fn finding_n1_and_n2_at_various_intersections_4() {
         let (r, xs) = n1_n2_scenario();
-        let comps = xs.get(4).unwrap().prepare_computations(&r, &xs);
+        let comps = xs.get(4).unwrap().prepare_computations(&r, &xs, &Group::new());
 
         assert!(comps.get_n1().approx_eq(2.5, Margin::default_f64()));
         assert!(comps.get_n2().approx_eq(1.5, Margin::default_f64()));
@@ -420,7 +420,7 @@ mod tests {
     #[test]
     fn finding_n1_and_n2_at_various_intersections_5() {
         let (r, xs) = n1_n2_scenario();
-        let comps = xs.get(5).unwrap().prepare_computations(&r, &xs);
+        let comps = xs.get(5).unwrap().prepare_computations(&r, &xs, &Group::new());
 
         assert!(comps.get_n1().approx_eq(1.5, Margin::default_f64()));
         assert!(comps.get_n2().approx_eq(1.0, Margin::default_f64()));
