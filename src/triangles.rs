@@ -41,7 +41,7 @@ impl Polygon for Triangle {
         let p1_to_origin = &original_ray.get_origin() - &self.p1;
         let u = f * p1_to_origin.dot(&dir_cross_e2);
 
-        if u < 0.0 || u > 1.0 {
+        if !(0.0..1.0).contains(&u) {
             return vec![];
         }
 
@@ -56,7 +56,7 @@ impl Polygon for Triangle {
     }
 
     fn normal_at(&self, _point: &Tuple) -> Tuple {
-        return self.normal.clone();
+        self.normal.clone()
     }
 }
 

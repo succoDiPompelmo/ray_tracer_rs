@@ -39,7 +39,7 @@ impl World {
 
     pub fn add_shapes(&mut self, shapes: &[Shape]) {
         for shape in shapes {
-            self.objects.push(Objects::Shape(shape.clone()));
+            self.objects.push(Objects::Shape(Box::new(shape.clone())));
         }
     }
 
@@ -205,7 +205,7 @@ mod tests {
 
             World {
                 light: Some(light),
-                objects: vec![Objects::Shape(s1), Objects::Shape(s2)],
+                objects: vec![Objects::Shape(Box::new(s1)), Objects::Shape(Box::new(s2))],
                 group: Group::new(),
             }
         }
@@ -272,7 +272,7 @@ mod tests {
             Objects::Group(_) => panic!(),
         };
 
-        let i = Intersection::new(4.0, shape);
+        let i = Intersection::new(4.0, *shape);
         let comps = i.prepare_computations(&r, &[], &Group::new());
         let c = w.shade_hit(&comps, 5);
         assert!(
@@ -302,7 +302,7 @@ mod tests {
             Objects::Group(_) => panic!(),
         };
 
-        let i = Intersection::new(0.5, shape);
+        let i = Intersection::new(0.5, *shape);
         let comps = i.prepare_computations(&r, &[], &Group::new());
         let c = w.shade_hit(&comps, 5);
 
@@ -444,7 +444,7 @@ mod tests {
             Objects::Group(_) => panic!(),
         };
 
-        let i = Intersection::new(1.0, shape);
+        let i = Intersection::new(1.0, *shape);
         let comps = i.prepare_computations(&r, &[], &Group::new());
         let color = w.reflected_color(&comps, 5);
 
@@ -579,8 +579,8 @@ mod tests {
         );
 
         let xs = Intersection::intersects(&[
-            Intersection::new(4.0, shape.clone()),
-            Intersection::new(6.0, shape.clone()),
+            Intersection::new(4.0, *shape.clone()),
+            Intersection::new(6.0, *shape.clone()),
         ]);
         let comps = xs
             .get(0)
@@ -614,8 +614,8 @@ mod tests {
             Tuple::new_vector(0.0, 0.0, 1.0),
         );
         let xs = Intersection::intersects(&[
-            Intersection::new(4.0, shape.clone()),
-            Intersection::new(6.0, shape.clone()),
+            Intersection::new(4.0, *shape.clone()),
+            Intersection::new(6.0, *shape.clone()),
         ]);
         let comps = xs
             .get(0)
@@ -649,8 +649,8 @@ mod tests {
             Tuple::new_vector(0.0, 1.0, 0.0),
         );
         let xs = Intersection::intersects(&[
-            Intersection::new(-2.0_f64.sqrt() / 2.0, shape.clone()),
-            Intersection::new(2.0_f64.sqrt() / 2.0, shape.clone()),
+            Intersection::new(-2.0_f64.sqrt() / 2.0, *shape.clone()),
+            Intersection::new(2.0_f64.sqrt() / 2.0, *shape.clone()),
         ]);
 
         let comps = xs
@@ -698,10 +698,10 @@ mod tests {
             Tuple::new_vector(0.0, 1.0, 0.0),
         );
         let xs = Intersection::intersects(&[
-            Intersection::new(-0.9899, a.clone()),
-            Intersection::new(-0.4899, b.clone()),
-            Intersection::new(0.4899, b.clone()),
-            Intersection::new(0.9899, a.clone()),
+            Intersection::new(-0.9899, *a.clone()),
+            Intersection::new(-0.4899, *b.clone()),
+            Intersection::new(0.4899, *b.clone()),
+            Intersection::new(0.9899, *a.clone()),
         ]);
 
         let comps = xs

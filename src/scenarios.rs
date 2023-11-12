@@ -99,7 +99,7 @@ impl Scenario {
         world.add_shapes(&[floor]);
         world.add_group(group);
 
-        return world;
+        world
     }
 }
 
@@ -111,7 +111,7 @@ fn hexagon_corner(parent_id: usize) -> Shape {
     corner.precompute_inverse_transformation();
     corner.set_parent_id(parent_id);
 
-    return corner;
+    corner
 }
 
 fn hexagon_edge(parent_id: usize) -> Shape {
@@ -128,7 +128,7 @@ fn hexagon_edge(parent_id: usize) -> Shape {
     edge.precompute_inverse_transformation();
     edge.set_parent_id(parent_id);
 
-    return edge;
+    edge
 }
 
 fn hexagon_side(g: &mut Group, parent_id: usize, n: usize) {

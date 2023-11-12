@@ -2,7 +2,7 @@ use crate::{groups::Group, intersections::Intersection, rays::Ray, shapes::Shape
 
 #[derive(Debug)]
 pub enum Objects {
-    Shape(Shape),
+    Shape(Box<Shape>),
     Group(Group),
 }
 

@@ -50,7 +50,7 @@ impl Canvas {
         let y = ((pixel.y * 255.0).round() as u8).clamp(0, 255);
         let z = ((pixel.z * 255.0).round() as u8).clamp(0, 255);
 
-        return [x, y, z];
+        [x, y, z]
     }
 }
 
