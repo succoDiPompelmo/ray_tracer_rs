@@ -51,7 +51,7 @@ impl Camera {
         // Remember that canvas is at z = -1
         let pixel = &inverse_transform * &Tuple::new_point(world_x, world_y, -1.0);
         let origin = &inverse_transform * &Tuple::new_point(0.0, 0.0, 0.0);
-        let direction = (pixel - origin).normalize();
+        let direction = (&pixel - &origin).normalize();
 
         Ray::new(origin, direction)
     }
