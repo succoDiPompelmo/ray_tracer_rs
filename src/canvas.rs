@@ -2,6 +2,8 @@ use image::{ImageBuffer, RgbImage, Rgb};
 
 use crate::tuples::Tuple;
 
+const OUTPUT_DIR: &str = "output";
+
 pub struct Canvas {
     width: usize,
     height: usize,
@@ -32,7 +34,7 @@ impl Canvas {
         }
     }
 
-    pub fn save(&self) {
+    pub fn save(&self, filename: String) {
         let mut img: RgbImage = ImageBuffer::new(self.width as u32, self.height as u32);
         for x in 0..self.height {
             for y in 0..self.width {
@@ -40,8 +42,7 @@ impl Canvas {
                 img.put_pixel(y as u32, x as u32, Rgb(Canvas::format_pixel(pixel)))
             }
         }
-
-        img.save("ciao.png").unwrap();
+        img.save(format!("{OUTPUT_DIR}/{filename}")).unwrap();
     }
 
     fn format_pixel(pixel: Tuple) -> [u8; 3] {

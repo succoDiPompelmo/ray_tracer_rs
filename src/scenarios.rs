@@ -2,10 +2,21 @@ use std::{sync::{Arc, Mutex}, f64::consts::PI};
 
 use crate::{tuples::Tuple, groups::Group, world::World, materials::Material, transformations::Transformation, shapes::Shape, spheres::Sphere, patterns::{Pattern, PatternsKind}, planes::Plane, cylinders::Cylinder};
 
-pub struct Scenario {}
+pub struct Scenario {
+    name: String,
+    world: World
+}
 
 impl Scenario {
-    pub fn hexagon() -> World {
+    pub fn get_name(&self) -> String {
+        self.name.to_owned()
+    }
+
+    pub fn get_world(&mut self) -> &mut World {
+        &mut self.world
+    }
+
+    pub fn hexagon() -> Scenario {
         let mut hex = Group::new();
         let parent_id = 0;
 
@@ -16,7 +27,7 @@ impl Scenario {
         let mut world = World::new();
         world.add_group(hex);
         
-        world
+        Scenario { name: "hexagon.png".to_owned(), world }
     }
 
     pub fn three_sphere() -> World {

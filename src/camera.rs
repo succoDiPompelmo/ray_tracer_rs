@@ -56,7 +56,7 @@ impl Camera {
         Ray::new(origin, direction)
     }
 
-    pub fn render(&self, mut world: World) -> Canvas {
+    pub fn render(&self, world: &mut World) -> Canvas {
         let mut image = Canvas::new(self.hsize, self.vsize);
         let mut pixels = vec![];
 
@@ -164,7 +164,7 @@ mod tests {
 
     #[test]
     fn rendering_a_world_with_a_camera() {
-        let w = World::default();
+        let mut w = World::default();
         let mut c = Camera::new(11, 11, PI / 2.0);
 
         let from = Tuple::new_point(0.0, 0.0, -5.0);
@@ -172,7 +172,7 @@ mod tests {
         let up = Tuple::new_vector(0.0, 1.0, 0.0);
 
         c.transform = Transformation::view_transform(from, to, up);
-        let image: Canvas = c.render(w);
+        let image: Canvas = c.render(&mut w);
 
         assert_eq!(
             image.pixel_at(5, 5),

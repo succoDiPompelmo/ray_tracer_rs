@@ -19,5 +19,4 @@ Cargo.lock
 /target
 
 # Ray tracer output
-*.ppm
-*.png
+output

@@ -29,9 +29,9 @@ use transformations::Transformation;
 use crate::tuples::Tuple;
 
 fn main() {
-    let mut world = Scenario::hexagon();
+    let mut scenario = Scenario::hexagon();
 
-    world.set_light(PointLight::new(
+    scenario.get_world().set_light(PointLight::new(
         Tuple::white(),
         Tuple::new_point(-10.0, 10.0, -10.0),
     ));
@@ -44,6 +44,6 @@ fn main() {
     ));
     camera.precompute_inverse_transform();
 
-    let canvas = camera.render(world);
-    canvas.save();
+    let canvas = camera.render(scenario.get_world());
+    canvas.save(scenario.get_name());
 }
