@@ -4,7 +4,7 @@ use float_cmp::ApproxEq;
 
 use crate::margin::Margin;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct Tuple {
     pub x: f64,
     pub y: f64,
@@ -102,6 +102,19 @@ impl ops::Add for Tuple {
     type Output = Self;
 
     fn add(self, rhs: Tuple) -> Tuple {
+        Tuple {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
+            w: self.w + rhs.w,
+        }
+    }
+}
+
+impl ops::Add for &Tuple {
+    type Output = Tuple;
+
+    fn add(self, rhs: Self) -> Self::Output {
         Tuple {
             x: self.x + rhs.x,
             y: self.y + rhs.y,

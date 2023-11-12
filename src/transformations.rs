@@ -74,7 +74,7 @@ impl Transformation {
     }
 
     pub fn view_transform(from: Tuple, to: Tuple, up: Tuple) -> Matrix {
-        let forward = (to - from).normalize();
+        let forward = (&to - &from).normalize();
         let left = forward.cross(&up.normalize());
         let true_up = left.cross(&forward);
 

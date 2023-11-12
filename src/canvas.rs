@@ -25,7 +25,7 @@ impl Canvas {
 
     #[cfg(test)]
     pub fn pixel_at(&self, x: usize, y: usize) -> Tuple {
-        self.state[y][x]
+        self.state[y][x].clone()
     }
 
     pub fn write_pixel(&mut self, color: Tuple, x: isize, y: isize) {
@@ -38,7 +38,7 @@ impl Canvas {
         let mut img: RgbImage = ImageBuffer::new(self.width as u32, self.height as u32);
         for x in 0..self.height {
             for y in 0..self.width {
-                let pixel = self.state[x][y];
+                let pixel = self.state[x][y].clone();
                 img.put_pixel(y as u32, x as u32, Rgb(Canvas::format_pixel(pixel)))
             }
         }
@@ -81,7 +81,7 @@ mod tests {
         let color = Tuple::new_color(1.0, 0.0, 0.0);
         let mut canvas = Canvas::new(10, 20);
 
-        canvas.write_pixel(color, 2, 3);
+        canvas.write_pixel(color.clone(), 2, 3);
 
         assert_eq!(canvas.pixel_at(2, 3), color);
     }

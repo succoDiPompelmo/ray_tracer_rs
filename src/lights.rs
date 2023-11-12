@@ -15,7 +15,7 @@ impl PointLight {
     }
 
     pub fn get_intensity(&self) -> Tuple {
-        self.intensity
+        self.intensity.clone()
     }
 
     pub fn get_position_ref(&self) -> &Tuple {
@@ -33,7 +33,7 @@ mod tests {
         let intensity = Tuple::white();
         let position = Tuple::new_point(0.0, 0.0, 0.0);
 
-        let light = PointLight::new(intensity, position);
+        let light = PointLight::new(intensity.clone(), position.clone());
 
         assert_eq!(light.position, position);
         assert_eq!(light.intensity, intensity);

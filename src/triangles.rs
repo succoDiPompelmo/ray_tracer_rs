@@ -1,6 +1,6 @@
 use float_cmp::ApproxEq;
 
-use crate::{shapes::Polygon, tuples::Tuple, rays::Ray, margin::Margin};
+use crate::{margin::Margin, rays::Ray, shapes::Polygon, tuples::Tuple};
 
 pub struct Triangle {
     p1: Tuple,
@@ -13,8 +13,8 @@ pub struct Triangle {
 
 impl Triangle {
     pub fn new(p1: Tuple, p2: Tuple, p3: Tuple) -> Triangle {
-        let e1 = p2 - p1;
-        let e2 = p3 - p1;
+        let e1 = &p2 - &p1;
+        let e2 = &p3 - &p1;
         let normal = e2.cross(&e1).normalize();
 
         Triangle {
@@ -34,11 +34,11 @@ impl Polygon for Triangle {
         let det = self.e1.dot(&dir_cross_e2);
 
         if det.abs().approx_eq(0.0, Margin::default_f64()) {
-            return vec![]
+            return vec![];
         };
 
-        let f = 1.0/det;
-        let p1_to_origin = original_ray.get_origin() - self.p1;
+        let f = 1.0 / det;
+        let p1_to_origin = &original_ray.get_origin() - &self.p1;
         let u = f * p1_to_origin.dot(&dir_cross_e2);
 
         if u < 0.0 || u > 1.0 {
@@ -49,14 +49,14 @@ impl Polygon for Triangle {
         let v = f * original_ray.get_direction().dot(&origin_cross_e1);
 
         if v < 0.0 || (u + v) > 1.0 {
-            return vec![]
+            return vec![];
         }
 
-        vec![f * self.e2.dot(&origin_cross_e1)] 
+        vec![f * self.e2.dot(&origin_cross_e1)]
     }
 
     fn normal_at(&self, _point: &Tuple) -> Tuple {
-        return self.normal
+        return self.normal.clone();
     }
 }
 
@@ -70,7 +70,7 @@ mod tests {
         let p2 = Tuple::new_point(-1.0, 0.0, 0.0);
         let p3 = Tuple::new_point(1.0, 0.0, 0.0);
 
-        let t = Triangle::new(p1, p2, p3);
+        let t = Triangle::new(p1.clone(), p2.clone(), p3.clone());
 
         assert_eq!(t.p1, p1);
         assert_eq!(t.p2, p2);
@@ -98,8 +98,15 @@ mod tests {
 
     #[test]
     fn intersecting_a_ray_parallel_to_the_triangle() {
-        let t = Triangle::new(Tuple::new_point(0.0, 1.0, 0.0), Tuple::new_point(-1.0, 0.0, 0.0), Tuple::new_point(1.0, 0.0, 0.0));
-        let r = Ray::new(Tuple::new_point(0.0, -1.0, -2.0), Tuple::new_vector(0.0, 1.0, 0.0));
+        let t = Triangle::new(
+            Tuple::new_point(0.0, 1.0, 0.0),
+            Tuple::new_point(-1.0, 0.0, 0.0),
+            Tuple::new_point(1.0, 0.0, 0.0),
+        );
+        let r = Ray::new(
+            Tuple::new_point(0.0, -1.0, -2.0),
+            Tuple::new_vector(0.0, 1.0, 0.0),
+        );
 
         let xs = t.intersect(&r);
         assert!(xs.is_empty());
@@ -107,8 +114,15 @@ mod tests {
 
     #[test]
     fn a_ray_misses_the_p1_p3_edge() {
-        let t = Triangle::new(Tuple::new_point(0.0, 1.0, 0.0), Tuple::new_point(-1.0, 0.0, 0.0), Tuple::new_point(1.0, 0.0, 0.0));
-        let r = Ray::new(Tuple::new_point(1.0, 1.0, -2.0), Tuple::new_point(0.0, 0.0, 1.0));
+        let t = Triangle::new(
+            Tuple::new_point(0.0, 1.0, 0.0),
+            Tuple::new_point(-1.0, 0.0, 0.0),
+            Tuple::new_point(1.0, 0.0, 0.0),
+        );
+        let r = Ray::new(
+            Tuple::new_point(1.0, 1.0, -2.0),
+            Tuple::new_point(0.0, 0.0, 1.0),
+        );
 
         let xs = t.intersect(&r);
         assert!(xs.is_empty());
@@ -116,8 +130,15 @@ mod tests {
 
     #[test]
     fn a_ray_misses_the_p1_p2_edge() {
-        let t = Triangle::new(Tuple::new_point(0.0, 1.0, 0.0), Tuple::new_point(-1.0, 0.0, 0.0), Tuple::new_point(1.0, 0.0, 0.0));
-        let r = Ray::new(Tuple::new_point(-1.0, 1.0, -2.0), Tuple::new_point(0.0, 0.0, 1.0));
+        let t = Triangle::new(
+            Tuple::new_point(0.0, 1.0, 0.0),
+            Tuple::new_point(-1.0, 0.0, 0.0),
+            Tuple::new_point(1.0, 0.0, 0.0),
+        );
+        let r = Ray::new(
+            Tuple::new_point(-1.0, 1.0, -2.0),
+            Tuple::new_point(0.0, 0.0, 1.0),
+        );
 
         let xs = t.intersect(&r);
         assert!(xs.is_empty());
@@ -125,8 +146,15 @@ mod tests {
 
     #[test]
     fn a_ray_misses_the_p2_p3_edge() {
-        let t = Triangle::new(Tuple::new_point(0.0, 1.0, 0.0), Tuple::new_point(-1.0, 0.0, 0.0), Tuple::new_point(1.0, 0.0, 0.0));
-        let r = Ray::new(Tuple::new_point(0.0, -1.0, -2.0), Tuple::new_point(0.0, 0.0, 1.0));
+        let t = Triangle::new(
+            Tuple::new_point(0.0, 1.0, 0.0),
+            Tuple::new_point(-1.0, 0.0, 0.0),
+            Tuple::new_point(1.0, 0.0, 0.0),
+        );
+        let r = Ray::new(
+            Tuple::new_point(0.0, -1.0, -2.0),
+            Tuple::new_point(0.0, 0.0, 1.0),
+        );
 
         let xs = t.intersect(&r);
         assert!(xs.is_empty());
@@ -134,8 +162,15 @@ mod tests {
 
     #[test]
     fn a_ray_strikes_a_triangle() {
-        let t = Triangle::new(Tuple::new_point(0.0, 1.0, 0.0), Tuple::new_point(-1.0, 0.0, 0.0), Tuple::new_point(1.0, 0.0, 0.0));
-        let r = Ray::new(Tuple::new_point(0.0, 0.5, -2.0), Tuple::new_point(0.0, 0.0, 1.0));
+        let t = Triangle::new(
+            Tuple::new_point(0.0, 1.0, 0.0),
+            Tuple::new_point(-1.0, 0.0, 0.0),
+            Tuple::new_point(1.0, 0.0, 0.0),
+        );
+        let r = Ray::new(
+            Tuple::new_point(0.0, 0.5, -2.0),
+            Tuple::new_point(0.0, 0.0, 1.0),
+        );
 
         let xs = t.intersect(&r);
         assert_eq!(xs.len(), 1);

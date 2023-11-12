@@ -104,7 +104,7 @@ impl World {
         let distance = v.magnitude();
         let direction = v.normalize();
 
-        let r = Ray::new(*point, direction);
+        let r = Ray::new(point.clone(), direction);
         let intersections = self.intersect(&r);
 
         let h = Intersection::hit(&intersections);
@@ -131,7 +131,10 @@ impl World {
             return Tuple::black();
         }
 
-        let reflected_ray = Ray::new(*comps.get_over_point_ref(), *comps.get_reflectv());
+        let reflected_ray = Ray::new(
+            comps.get_over_point_ref().clone(),
+            comps.get_reflectv().clone(),
+        );
         let color = self.color_at(&reflected_ray, recursion_depth_left - 1);
 
         return color * comps.get_object().get_material().get_reflective();
@@ -162,7 +165,7 @@ impl World {
         let cos_t = (1.0 - sin2_t).sqrt();
         let direction =
             comps.get_normalv_ref() * (n_ratio * cos_i - cos_t) - comps.get_eyev_ref() * n_ratio;
-        let refracted_ray = Ray::new(*comps.get_under_point_ref(), direction);
+        let refracted_ray = Ray::new(comps.get_under_point_ref().clone(), direction);
 
         self.color_at(&refracted_ray, remaining - 1)
             * comps.get_object().get_material().get_transparency()

@@ -38,27 +38,27 @@ impl Pattern {
         match self.kind {
             PatternsKind::Stripe => {
                 if (point.x.floor() as i64) % 2 == 0 {
-                    return self.color_a;
+                    return self.color_a.clone();
                 }
-                self.color_b
+                self.color_b.clone()
             }
             PatternsKind::Gradient => {
-                let distance = self.color_b - self.color_a;
+                let distance = self.color_b.clone() - self.color_a.clone();
                 let fraction = point.x - point.x.floor();
 
-                self.color_a + distance * fraction
+                self.color_a.clone() + distance * fraction
             }
             PatternsKind::Ring => {
                 if (point.x.powi(2) + point.z.powi(2)).sqrt().floor() as i64 % 2 == 0 {
-                    return self.color_a;
+                    return self.color_a.clone();
                 }
-                self.color_b
+                self.color_b.clone()
             }
             PatternsKind::Checker => {
                 if (point.x.abs() + point.y.abs() + point.z.abs()).floor() as i64 % 2 == 0 {
-                    return self.color_a;
+                    return self.color_a.clone();
                 }
-                self.color_b
+                self.color_b.clone()
             }
             PatternsKind::Test => Tuple::new_color(point.x, point.y, point.z),
         }

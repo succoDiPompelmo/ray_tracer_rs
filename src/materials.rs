@@ -30,7 +30,7 @@ impl Material {
 
     #[cfg(test)]
     pub fn get_color(&self) -> Tuple {
-        self.color
+        self.color.clone()
     }
 
     pub fn get_reflective(&self) -> f64 {
@@ -90,13 +90,13 @@ impl Material {
     ) -> Tuple {
         let color = match &self.pattern {
             Some(p) => p.stripe_at_object(object, point),
-            None => self.color,
+            None => self.color.clone(),
         };
 
         let effective_color = color.hadamard_product(&light.get_intensity());
         let lightv = (light.get_position_ref() - point).normalize();
 
-        let ambient = effective_color * self.ambient;
+        let ambient = &effective_color * self.ambient;
 
         if in_shadow {
             return ambient;

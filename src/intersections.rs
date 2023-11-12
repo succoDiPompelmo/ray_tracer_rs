@@ -86,8 +86,8 @@ impl Intersection {
 
         let reflectv = ray.get_direction().reflect(&normalv);
 
-        let over_point = point + normalv * Computations::get_epsilon();
-        let under_point = point - normalv * Computations::get_epsilon();
+        let over_point = &point + &(&normalv * Computations::get_epsilon());
+        let under_point = &point - &(&normalv * Computations::get_epsilon());
 
         let mut containers: Vec<Shape> = vec![];
 

@@ -19,7 +19,7 @@ impl Sphere {
 
 impl Polygon for Sphere {
     fn intersect(&self, ray: &Ray) -> Vec<f64> {
-        let sphere_to_ray = ray.get_origin() - self.center;
+        let sphere_to_ray = &ray.get_origin() - &self.center;
 
         let a = ray.get_direction().dot(&ray.get_direction());
         let b = 2.0 * ray.get_direction().dot(&sphere_to_ray);

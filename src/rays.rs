@@ -12,15 +12,15 @@ impl Ray {
     }
 
     pub fn get_origin(&self) -> Tuple {
-        self.origin
+        self.origin.clone()
     }
 
     pub fn get_direction(&self) -> Tuple {
-        self.direction
+        self.direction.clone()
     }
 
     pub fn position(&self, distance: f64) -> Tuple {
-        self.origin + self.direction * distance
+        self.origin.clone() + self.direction.clone() * distance
     }
 
     pub fn transform(&self, t: &Matrix) -> Ray {
@@ -43,7 +43,7 @@ mod tests {
         let origin = Tuple::new_point(1.0, 2.0, 3.0);
         let direction = Tuple::new_vector(4.0, 5.0, 6.0);
 
-        let ray = Ray::new(origin, direction);
+        let ray = Ray::new(origin.clone(), direction.clone());
 
         assert!(ray.get_origin() == origin);
         assert!(ray.get_direction() == direction);
