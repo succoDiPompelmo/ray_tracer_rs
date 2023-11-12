@@ -1,6 +1,6 @@
 use float_cmp::ApproxEq;
 
-use crate::{margin::Margin, rays::Ray, shapes::Shape, tuples::Tuple, groups::Group};
+use crate::{groups::Group, margin::Margin, rays::Ray, shapes::Shape, tuples::Tuple};
 
 #[derive(Clone, Debug)]
 pub struct Intersection {
@@ -63,7 +63,12 @@ impl Intersection {
         hit.cloned()
     }
 
-    pub fn prepare_computations(&self, ray: &Ray, xs: &[Intersection], group: &Group) -> Computations {
+    pub fn prepare_computations(
+        &self,
+        ray: &Ray,
+        xs: &[Intersection],
+        group: &Group,
+    ) -> Computations {
         let t = self.t;
         let object = self.object.clone();
 
@@ -408,7 +413,10 @@ mod tests {
             Intersection::new(2.0_f64.sqrt() / 2.0, shape.clone()),
         ]);
 
-        let comps: Computations = xs.get(1).unwrap().prepare_computations(&r, &xs, &Group::new());
+        let comps: Computations = xs
+            .get(1)
+            .unwrap()
+            .prepare_computations(&r, &xs, &Group::new());
         let reflectance = comps.schlick();
 
         assert!(reflectance.approx_eq(1.0, Margin::default_f64()));
@@ -426,7 +434,10 @@ mod tests {
             Intersection::new(1.0, shape.clone()),
         ]);
 
-        let comps: Computations = xs.get(1).unwrap().prepare_computations(&r, &xs, &Group::new());
+        let comps: Computations = xs
+            .get(1)
+            .unwrap()
+            .prepare_computations(&r, &xs, &Group::new());
         let reflectance = comps.schlick();
 
         assert!(reflectance.approx_eq(0.04, Margin::default_f64()));
@@ -441,7 +452,10 @@ mod tests {
         );
         let xs = Intersection::intersects(&[Intersection::new(1.8589, shape.clone())]);
 
-        let comps: Computations = xs.get(0).unwrap().prepare_computations(&r, &xs, &Group::new());
+        let comps: Computations = xs
+            .get(0)
+            .unwrap()
+            .prepare_computations(&r, &xs, &Group::new());
         let reflectance = comps.schlick();
 
         assert!(reflectance.approx_eq(0.48873081012212183, Margin::default_f64()));

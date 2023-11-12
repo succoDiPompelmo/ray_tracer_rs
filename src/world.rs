@@ -1,13 +1,14 @@
 use float_cmp::ApproxEq;
 
 use crate::{
+    groups::Group,
     intersections::{Computations, Intersection},
     lights::PointLight,
     margin::Margin,
     objects::Objects,
     rays::Ray,
     shapes::Shape,
-    tuples::Tuple, groups::Group,
+    tuples::Tuple,
 };
 
 pub struct World {
@@ -21,7 +22,7 @@ impl World {
         World {
             light: None,
             objects: vec![],
-            group: Group::new()
+            group: Group::new(),
         }
     }
 
@@ -202,7 +203,7 @@ mod tests {
             World {
                 light: Some(light),
                 objects: vec![Objects::Shape(s1), Objects::Shape(s2)],
-                group: Group::new()
+                group: Group::new(),
             }
         }
     }
@@ -578,7 +579,10 @@ mod tests {
             Intersection::new(4.0, shape.clone()),
             Intersection::new(6.0, shape.clone()),
         ]);
-        let comps = xs.get(0).unwrap().prepare_computations(&r, &xs, &Group::new());
+        let comps = xs
+            .get(0)
+            .unwrap()
+            .prepare_computations(&r, &xs, &Group::new());
 
         let c = w.refracted_color(&comps, 5);
         assert_eq!(c, Tuple::black())
@@ -610,7 +614,10 @@ mod tests {
             Intersection::new(4.0, shape.clone()),
             Intersection::new(6.0, shape.clone()),
         ]);
-        let comps = xs.get(0).unwrap().prepare_computations(&r, &xs, &Group::new());
+        let comps = xs
+            .get(0)
+            .unwrap()
+            .prepare_computations(&r, &xs, &Group::new());
 
         let c = w.reflected_color(&comps, 0);
         assert_eq!(c, Tuple::black())
@@ -643,7 +650,10 @@ mod tests {
             Intersection::new(2.0_f64.sqrt() / 2.0, shape.clone()),
         ]);
 
-        let comps = xs.get(1).unwrap().prepare_computations(&r, &xs, &Group::new());
+        let comps = xs
+            .get(1)
+            .unwrap()
+            .prepare_computations(&r, &xs, &Group::new());
 
         let c = w.refracted_color(&comps, 5);
         assert_eq!(c, Tuple::black())
@@ -691,7 +701,10 @@ mod tests {
             Intersection::new(0.9899, a.clone()),
         ]);
 
-        let comps = xs.get(2).unwrap().prepare_computations(&r, &xs, &Group::new());
+        let comps = xs
+            .get(2)
+            .unwrap()
+            .prepare_computations(&r, &xs, &Group::new());
         let c = w.refracted_color(&comps, 5);
 
         assert_eq!(
@@ -725,7 +738,10 @@ mod tests {
             Tuple::new_vector(0.0, -2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0),
         );
         let xs = Intersection::intersects(&[Intersection::new(2.0_f64.sqrt(), floor)]);
-        let comps = xs.get(0).unwrap().prepare_computations(&r, &xs, &Group::new());
+        let comps = xs
+            .get(0)
+            .unwrap()
+            .prepare_computations(&r, &xs, &Group::new());
         let color = w.shade_hit(&comps, 5);
         assert_eq!(
             color,
@@ -759,7 +775,10 @@ mod tests {
             Tuple::new_vector(0.0, -2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0),
         );
         let xs = Intersection::intersects(&[Intersection::new(2.0_f64.sqrt(), floor)]);
-        let comps = xs.get(0).unwrap().prepare_computations(&r, &xs, &Group::new());
+        let comps = xs
+            .get(0)
+            .unwrap()
+            .prepare_computations(&r, &xs, &Group::new());
         let color = w.shade_hit(&comps, 5);
         assert_eq!(
             color,

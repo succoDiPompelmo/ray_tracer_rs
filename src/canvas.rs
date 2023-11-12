@@ -1,4 +1,4 @@
-use image::{ImageBuffer, RgbImage, Rgb};
+use image::{ImageBuffer, Rgb, RgbImage};
 
 use crate::tuples::Tuple;
 
@@ -48,9 +48,9 @@ impl Canvas {
     fn format_pixel(pixel: Tuple) -> [u8; 3] {
         let x = ((pixel.x * 255.0).round() as u8).clamp(0, 255);
         let y = ((pixel.y * 255.0).round() as u8).clamp(0, 255);
-        let z = ((pixel.z * 255.0).round() as u8).clamp(0, 255);        
+        let z = ((pixel.z * 255.0).round() as u8).clamp(0, 255);
 
-        return [x, y, z]
+        return [x, y, z];
     }
 }
 

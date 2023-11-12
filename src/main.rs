@@ -12,12 +12,13 @@ mod objects;
 mod patterns;
 mod planes;
 mod rays;
+mod scenarios;
 mod shapes;
 mod spheres;
 mod transformations;
+mod triangles;
 mod tuples;
 mod world;
-mod scenarios;
 
 use std::f64::consts::PI;
 
