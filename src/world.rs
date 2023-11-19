@@ -180,8 +180,8 @@ mod tests {
     use crate::{
         materials::Material,
         patterns::{Pattern, PatternsKind},
-        planes::Plane,
-        spheres::Sphere,
+        shapes::planes::Plane,
+        shapes::spheres::Sphere,
         transformations::Transformation,
     };
 

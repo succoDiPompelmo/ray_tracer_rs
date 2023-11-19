@@ -1,7 +1,5 @@
 mod camera;
 mod canvas;
-mod cubes;
-mod cylinders;
 mod groups;
 mod intersections;
 mod lights;
@@ -10,13 +8,10 @@ mod materials;
 mod matrices;
 mod objects;
 mod patterns;
-mod planes;
 mod rays;
 mod scenarios;
 mod shapes;
-mod spheres;
 mod transformations;
-mod triangles;
 mod tuples;
 mod world;
 
@@ -31,8 +26,8 @@ use crate::tuples::Tuple;
 
 fn main() {
     println!("{:?}", Scenario::list());
-    
-    let mut scenario = Scenario::get("ciao");
+
+    let mut scenario = Scenario::get("Hexagon");
 
     scenario.get_world().set_light(PointLight::new(
         Tuple::white(),

@@ -205,7 +205,7 @@ mod tests {
     use std::sync::{Arc, Mutex};
 
     use crate::{
-        planes::Plane, rays::Ray, shapes::Shape, spheres::Sphere, transformations::Transformation,
+        shapes::planes::Plane, rays::Ray, shapes::Shape, shapes::spheres::Sphere, transformations::Transformation,
         tuples::Tuple,
     };
 

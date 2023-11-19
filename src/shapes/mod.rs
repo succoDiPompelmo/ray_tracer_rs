@@ -1,3 +1,8 @@
+pub mod cylinders;
+pub mod spheres;
+pub mod triangles;
+pub mod planes;
+
 use std::{
     fmt::Debug,
     sync::{Arc, Mutex},
@@ -220,7 +225,7 @@ mod tests {
     use crate::{
         groups::{Group, NodeTypes},
         margin::Margin,
-        spheres::Sphere,
+        shapes::spheres::Sphere,
         transformations::Transformation,
     };
 

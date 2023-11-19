@@ -128,7 +128,7 @@ mod tests {
 
     use float_cmp::ApproxEq;
 
-    use crate::{lights::PointLight, margin::Margin, patterns::PatternsKind, spheres::Sphere};
+    use crate::{lights::PointLight, margin::Margin, patterns::PatternsKind, shapes::spheres::Sphere};
 
     use super::*;
 

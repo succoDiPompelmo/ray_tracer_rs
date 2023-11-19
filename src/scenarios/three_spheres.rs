@@ -1,6 +1,6 @@
 use std::sync::{Mutex, Arc};
 
-use crate::{world::World, planes::Plane, shapes::Shape, materials::Material, tuples::Tuple, patterns::{Pattern, PatternsKind}, transformations::Transformation, spheres::Sphere, groups::Group};
+use crate::{world::World, shapes::planes::Plane, shapes::Shape, materials::Material, tuples::Tuple, patterns::{Pattern, PatternsKind}, transformations::Transformation, shapes::spheres::Sphere, groups::Group};
 
 use super::Scenario;
 

@@ -69,7 +69,7 @@ mod tests {
 
     use std::sync::{Arc, Mutex};
 
-    use crate::{spheres::Sphere, transformations::Transformation, tuples::Tuple};
+    use crate::{shapes::spheres::Sphere, transformations::Transformation, tuples::Tuple};
 
     use super::*;
 

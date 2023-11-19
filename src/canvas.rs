@@ -42,7 +42,7 @@ impl Canvas {
                 img.put_pixel(y as u32, x as u32, Rgb(Canvas::format_pixel(pixel)))
             }
         }
-        img.save(format!("{OUTPUT_DIR}/{filename}")).unwrap();
+        img.save(format!("{OUTPUT_DIR}/{filename}.png")).unwrap();
     }
 
     fn format_pixel(pixel: Tuple) -> [u8; 3] {

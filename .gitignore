@@ -15,8 +15,10 @@ Cargo.lock
 
 
 # Added by cargo
-
 /target
 
 # Ray tracer output
 output
+
+# VS Code
+/.vscode
