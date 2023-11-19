@@ -30,11 +30,13 @@ use transformations::Transformation;
 use crate::tuples::Tuple;
 
 fn main() {
-    let mut scenario = Scenario::hexagon();
+    println!("{:?}", Scenario::list());
+    
+    let mut scenario = Scenario::get("ciao");
 
     scenario.get_world().set_light(PointLight::new(
         Tuple::white(),
-        Tuple::new_point(-10.0, 10.0, -10.0),
+        Tuple::new_point(-5.0, 10.0, -10.0),
     ));
 
     let mut camera = Camera::new(1000, 500, PI / 2.0);
