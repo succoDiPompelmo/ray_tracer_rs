@@ -1,6 +1,6 @@
 use float_cmp::ApproxEq;
 
-use crate::{margin::Margin, rays::Ray, shapes::Polygon, tuples::Tuple};
+use crate::{core::tuples::Tuple, margin::Margin, rays::Ray, shapes::Polygon};
 
 #[derive(Clone, Debug)]
 pub struct Sphere {
@@ -56,7 +56,9 @@ mod tests {
         sync::{Arc, Mutex},
     };
 
-    use crate::{rays::Ray, shapes::Shape, transformations::Transformation, tuples::Tuple};
+    use crate::{
+        core::transformations::Transformation, core::tuples::Tuple, rays::Ray, shapes::Shape,
+    };
 
     use super::*;
 

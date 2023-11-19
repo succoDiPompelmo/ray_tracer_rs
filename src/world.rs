@@ -1,6 +1,7 @@
 use float_cmp::ApproxEq;
 
 use crate::{
+    core::tuples::Tuple,
     groups::Group,
     intersections::{Computations, Intersection},
     lights::PointLight,
@@ -8,7 +9,6 @@ use crate::{
     objects::Objects,
     rays::Ray,
     shapes::Shape,
-    tuples::Tuple,
 };
 
 pub struct World {
@@ -178,11 +178,11 @@ mod tests {
     use std::sync::{Arc, Mutex};
 
     use crate::{
+        core::transformations::Transformation,
         materials::Material,
         patterns::{Pattern, PatternsKind},
         shapes::planes::Plane,
         shapes::spheres::Sphere,
-        transformations::Transformation,
     };
 
     use super::*;

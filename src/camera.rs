@@ -1,4 +1,4 @@
-use crate::{canvas::Canvas, matrices::Matrix, rays::Ray, tuples::Tuple, world::World};
+use crate::{canvas::Canvas, core::matrices::Matrix, core::tuples::Tuple, rays::Ray, world::World};
 
 pub struct Camera {
     hsize: usize,
@@ -90,10 +90,7 @@ mod tests {
 
     use std::f64::consts::PI;
 
-    use crate::{
-        canvas::Canvas, margin::Margin, transformations::Transformation, tuples::Tuple,
-        world::World,
-    };
+    use crate::{core::transformations::Transformation, margin::Margin};
     use float_cmp::ApproxEq;
 
     use super::*;

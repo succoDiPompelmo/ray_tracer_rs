@@ -1,4 +1,4 @@
-use crate::{matrices::Matrix, tuples::Tuple};
+use crate::{core::matrices::Matrix, core::tuples::Tuple};
 
 pub struct Transformation {}
 
@@ -95,8 +95,6 @@ impl Transformation {
 mod tests {
 
     use std::f64::consts::PI;
-
-    use crate::tuples::Tuple;
 
     use super::*;
 

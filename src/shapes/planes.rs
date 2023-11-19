@@ -1,4 +1,4 @@
-use crate::{rays::Ray, shapes::Polygon, tuples::Tuple};
+use crate::{core::tuples::Tuple, rays::Ray, shapes::Polygon};
 
 pub struct Plane {}
 
@@ -18,7 +18,7 @@ impl Polygon for Plane {
         vec![t]
     }
 
-    fn normal_at(&self, _point: &crate::tuples::Tuple) -> Tuple {
+    fn normal_at(&self, _point: &Tuple) -> Tuple {
         Tuple::new_vector(0.0, 1.0, 0.0)
     }
 }
@@ -28,7 +28,7 @@ mod tests {
 
     use float_cmp::ApproxEq;
 
-    use crate::{margin::Margin, rays::Ray, tuples::Tuple};
+    use crate::margin::Margin;
 
     use super::*;
 

@@ -1,4 +1,4 @@
-use crate::tuples::Tuple;
+use crate::core::tuples::Tuple;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct PointLight {

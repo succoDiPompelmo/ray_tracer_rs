@@ -1,6 +1,15 @@
-use std::{sync::{Arc, Mutex}, f64::consts::PI};
+use std::{
+    f64::consts::PI,
+    sync::{Arc, Mutex},
+};
 
-use crate::{groups::Group, world::World, shapes::{Shape, cylinders::Cylinder}, transformations::Transformation, shapes::spheres::Sphere};
+use crate::{
+    core::transformations::Transformation,
+    groups::Group,
+    shapes::spheres::Sphere,
+    shapes::{cylinders::Cylinder, Shape},
+    world::World,
+};
 
 use super::Scenario;
 

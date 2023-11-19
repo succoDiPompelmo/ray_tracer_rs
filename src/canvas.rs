@@ -1,6 +1,6 @@
 use image::{ImageBuffer, Rgb, RgbImage};
 
-use crate::tuples::Tuple;
+use crate::core::tuples::Tuple;
 
 const OUTPUT_DIR: &str = "output";
 

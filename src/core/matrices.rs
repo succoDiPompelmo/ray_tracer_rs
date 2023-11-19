@@ -1,6 +1,6 @@
 use std::ops;
 
-use crate::{margin::Margin, tuples::Tuple};
+use crate::{core::tuples::Tuple, margin::Margin};
 use float_cmp::ApproxEq;
 
 #[derive(Clone, Debug)]

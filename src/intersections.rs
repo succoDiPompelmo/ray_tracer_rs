@@ -1,6 +1,6 @@
 use float_cmp::ApproxEq;
 
-use crate::{groups::Group, margin::Margin, rays::Ray, shapes::Shape, tuples::Tuple};
+use crate::{core::tuples::Tuple, groups::Group, margin::Margin, rays::Ray, shapes::Shape};
 
 #[derive(Clone, Debug)]
 pub struct Intersection {
@@ -205,8 +205,8 @@ mod tests {
     use std::sync::{Arc, Mutex};
 
     use crate::{
-        shapes::planes::Plane, rays::Ray, shapes::Shape, shapes::spheres::Sphere, transformations::Transformation,
-        tuples::Tuple,
+        core::transformations::Transformation, core::tuples::Tuple, rays::Ray,
+        shapes::planes::Plane, shapes::spheres::Sphere, shapes::Shape,
     };
 
     use super::*;

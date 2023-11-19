@@ -15,7 +15,7 @@ impl Scenario {
         match name {
             "Hexagon" => Hexagon::new(),
             "Three Spheres" => ThreeSpheres::new(),
-            _ => panic!("no scenario defined for name")
+            _ => panic!("no scenario defined for name"),
         }
     }
 

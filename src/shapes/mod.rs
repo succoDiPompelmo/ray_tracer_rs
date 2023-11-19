@@ -1,7 +1,7 @@
 pub mod cylinders;
+pub mod planes;
 pub mod spheres;
 pub mod triangles;
-pub mod planes;
 
 use std::{
     fmt::Debug,
@@ -9,12 +9,12 @@ use std::{
 };
 
 use crate::{
+    core::matrices::Matrix,
+    core::tuples::Tuple,
     groups::{Group, NodeTypes},
     intersections::Intersection,
     materials::Material,
-    matrices::Matrix,
     rays::Ray,
-    tuples::Tuple,
 };
 
 #[cfg(test)]
@@ -223,10 +223,10 @@ mod tests {
     use float_cmp::ApproxEq;
 
     use crate::{
+        core::transformations::Transformation,
         groups::{Group, NodeTypes},
         margin::Margin,
         shapes::spheres::Sphere,
-        transformations::Transformation,
     };
 
     use super::*;

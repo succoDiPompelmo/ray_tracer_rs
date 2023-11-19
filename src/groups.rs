@@ -1,6 +1,6 @@
 use r3bl_rs_utils::Arena;
 
-use crate::{intersections::Intersection, matrices::Matrix, rays::Ray, shapes::Shape};
+use crate::{core::matrices::Matrix, intersections::Intersection, rays::Ray, shapes::Shape};
 
 #[derive(Debug)]
 pub struct Group {
@@ -69,7 +69,9 @@ mod tests {
 
     use std::sync::{Arc, Mutex};
 
-    use crate::{shapes::spheres::Sphere, transformations::Transformation, tuples::Tuple};
+    use crate::{
+        core::transformations::Transformation, core::tuples::Tuple, shapes::spheres::Sphere,
+    };
 
     use super::*;
 

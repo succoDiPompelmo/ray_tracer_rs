@@ -1,4 +1,4 @@
-use crate::{matrices::Matrix, shapes::Shape, tuples::Tuple};
+use crate::{core::matrices::Matrix, core::tuples::Tuple, shapes::Shape};
 
 #[derive(Clone, Debug)]
 pub enum PatternsKind {
@@ -75,7 +75,7 @@ mod tests {
 
     use std::sync::{Arc, Mutex};
 
-    use crate::{shapes::Shape, shapes::spheres::Sphere, transformations::Transformation, tuples::Tuple};
+    use crate::{core::transformations::Transformation, shapes::spheres::Sphere};
 
     use super::*;
 

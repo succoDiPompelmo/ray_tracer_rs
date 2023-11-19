@@ -1,4 +1,4 @@
-use crate::{matrices::Matrix, tuples::Tuple};
+use crate::{core::matrices::Matrix, core::tuples::Tuple};
 
 #[derive(Debug, PartialEq)]
 pub struct Ray {
@@ -34,7 +34,7 @@ impl Ray {
 #[cfg(test)]
 mod tests {
 
-    use crate::transformations::Transformation;
+    use crate::core::transformations::Transformation;
 
     use super::*;
 

@@ -1,6 +1,6 @@
 use float_cmp::ApproxEq;
 
-use crate::{margin::Margin, rays::Ray, shapes::Polygon, tuples::Tuple};
+use crate::{core::tuples::Tuple, margin::Margin, rays::Ray, shapes::Polygon};
 
 pub struct Triangle {
     p1: Tuple,

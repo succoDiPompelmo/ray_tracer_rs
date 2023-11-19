@@ -1,6 +1,16 @@
-use std::sync::{Mutex, Arc};
+use std::sync::{Arc, Mutex};
 
-use crate::{world::World, shapes::planes::Plane, shapes::Shape, materials::Material, tuples::Tuple, patterns::{Pattern, PatternsKind}, transformations::Transformation, shapes::spheres::Sphere, groups::Group};
+use crate::{
+    core::transformations::Transformation,
+    core::tuples::Tuple,
+    groups::Group,
+    materials::Material,
+    patterns::{Pattern, PatternsKind},
+    shapes::planes::Plane,
+    shapes::spheres::Sphere,
+    shapes::Shape,
+    world::World,
+};
 
 use super::Scenario;
 
@@ -9,7 +19,10 @@ pub struct ThreeSpheres {}
 
 impl ThreeSpheres {
     pub fn new() -> Scenario {
-        Scenario { name: NAME.to_owned(), world: three_sphere() }
+        Scenario {
+            name: NAME.to_owned(),
+            world: three_sphere(),
+        }
     }
 
     pub fn name() -> String {
@@ -49,8 +62,7 @@ pub fn three_sphere() -> World {
 
     let mut left = Shape::default(Arc::new(Mutex::new(Sphere::new())));
     left.set_transformation(
-        Transformation::translation(-1.5, 0.33, -0.75)
-            * Transformation::scaling(0.33, 0.33, 0.33),
+        Transformation::translation(-1.5, 0.33, -0.75) * Transformation::scaling(0.33, 0.33, 0.33),
     );
     let mut left_material = Material::default();
     left_material.set_color(Tuple::new_color(1.0, 0.8, 0.1));
