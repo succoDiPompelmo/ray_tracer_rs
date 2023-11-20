@@ -1,4 +1,4 @@
-use crate::{groups::Group, intersections::Intersection, rays::Ray, shapes::Shape};
+use crate::{intersections::Intersection, rays::Ray, shapes::groups::Group, shapes::Shape};
 
 #[derive(Debug)]
 pub enum Objects {

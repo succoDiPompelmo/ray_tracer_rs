@@ -3,9 +3,9 @@ use std::sync::{Arc, Mutex};
 use crate::{
     core::transformations::Transformation,
     core::tuples::Tuple,
-    groups::Group,
+    materials::patterns::{Pattern, PatternsKind},
     materials::Material,
-    patterns::{Pattern, PatternsKind},
+    shapes::groups::Group,
     shapes::planes::Plane,
     shapes::spheres::Sphere,
     shapes::Shape,

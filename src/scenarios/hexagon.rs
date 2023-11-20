@@ -5,7 +5,7 @@ use std::{
 
 use crate::{
     core::transformations::Transformation,
-    groups::Group,
+    shapes::groups::Group,
     shapes::spheres::Sphere,
     shapes::{cylinders::Cylinder, Shape},
     world::World,

@@ -1,13 +1,10 @@
 mod camera;
 mod canvas;
 mod core;
-mod groups;
 mod intersections;
 mod lights;
 mod margin;
 mod materials;
-mod objects;
-mod patterns;
 mod rays;
 mod scenarios;
 mod shapes;

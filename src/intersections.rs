@@ -1,6 +1,6 @@
 use float_cmp::ApproxEq;
 
-use crate::{core::tuples::Tuple, groups::Group, margin::Margin, rays::Ray, shapes::Shape};
+use crate::{core::tuples::Tuple, margin::Margin, rays::Ray, shapes::groups::Group, shapes::Shape};
 
 #[derive(Clone, Debug)]
 pub struct Intersection {

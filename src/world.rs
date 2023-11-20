@@ -2,12 +2,12 @@ use float_cmp::ApproxEq;
 
 use crate::{
     core::tuples::Tuple,
-    groups::Group,
     intersections::{Computations, Intersection},
     lights::PointLight,
     margin::Margin,
-    objects::Objects,
     rays::Ray,
+    shapes::groups::Group,
+    shapes::objects::Objects,
     shapes::Shape,
 };
 
@@ -179,8 +179,8 @@ mod tests {
 
     use crate::{
         core::transformations::Transformation,
+        materials::patterns::{Pattern, PatternsKind},
         materials::Material,
-        patterns::{Pattern, PatternsKind},
         shapes::planes::Plane,
         shapes::spheres::Sphere,
     };

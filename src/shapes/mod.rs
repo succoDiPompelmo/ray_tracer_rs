@@ -1,4 +1,6 @@
 pub mod cylinders;
+pub mod groups;
+pub mod objects;
 pub mod planes;
 pub mod spheres;
 pub mod triangles;
@@ -11,10 +13,10 @@ use std::{
 use crate::{
     core::matrices::Matrix,
     core::tuples::Tuple,
-    groups::{Group, NodeTypes},
     intersections::Intersection,
     materials::Material,
     rays::Ray,
+    shapes::groups::{Group, NodeTypes},
 };
 
 #[cfg(test)]
@@ -224,8 +226,8 @@ mod tests {
 
     use crate::{
         core::transformations::Transformation,
-        groups::{Group, NodeTypes},
         margin::Margin,
+        shapes::groups::{Group, NodeTypes},
         shapes::spheres::Sphere,
     };
 
