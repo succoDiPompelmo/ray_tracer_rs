@@ -1,23 +1,19 @@
 mod camera;
 mod canvas;
 mod core;
-mod intersections;
-mod lights;
 mod margin;
 mod materials;
 mod rays;
 mod scenarios;
 mod shapes;
-mod world;
 
 use std::f64::consts::PI;
 
 use camera::Camera;
 use core::transformations::Transformation;
-use lights::PointLight;
 use scenarios::Scenario;
 
-use crate::core::tuples::Tuple;
+use crate::{core::tuples::Tuple, scenarios::lights::PointLight};
 
 fn main() {
     println!("{:?}", Scenario::list());

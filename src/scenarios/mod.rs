@@ -1,9 +1,9 @@
 mod hexagon;
+pub mod lights;
 mod three_spheres;
+pub mod world;
 
-use crate::world::World;
-
-use self::{hexagon::Hexagon, three_spheres::ThreeSpheres};
+use self::{hexagon::Hexagon, three_spheres::ThreeSpheres, world::World};
 
 pub struct Scenario {
     name: String,

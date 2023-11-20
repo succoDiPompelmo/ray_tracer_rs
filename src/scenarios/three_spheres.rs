@@ -9,10 +9,9 @@ use crate::{
     shapes::planes::Plane,
     shapes::spheres::Sphere,
     shapes::Shape,
-    world::World,
 };
 
-use super::Scenario;
+use super::{world::World, Scenario};
 
 const NAME: &str = "Three Spheres";
 pub struct ThreeSpheres {}

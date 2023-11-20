@@ -2,14 +2,15 @@ use float_cmp::ApproxEq;
 
 use crate::{
     core::tuples::Tuple,
-    intersections::{Computations, Intersection},
-    lights::PointLight,
     margin::Margin,
     rays::Ray,
     shapes::groups::Group,
+    shapes::intersections::{Computations, Intersection},
     shapes::objects::Objects,
     shapes::Shape,
 };
+
+use super::lights::PointLight;
 
 pub struct World {
     light: Option<PointLight>,

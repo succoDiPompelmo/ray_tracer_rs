@@ -1,4 +1,6 @@
-use crate::{canvas::Canvas, core::matrices::Matrix, core::tuples::Tuple, rays::Ray, world::World};
+use crate::{
+    canvas::Canvas, core::matrices::Matrix, core::tuples::Tuple, rays::Ray, scenarios::world::World,
+};
 
 pub struct Camera {
     hsize: usize,

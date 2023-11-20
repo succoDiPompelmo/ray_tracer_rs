@@ -8,10 +8,9 @@ use crate::{
     shapes::groups::Group,
     shapes::spheres::Sphere,
     shapes::{cylinders::Cylinder, Shape},
-    world::World,
 };
 
-use super::Scenario;
+use super::{world::World, Scenario};
 
 const NAME: &str = "Hexagon";
 

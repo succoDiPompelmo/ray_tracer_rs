@@ -1,6 +1,8 @@
 use r3bl_rs_utils::Arena;
 
-use crate::{core::matrices::Matrix, intersections::Intersection, rays::Ray, shapes::Shape};
+use crate::{
+    core::matrices::Matrix, rays::Ray, shapes::intersections::Intersection, shapes::Shape,
+};
 
 #[derive(Debug)]
 pub struct Group {

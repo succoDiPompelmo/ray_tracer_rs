@@ -1,6 +1,8 @@
 pub mod patterns;
 
-use crate::{core::tuples::Tuple, lights::PointLight, materials::patterns::Pattern, shapes::Shape};
+use crate::{
+    core::tuples::Tuple, materials::patterns::Pattern, scenarios::lights::PointLight, shapes::Shape,
+};
 
 #[derive(Clone, Debug)]
 pub struct Material {
@@ -130,10 +132,7 @@ mod tests {
 
     use float_cmp::ApproxEq;
 
-    use crate::{
-        lights::PointLight, margin::Margin, materials::patterns::PatternsKind,
-        shapes::spheres::Sphere,
-    };
+    use crate::{margin::Margin, materials::patterns::PatternsKind, shapes::spheres::Sphere};
 
     use super::*;
 
