@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Input, Canvas, and Dropdown</title>
+    <style>
+        /* Optional: Add some basic styling for better presentation */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        input,
+        canvas,
+        select {
+            margin-bottom: 10px;
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #canvasContainer {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="container">
+        <div id="inputs">
+            <label for="input1">Input 1:</label>
+            <input type="text" id="input1" name="input1">
+
+            <label for="input2">Input 2:</label>
+            <input type="text" id="input2" name="input2">
+
+            <label for="input3">Input 3:</label>
+            <input type="text" id="input3" name="input3">
+
+            <!-- New dropdown menu -->
+            <label for="dropdown">Select Option:</label>
+            <select id="dropdown" style="width: 200px;"></select>
+
+            <button id="callApiButton">Render</button>
+        </div>
+
+        <img id="imageElement" alt="Image">
+    </div>
+
+    <script>
+        // Fetch data for dropdown menu options
+        fetch('http://localhost:3000/scenarios')
+            .then(response => response.json())
+            .then(options => {
+                const dropdown = document.getElementById('dropdown');
+
+                // Populate dropdown menu with options
+                options.values.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    dropdown.appendChild(optionElement);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching dropdown options:', error);
+            });
+
+        document.getElementById('callApiButton').addEventListener('click', makeHttpRequest);
+
+        function makeHttpRequest() {
+            // Get input values
+            const input1Value = document.getElementById('input1').value;
+            const input2Value = document.getElementById('input2').value;
+            const input3Value = document.getElementById('input3').value;
+
+            // Use the input values and dropdown selection as parameters in the URL
+            const selectedOption = document.getElementById('dropdown').value;
+            const apiUrl = `http://localhost:3000/render/${selectedOption}`;
+
+            // Create JSON body
+            const requestBody = {
+                x: parseFloat(input1Value),
+                y: parseFloat(input2Value),
+                z: parseFloat(input3Value)
+            };
+
+            // Make the HTTP request with JSON body
+            fetch(apiUrl, {
+                method: 'POST', // Assuming you want to use the POST method
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            }).then(response => response.json())
+                .then(data => {
+                    // Assuming the API response contains a 'base64_image' property
+                    const base64ImageData = data.base64_image;
+
+                    // Set the src attribute of the img element
+                    const imgElement = document.getElementById('imageElement');
+                    imgElement.src = `data:image/png;base64,${base64ImageData}`;
+                })
+                .catch(error => {
+                    // Handle errors
+                    console.error('Error making HTTP call:', error);
+                    alert('Error making HTTP call. Check the console for details.');
+                });
+        }
+    </script>
+
+</body>
+
+</html>

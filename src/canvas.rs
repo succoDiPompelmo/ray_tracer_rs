@@ -1,4 +1,8 @@
-use image::{ImageBuffer, Rgb, RgbImage};
+use std::io::Cursor;
+
+use image::{ImageBuffer, ImageOutputFormat, Rgb, RgbImage};
+
+use base64::{engine::general_purpose, Engine as _};
 
 use crate::core::tuples::Tuple;
 
@@ -43,6 +47,21 @@ impl Canvas {
             }
         }
         img.save(format!("{OUTPUT_DIR}/{filename}.png")).unwrap();
+    }
+
+    pub fn base64(&self) -> String {
+        let mut img: RgbImage = ImageBuffer::new(self.width as u32, self.height as u32);
+        for x in 0..self.height {
+            for y in 0..self.width {
+                let pixel = self.state[x][y].clone();
+                img.put_pixel(y as u32, x as u32, Rgb(Canvas::format_pixel(pixel)))
+            }
+        }
+        let mut image_data: Vec<u8> = Vec::new();
+        img.write_to(&mut Cursor::new(&mut image_data), ImageOutputFormat::Png)
+            .unwrap();
+
+        general_purpose::STANDARD.encode(image_data)
     }
 
     fn format_pixel(pixel: Tuple) -> [u8; 3] {

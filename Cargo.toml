@@ -6,10 +6,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+actix-cors = "0.6.4"
+actix-web = "4.4.0"
+base64 = "0.21.5"
 float-cmp = "0.9.0"
 image = "0.24.7"
 r3bl_rs_utils = "0.9.14"
-rayon = "1.7.0"
+serde = "1.0.193"
 
 [dev-dependencies]
 mockall = "0.11.4"
