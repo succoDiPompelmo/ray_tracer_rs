@@ -9,11 +9,10 @@ mod shapes;
 
 use std::f64::consts::PI;
 
+use actix_cors::Cors;
 use actix_web::{error, get, post, web, App, HttpServer, Responder, Result};
 use scenarios::Scenario;
 use serde::{Deserialize, Serialize};
-
-use actix_cors::Cors;
 
 use crate::{
     camera::Camera,
@@ -56,7 +55,7 @@ async fn list_scenarios() -> Result<impl Responder> {
 #[post("/render/{scenario}")]
 async fn render_scenario(
     scenario: web::Path<String>,
-    light: web::Json<LightPosition>,
+    parameters: web::Json<ScenarioParameters>,
 ) -> Result<impl Responder> {
     if !Scenario::list().contains(&scenario) {
         return Err(error::ErrorBadRequest("err.name"));
@@ -66,14 +65,30 @@ async fn render_scenario(
 
     scenario.get_world().set_light(PointLight::new(
         Tuple::white(),
-        Tuple::new_point(light.x, light.y, light.z),
+        Tuple::new_point(
+            parameters.light_position.x,
+            parameters.light_position.y,
+            parameters.light_position.z,
+        ),
     ));
 
     let mut camera = Camera::new(1000, 500, PI / 2.0);
     camera.set_transform(Transformation::view_transform(
-        Tuple::new_point(0.0, 1.5, -5.0),
-        Tuple::new_point(0.0, 1.0, 0.0),
-        Tuple::new_vector(0.0, 1.0, 0.0),
+        Tuple::new_point(
+            parameters.camera_position.from.x,
+            parameters.camera_position.from.y,
+            parameters.camera_position.from.z,
+        ),
+        Tuple::new_point(
+            parameters.camera_position.to.x,
+            parameters.camera_position.to.y,
+            parameters.camera_position.to.z,
+        ),
+        Tuple::new_point(
+            parameters.camera_position.up.x,
+            parameters.camera_position.up.y,
+            parameters.camera_position.up.z,
+        ),
     ));
     camera.precompute_inverse_transform();
 
@@ -91,7 +106,41 @@ struct Scenarios {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+struct ScenarioParameters {
+    camera_position: CameraPosition,
+    light_position: LightPosition,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 struct LightPosition {
+    x: f64,
+    y: f64,
+    z: f64,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct CameraPosition {
+    from: FromPosition,
+    to: ToPosition,
+    up: UpPosition,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct FromPosition {
+    x: f64,
+    y: f64,
+    z: f64,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct ToPosition {
+    x: f64,
+    y: f64,
+    z: f64,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct UpPosition {
     x: f64,
     y: f64,
     z: f64,

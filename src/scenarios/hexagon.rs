@@ -28,9 +28,7 @@ impl Hexagon {
         let mut world = World::new();
         world.add_group(hex);
 
-        Scenario {
-            world,
-        }
+        Scenario { world }
     }
 
     pub fn name() -> String {

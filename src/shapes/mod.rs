@@ -1,3 +1,4 @@
+pub mod cubes;
 pub mod cylinders;
 pub mod groups;
 pub mod intersections;
@@ -5,7 +6,6 @@ pub mod objects;
 pub mod planes;
 pub mod spheres;
 pub mod triangles;
-pub mod cubes;
 
 use std::{
     fmt::Debug,

@@ -7,7 +7,7 @@ use crate::{
     materials::Material,
     shapes::groups::Group,
     shapes::planes::Plane,
-    shapes::{Shape, cubes::Cube},
+    shapes::{cubes::Cube, Shape},
 };
 
 use super::{world::World, Scenario};
@@ -17,9 +17,7 @@ pub struct TransparentCube {}
 
 impl TransparentCube {
     pub fn new() -> Scenario {
-        Scenario {
-            world: draw(),
-        }
+        Scenario { world: draw() }
     }
 
     pub fn name() -> String {

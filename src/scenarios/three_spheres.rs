@@ -18,9 +18,7 @@ pub struct ThreeSpheres {}
 
 impl ThreeSpheres {
     pub fn new() -> Scenario {
-        Scenario {
-            world: draw(),
-        }
+        Scenario { world: draw() }
     }
 
     pub fn name() -> String {

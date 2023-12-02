@@ -1,10 +1,12 @@
 mod hexagon;
 pub mod lights;
 mod three_spheres;
-pub mod world;
 mod transparent_cube;
+pub mod world;
 
-use self::{hexagon::Hexagon, three_spheres::ThreeSpheres, world::World, transparent_cube::TransparentCube};
+use self::{
+    hexagon::Hexagon, three_spheres::ThreeSpheres, transparent_cube::TransparentCube, world::World,
+};
 
 pub struct Scenario {
     world: World,
@@ -21,7 +23,11 @@ impl Scenario {
     }
 
     pub fn list() -> Vec<String> {
-        vec![Hexagon::name(), ThreeSpheres::name(), TransparentCube::name()]
+        vec![
+            Hexagon::name(),
+            ThreeSpheres::name(),
+            TransparentCube::name(),
+        ]
     }
 
     pub fn get_world(&mut self) -> &mut World {

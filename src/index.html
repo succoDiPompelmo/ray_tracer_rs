@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Input, Canvas, and Dropdown</title>
+    <title>Rust Ray Tracer</title>
     <style>
         /* Optional: Add some basic styling for better presentation */
         body {
@@ -37,16 +37,47 @@
 <body>
 
     <div id="container">
-        <div id="inputs">
-            <label for="input1">Input 1:</label>
-            <input type="text" id="input1" name="input1">
+        <div id="camera_from_inputs">
+            <label for="camera_from_x">Camera From X:</label>
+            <input type="text" id="camera_from_x" name="camera_from_x" value="0.0">
 
-            <label for="input2">Input 2:</label>
-            <input type="text" id="input2" name="input2">
+            <label for="camera_from_y">Camera From Y:</label>
+            <input type="text" id="camera_from_y" name="camera_from_y" value="1.5">
 
-            <label for="input3">Input 3:</label>
-            <input type="text" id="input3" name="input3">
+            <label for="camera_from_z">Camera From Z:</label>
+            <input type="text" id="camera_from_z" name="camera_from_z" value="-5.0">
+        </div>
+        <div id="camera_to_inputs">
+            <label for="camera_to_x">Camera To X:</label>
+            <input type="text" id="camera_to_x" name="camera_to_x" value="0.0">
 
+            <label for="camera_to_y">Camera To Y:</label>
+            <input type="text" id="camera_to_y" name="camera_to_y" value="1.0">
+
+            <label for="camera_to_z">Camera To Z:</label>
+            <input type="text" id="camera_to_z" name="camera_to_z" value="0.0">
+        </div>
+        <div id="camera_up_inputs">
+            <label for="camera_up_x">Camera Up X:</label>
+            <input type="text" id="camera_up_x" name="camera_up_x" value="0.0">
+
+            <label for="camera_up_y">Camera Up Y:</label>
+            <input type="text" id="camera_up_y" name="camera_up_y" value="1.0">
+
+            <label for="camera_up_z">Camera Up Z:</label>
+            <input type="text" id="camera_up_z" name="camera_up_z" value="0.0">
+        </div>
+        <div id="light_inputs">
+            <label for="light_x">Light X:</label>
+            <input type="text" id="light_x" name="light_x">
+
+            <label for="light_y">Light Y:</label>
+            <input type="text" id="light_y" name="light_y">
+
+            <label for="light_z">Light Z:</label>
+            <input type="text" id="light_z" name="light_z">
+        </div>
+        <div id="dropdown_menus">
             <!-- New dropdown menu -->
             <label for="dropdown">Select Option:</label>
             <select id="dropdown" style="width: 200px;"></select>
@@ -80,9 +111,21 @@
 
         function makeHttpRequest() {
             // Get input values
-            const input1Value = document.getElementById('input1').value;
-            const input2Value = document.getElementById('input2').value;
-            const input3Value = document.getElementById('input3').value;
+            const light_x = document.getElementById('light_x').value;
+            const light_y = document.getElementById('light_y').value;
+            const light_z = document.getElementById('light_z').value;
+
+            const camera_from_x = document.getElementById('camera_from_x').value;
+            const camera_from_y = document.getElementById('camera_from_y').value;
+            const camera_from_z = document.getElementById('camera_from_z').value;
+
+            const camera_to_x = document.getElementById('camera_to_x').value;
+            const camera_to_y = document.getElementById('camera_to_y').value;
+            const camera_to_z = document.getElementById('camera_to_z').value;
+
+            const camera_up_x = document.getElementById('camera_up_x').value;
+            const camera_up_y = document.getElementById('camera_up_y').value;
+            const camera_up_z = document.getElementById('camera_up_z').value;
 
             // Use the input values and dropdown selection as parameters in the URL
             const selectedOption = document.getElementById('dropdown').value;
@@ -90,9 +133,28 @@
 
             // Create JSON body
             const requestBody = {
-                x: parseFloat(input1Value),
-                y: parseFloat(input2Value),
-                z: parseFloat(input3Value)
+                light_position: {
+                    x: parseFloat(light_x),
+                    y: parseFloat(light_y),
+                    z: parseFloat(light_z)
+                },
+                camera_position: {
+                    from: {
+                        x: parseFloat(camera_from_x),
+                        y: parseFloat(camera_from_y),
+                        z: parseFloat(camera_from_z)
+                    },
+                    to: {
+                        x: parseFloat(camera_to_x),
+                        y: parseFloat(camera_to_y),
+                        z: parseFloat(camera_to_z)
+                    },
+                    up: {
+                        x: parseFloat(camera_up_x),
+                        y: parseFloat(camera_up_y),
+                        z: parseFloat(camera_up_z)
+                    }
+                }
             };
 
             // Make the HTTP request with JSON body
