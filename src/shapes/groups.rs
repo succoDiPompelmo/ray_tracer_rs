@@ -18,7 +18,7 @@ pub enum NodeTypes {
 impl Group {
     pub fn new() -> Group {
         let mut arena = Arena::<NodeTypes>::new();
-        let root_id = arena.add_new_node(
+        arena.add_new_node(
             NodeTypes::Matrix((Matrix::identity(4), Matrix::identity(4))),
             None,
         );

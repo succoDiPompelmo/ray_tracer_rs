@@ -19,8 +19,7 @@ pub struct ThreeSpheres {}
 impl ThreeSpheres {
     pub fn new() -> Scenario {
         Scenario {
-            name: NAME.to_owned(),
-            world: three_sphere(),
+            world: draw(),
         }
     }
 
@@ -29,7 +28,7 @@ impl ThreeSpheres {
     }
 }
 
-pub fn three_sphere() -> World {
+pub fn draw() -> World {
     let mut floor = Shape::default(Arc::new(Mutex::new(Plane::new())));
     let mut floor_material = Material::default();
     floor_material.set_color(Tuple::new_color(1.0, 0.9, 0.9));

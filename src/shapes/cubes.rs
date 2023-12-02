@@ -1,12 +1,11 @@
 use float_cmp::ApproxEq;
 
-use crate::{margin::Margin, rays::Ray, shapes::Polygon, tuples::Tuple};
+use crate::{margin::Margin, rays::Ray, shapes::Polygon, core::tuples::Tuple};
 
 pub struct Cube {}
 
 impl Cube {
-    #[cfg(test)]
-    fn new() -> Cube {
+    pub fn new() -> Cube {
         Cube {}
     }
 }

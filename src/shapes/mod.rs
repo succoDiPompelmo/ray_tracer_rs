@@ -5,6 +5,7 @@ pub mod objects;
 pub mod planes;
 pub mod spheres;
 pub mod triangles;
+pub mod cubes;
 
 use std::{
     fmt::Debug,
@@ -37,7 +38,6 @@ impl Debug for dyn Polygon + Send + Sync {
 
 #[derive(Clone, Debug)]
 pub struct Shape {
-    id: Option<usize>,
     parent_id: Option<usize>,
     polygon: Arc<Mutex<dyn Polygon + Send + Sync>>,
     pub material: Material,
@@ -54,7 +54,6 @@ impl PartialEq for Shape {
 impl Shape {
     pub fn default(polygon: Arc<Mutex<dyn Polygon + Send + Sync>>) -> Shape {
         Shape {
-            id: None,
             parent_id: None,
             polygon,
             material: Material::default(),
@@ -70,25 +69,12 @@ impl Shape {
         material.set_refractive_index(1.5);
 
         Shape {
-            id: None,
             parent_id: None,
             polygon,
             material,
             transformation: Matrix::identity(4),
             inverse_transformation: None,
         }
-    }
-
-    pub fn get_id(&self) -> Option<usize> {
-        self.id
-    }
-
-    pub fn get_parent_id(&self) -> Option<usize> {
-        self.parent_id
-    }
-
-    pub fn set_id(&mut self, id: usize) {
-        self.id = Some(id)
     }
 
     pub fn set_parent_id(&mut self, id: usize) {

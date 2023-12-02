@@ -29,7 +29,6 @@ impl Hexagon {
         world.add_group(hex);
 
         Scenario {
-            name: NAME.to_owned(),
             world,
         }
     }
